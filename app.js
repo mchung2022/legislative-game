@@ -3,8 +3,15 @@
  * 遊戲邏輯與互動控制 JS 檔案
  */
 
+// --- 後端配置 ---
+// 教師部署 Google Apps Script 後，請將產生的網頁應用程式 URL 貼在下方雙引號內：
+// 例如："https://script.google.com/macros/s/AKfycb.../exec"
+const GOOGLE_SHEET_APP_URL = ""; 
+
 // --- 遊戲狀態管理 ---
 const gameState = {
+  playerClass: "無",
+  playerSeat: "無",
   playerName: "訪客委員",
   selectedChar: "dotty", // dotty, ray, wah
   selectedBill: "homework", // homework, lunch, green
@@ -310,6 +317,11 @@ const hudCharAvatar = document.getElementById('hud-char-avatar');
 const progressBar = document.getElementById('timeline-progress-bar');
 const stepNodes = document.querySelectorAll('.step-node');
 
+// 後端同步 DOM
+const syncStatusBox = document.getElementById('sync-status-box');
+const syncIcon = document.getElementById('sync-icon');
+const syncText = document.getElementById('sync-text');
+
 // --- 輔助函式：切換關卡畫面 ---
 function switchScreen(screenName) {
   playSound('click');
@@ -383,14 +395,22 @@ soundToggle.addEventListener('click', () => {
 // --- 0. 歡迎畫面邏輯 ---
 const btnStartGame = document.getElementById('btn-start-game');
 const playerNameInput = document.getElementById('player-name-input');
+const playerClassInput = document.getElementById('player-class-input');
+const playerSeatInput = document.getElementById('player-seat-input');
 
 btnStartGame.addEventListener('click', () => {
-  const inputVal = playerNameInput.value.trim();
-  if (inputVal !== "") {
-    gameState.playerName = inputVal;
-  } else {
-    gameState.playerName = "亮晶晶立委";
+  const nameVal = playerNameInput.value.trim();
+  const classVal = playerClassInput.value.trim();
+  const seatVal = playerSeatInput.value.trim();
+  
+  if (nameVal === "" || classVal === "" || seatVal === "") {
+    alert("請填寫完整的班級、座號與姓名，才能開始推動法案唷！");
+    return;
   }
+  
+  gameState.playerName = nameVal;
+  gameState.playerClass = classVal;
+  gameState.playerSeat = seatVal;
   switchScreen('select');
 });
 
@@ -1241,6 +1261,55 @@ const certDateDay = document.getElementById('cert-date-day');
 const btnPrintCertificate = document.getElementById('btn-print-certificate');
 const btnRestartAll = document.getElementById('btn-restart-all');
 
+function sendDataToBackend() {
+  if (!syncStatusBox || !syncIcon || !syncText) return;
+
+  if (GOOGLE_SHEET_APP_URL === "") {
+    // 未設定後端，單機模式
+    syncStatusBox.className = "sync-status-box failed";
+    syncIcon.className = "fas fa-exclamation-circle sync-icon";
+    syncText.textContent = "⚠️ 教師未設定 Google 試算表串接網址，作答成果未同步（單機模式）。";
+    return;
+  }
+
+  // 設定為同步中狀態
+  syncStatusBox.className = "sync-status-box syncing";
+  syncIcon.className = "fas fa-sync sync-icon";
+  syncText.textContent = "正在同步成果至雲端試算表...";
+
+  const payload = {
+    class: gameState.playerClass,
+    seat: gameState.playerSeat,
+    name: gameState.playerName,
+    bill: BILLS[gameState.selectedBill].title,
+    score: gameState.quizScore,
+    passed: (gameState.vetoClicks * 2 >= 57) ? "是" : "否",
+    timestamp: new Date().toLocaleString("zh-TW", { timeZone: "Asia/Taipei" })
+  };
+
+  // 使用 mode: 'no-cors' 來避免跨網域 CORS 問題
+  fetch(GOOGLE_SHEET_APP_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  })
+  .then(() => {
+    // 成功同步 (no-cors 即使拿到 opaque response 也會 resolve)
+    syncStatusBox.className = "sync-status-box success";
+    syncIcon.className = "fas fa-check-circle sync-icon";
+    syncText.textContent = "🎉 學習成果已成功同步至教師的 Google 試算表！";
+  })
+  .catch((error) => {
+    console.error("Backend sync failed:", error);
+    syncStatusBox.className = "sync-status-box failed";
+    syncIcon.className = "fas fa-times-circle sync-icon";
+    syncText.textContent = "❌ 同步失敗，請檢查網路連線或通知教師！";
+  });
+}
+
 function initCertificate() {
   certPlayerName.textContent = gameState.playerName;
   certBillTitle.textContent = BILLS[gameState.selectedBill].title;
@@ -1254,6 +1323,9 @@ function initCertificate() {
   certDateYear.textContent = (year - 1911).toString();
   certDateMonth.textContent = month.toString();
   certDateDay.textContent = day.toString();
+  
+  // 觸發後端同步
+  sendDataToBackend();
   
   triggerConfetti();
 }

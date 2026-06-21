@@ -359,6 +359,45 @@ h1, h2, h3, h4, h5 {
   margin-bottom: 35px;
 }
 
+.form-group-row {
+  display: flex;
+  gap: 15px;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 15px;
+}
+
+.form-group-item {
+  flex: 1;
+}
+
+.form-group-item label {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.form-group-item input {
+  width: 100%;
+  padding: 15px;
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--card-border);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-light);
+  font-size: 1.1rem;
+  text-align: center;
+  transition: var(--transition-smooth);
+}
+
+.form-group-item input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 15px var(--color-primary-glow);
+}
+
 .form-group {
   margin-bottom: 30px;
   width: 100%;
@@ -1314,6 +1353,54 @@ h1, h2, h3, h4, h5 {
   font-size: 1.8rem;
   margin-top: 8px;
   animation: bounce 1s infinite alternate;
+}
+
+/* Sync Status Box in Certificate Screen */
+.sync-status-box {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--card-border);
+  border-radius: var(--border-radius-md);
+  padding: 15px 25px;
+  margin: 0 auto 25px;
+  width: 100%;
+  max-width: 750px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.95rem;
+  transition: var(--transition-smooth);
+}
+
+.sync-status-box.syncing {
+  border-color: var(--color-warning) !important;
+  color: var(--color-warning) !important;
+  background: rgba(217, 119, 6, 0.05) !important;
+}
+
+.sync-status-box.success {
+  border-color: var(--color-success) !important;
+  color: var(--color-success) !important;
+  background: rgba(34, 197, 94, 0.05) !important;
+}
+
+.sync-status-box.failed {
+  border-color: var(--color-danger) !important;
+  color: var(--color-danger) !important;
+  background: rgba(239, 68, 68, 0.05) !important;
+}
+
+.sync-icon {
+  font-size: 1.2rem;
+}
+
+.sync-status-box.syncing .sync-icon {
+  animation: spin 1.2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* Certificate Screen */

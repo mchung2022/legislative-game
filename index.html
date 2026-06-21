@@ -83,6 +83,16 @@
         <p class="intro-desc">
           你知道一條法律是怎麼誕生的嗎？從提案、審查、激烈辯論、表決到公布，每一個步驟都充滿挑戰！現在就化身立法小尖兵，帶領你的法案闖過「三讀」重重難關，成功讓它成為正式法律吧！
         </p>
+        <div class="form-group-row">
+          <div class="form-group-item">
+            <label for="player-class-input">班級：</label>
+            <input type="text" id="player-class-input" placeholder="例如：801" maxlength="6">
+          </div>
+          <div class="form-group-item">
+            <label for="player-seat-input">座號：</label>
+            <input type="number" id="player-seat-input" placeholder="例如：15" min="1" max="99">
+          </div>
+        </div>
         <div class="form-group">
           <label for="player-name-input">輸入你的立法委員大名：</label>
           <input type="text" id="player-name-input" placeholder="例如：閃亮亮立委" maxlength="10">
@@ -556,6 +566,12 @@
               </div>
             </div>
           </div>
+        </div>
+
+        <!-- Google Sheet Sync Status -->
+        <div class="sync-status-box" id="sync-status-box">
+          <i class="fas fa-cloud-upload-alt sync-icon" id="sync-icon"></i>
+          <span id="sync-text">已備妥成果，準備進行雲端同步...</span>
         </div>
 
         <div class="certificate-actions">
