@@ -467,114 +467,29 @@ const BILLS = {
 
 const QUIZ_QUESTIONS = [
   {
-    question: "【需求法則】氣溫炎熱時，手搖飲店通常大排長龍。但如果一杯珍奶價格從 50 元暴漲到 150 元，在其他條件不變下，大部分消費者的購買意願會降低。這種「價格上漲，需求量減少；價格下跌，需求量增加」的變動關係，在經濟學上稱之為？",
-    options: [
-      "需求法則",
-      "供給法則",
-      "比較利益法則",
-      "受益原則"
-    ],
-    answer: 0,
-    explanation: "需求法則（Law of Demand）指出，在其他條件不變的情況下，商品的「價格」與「需求量」呈反向變動的關係（價格越高，需求量越低）。"
+    question: "【需求法則】在其他條件不變下，當商品的價格越高，消費者的需求量就會越低；價格越低，需求量就越高。這種價格與需求量呈反向變動的關係，在經濟學上稱之為【＿＿＿＿】。 (請輸入四字詞，如：需求法則)",
+    answers: ["需求法則", "需求定律"],
+    explanation: "需求法則指出商品價格與需求量呈反向變動（價格上漲，需求量減少；價格下跌，需求量增加）。"
   },
   {
-    question: "【供給法則】當高麗菜價格崩跌時，農民常因扣除運銷費用後血本無歸而放棄採收；相反地，當颱風過後菜價暴漲時，農民會設法增加採收與種植。這種「價格越高，供給量越多；價格越低，供給量越少」的現象，稱之為？",
-    options: [
-      "需求法則",
-      "供給法則",
-      "分散風險原則",
-      "負擔能力原則"
-    ],
-    answer: 1,
-    explanation: "供給法則（Law of Supply）指出，在其他條件不變的情況下，商品的「價格」與「供給量」呈同向變動的關係（價格越高，生產者的供給意願與數量就越多）。"
+    question: "【市場均衡】在自由市場中，當買方的「需求量」剛好等於賣方的「供給量」時，價格將達到不再變動的穩定狀態。此時的價格在經濟學上稱之為【＿＿＿＿】。 (請輸入四字詞，如：均衡價格)",
+    answers: ["均衡價格", "市場均衡價格"],
+    explanation: "當供給量與需求量相等時，市場達到均衡，這時的市場價格即為「均衡價格」。"
   },
   {
-    question: "【市場均衡】當市場上某項商品的「需求量」剛好等於「供給量」時，買賣雙方都能買到與賣出想要的數量，價格此時不再波動。此時的狀態與價格在經濟學上稱之為？",
-    options: [
-      "供不應求，超額價格",
-      "供過於求，剩餘價格",
-      "市場均衡，均衡價格",
-      "政府管制，保證價格"
-    ],
-    answer: 2,
-    explanation: "當市場需求量與供給量相等時，達到市場均衡（Market Equilibrium），此時的價格稱為「均衡價格」，交易數量稱為「均衡數量」。"
+    question: "【供過於求】某年高麗菜大豐收，農民運送大量蔬菜到市場，但消費者每天的胃口有限，導致菜攤上堆滿高麗菜賣不出去。這種供給量大於需求量的現象，在經濟學上稱之為【＿＿＿＿】（或過剩）。 (請輸入四字詞，如：供過於求)",
+    answers: ["供過於求", "超額供給"],
+    explanation: "當供給量大於需求量時，市場出現「供過於求」或過剩，會推動市場價格下跌。"
   },
   {
-    question: "【供不應求（短缺）】當某款限量電競手機定價過低，導致有 1000 位玩家想要搶購（需求量），但廠商受限於產能只生產了 100 支（供給量）。這種「需求量大於供給量」的現象會導致市場如何變動？",
-    options: [
-      "供不應求（短缺），價格有上漲的壓力",
-      "供過於求（過剩），價格有下跌的壓力",
-      "市場均衡，價格維持不變",
-      "供給增加，價格跌到零元"
-    ],
-    answer: 0,
-    explanation: "當需求量大於供給量時，稱為「供不應求」或短缺（Shortage）。因為買不到商品的人願意出更高價搶購，會推動市場價格上漲。"
+    question: "【替代品】當鮮奶價格大幅上漲時，消費者會改買燕麥奶來泡咖啡，這使得燕麥奶的需求增加。在經濟學上，「燕麥奶」相對於「鮮奶」的角色，稱之為【＿＿＿】。 (請輸入三字詞，如：替代品)",
+    answers: ["替代品"],
+    explanation: "當兩種商品能滿足相似需求，且其中一種價格上漲會導致另一種需求增加，這兩種商品互為「替代品」。"
   },
   {
-    question: "【供過於求（過剩）】某年香蕉大豐收，農民拼命採收送往市場（供給量大增），但消費者每天的胃口有限（需求量未變），導致水果攤上堆滿香蕉賣不出去。這種「供給量大於需求量」的現象會導致市場價格如何變動？",
-    options: [
-      "供不應求，價格上漲",
-      "供過於求（過剩），價格下跌",
-      "市場均衡，價格上漲",
-      "需求增加，價格維持不變"
-    ],
-    answer: 1,
-    explanation: "當供給量大於需求量時，稱為「供過於求」或過剩（Surplus）。商家為了把滯銷的商品賣出去，會降價促銷，導致市場價格下跌。"
-  },
-  {
-    question: "【非價格因素：需求變動】世界衛生組織發表報告證實：「天天喝大杯糖分過高的手搖飲會大幅增加糖尿病風險」。這份報告公布後，即使手搖飲價格完全沒變，市場上的手搖飲銷量依然大幅下滑。這屬於下列哪一種情況？",
-    options: [
-      "價格上漲導致的需求量減少",
-      "消費者喜好（偏好）轉變導致的「需求減少」",
-      "生產成本增加導致的「供給減少」",
-      "消費者所得增加導致的「需求增加」"
-    ],
-    answer: 1,
-    explanation: "醫學與健康觀念轉變了消費者的偏好（非價格因素），使得在相同價格下購買意願整體下滑，這在經濟學上稱為「需求減少」（需求曲線向左移）。"
-  },
-  {
-    question: "【非價格因素：供給變動】今年因為乾旱缺水，加上工人工資上漲，導致手搖飲的茶葉與珍珠原料人力成本大幅提高。在茶飲零售價不變的情況下，許多飲料店決定縮減每日營業時段與出貨量。這在經濟學上稱之為？",
-    options: [
-      "生產成本增加導致的「供給減少」",
-      "消費者所得減少導致的「需求減少」",
-      "生產技術進步導致的「供給增加」",
-      "商品價格下跌導致的「供給量減少」"
-    ],
-    answer: 0,
-    explanation: "生產成本（如原料、工資）是影響供給的非價格因素。成本增加會降低商家的利潤率，使商家在相同價格下的供給意願降低，稱為「供給減少」（供給曲線向左移）。"
-  },
-  {
-    question: "【替代品與互補品】當鮮奶的價格大幅暴漲時，很多咖啡店紛紛減少調製鮮奶茶，許多消費者不願意喝昂貴的鮮奶，改為選購燕麥奶來替代。在經濟學上，當鮮奶價格上漲，導致燕麥奶的需求量增加時，這兩種商品互為什麼關係？",
-    options: [
-      "互補品 (必須搭配一起使用)",
-      "替代品 (功能相似，可互相取代)",
-      "無關品",
-      "奢侈品"
-    ],
-    answer: 1,
-    explanation: "當兩種商品具有相似功能，且其中一種商品的價格上漲時，會導致另一種商品的需求量增加，這兩種商品互為「替代品」（Substitutes）。"
-  },
-  {
-    question: "【政府干預：最高限價】當颱風過後有機蔬菜價格狂飆，政府為了平息買方民怨，強行規定：「一把生菜最高只能賣 20 元（遠低於市場均衡價格）」。這種「最高限價（價格上限）」政策，通常會在市場上導致什麼後果？",
-    options: [
-      "菜農瘋狂採收，市場出現大量蔬菜過剩",
-      "菜農因無利可圖而拒絕賣菜，消費者排隊買不到，甚至出現黃牛黑市（短缺）",
-      "買賣雙方皆大歡喜，市場立刻達到完美的均衡",
-      "蔬菜品質變得更好，分量變得更多"
-    ],
-    answer: 1,
-    explanation: "政府設定低於均衡價格的「最高限價」旨在保護消費者，但這會壓低生產者利潤，導致供給量急縮，而低價又吸引更多需求量，造成嚴重的「供不應求（短缺）」，常伴隨排隊與黑市炒作。"
-  },
-  {
-    question: "【政府干預：最低限價】政府為了保障基層勞工的最低生活水準，強制實施「最低基本工資（勞動市場的最低限價）」。如果基本工資設定在遠高於市場均衡工資的水平，在其他條件不變下，勞動市場可能出現什麼現象？",
-    options: [
-      "所有老闆都拼命招募更多員工，失業率降為零",
-      "勞工找工作的意願降低，工廠找不到人",
-      "老闆因成本過高而減少僱用（需求量減），想工作的勞工增加（供給量增），導致供過於求（失業人口增加）",
-      "勞工工作效率立刻提升十倍，薪水大降"
-    ],
-    answer: 2,
-    explanation: "基本工資高於均衡工資是政府施行的「最低限價」政策。雖然保障了在職勞工，但由於僱用成本增加，老闆僱用人數（需求量）減少，而想工作的人數（供給量）增加，導致超額供給，在市場上表現為失業人口增加。"
+    question: "【政府干預】颱風過後青菜暴漲，政府規定蔬菜每把售價上限（低於均衡價格），旨在保障消費者利益。這種價格上限政策在經濟學上又稱為【＿＿＿＿】。 (請輸入四字詞，如：最高限價)",
+    answers: ["最高限價", "價格上限", "限價上限"],
+    explanation: "政府強行限制交易價格不得超過某個高度，稱為「最高限價」或「價格上限」，通常會導致供不應求（短缺）與排隊、黑市等現象。"
   }
 ];
 
@@ -1317,14 +1232,35 @@ function loadQuizQuestion() {
     quizQNum.textContent = `第 ${gameState.quizCurrentQuestion + 1} / ${QUIZ_QUESTIONS.length} 題`;
     quizQuestion.textContent = qData.question;
     
-    quizOptionsContainer.innerHTML = "";
-    qData.options.forEach((opt, idx) => {
-      const btn = document.createElement('button');
-      btn.className = 'quiz-opt-btn';
-      btn.textContent = opt;
-      btn.addEventListener('click', () => handleQuizAnswer(idx, btn));
-      quizOptionsContainer.appendChild(btn);
+    // 渲染填充題輸入框與送出按鈕
+    quizOptionsContainer.innerHTML = `
+      <div class="fill-blank-box" style="margin-top: 15px; display: flex; flex-direction: column; gap: 15px; width: 100%;">
+        <input type="text" id="quiz-blank-input" 
+               style="width: 100%; padding: 14px 18px; border-radius: 8px; border: 1px solid var(--card-border); background: rgba(255, 255, 255, 0.05); color: white; font-size: 1.05rem; outline: none; transition: border-color 0.2s;" 
+               placeholder="請在此輸入答案..." autocomplete="off">
+        <button id="btn-submit-blank" class="btn btn-primary" style="width: 100%; padding: 12px; font-weight: bold; border-radius: 8px;">提交答案</button>
+      </div>
+    `;
+    
+    const inputField = document.getElementById('quiz-blank-input');
+    const submitBtn = document.getElementById('btn-submit-blank');
+
+    function submitAnswer() {
+      const userAns = inputField.value.trim();
+      if (userAns === "") {
+        alert("請先輸入答案再提交唷！");
+        return;
+      }
+      handleQuizAnswer(userAns, submitBtn);
+    }
+
+    submitBtn.addEventListener('click', submitAnswer);
+    inputField.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        submitAnswer();
+      }
     });
+    inputField.focus();
   } else {
     quizQNum.textContent = "現場答辯結束";
     quizQuestion.textContent = "供需法則答辯完畢！全案進行二讀市場交易電子媒合！";
@@ -1333,41 +1269,49 @@ function loadQuizQuestion() {
   }
 }
 
-function handleQuizAnswer(selectedIdx, clickedBtn) {
+function handleQuizAnswer(userAnswerText, submitBtn) {
   const qData = QUIZ_QUESTIONS[gameState.quizCurrentQuestion];
-  const allBtns = quizOptionsContainer.querySelectorAll('.quiz-opt-btn');
+  const inputField = document.getElementById('quiz-blank-input');
   
-  allBtns.forEach(btn => btn.style.pointerEvents = 'none');
+  inputField.disabled = true;
+  submitBtn.disabled = true;
+  submitBtn.style.pointerEvents = 'none';
   
-  if (selectedIdx === qData.answer) {
+  // 比對答案 (不區分大小寫、去空格)
+  const cleanAns = userAnswerText.trim().toLowerCase();
+  const isCorrect = qData.answers.some(ans => ans.trim().toLowerCase() === cleanAns);
+  
+  if (isCorrect) {
     playSound('success');
     gameState.quizScore++;
-    clickedBtn.classList.add('correct');
+    inputField.style.borderColor = "var(--color-success)";
+    inputField.style.background = "rgba(34, 197, 94, 0.1)";
     
     quizFeedbackBox.classList.remove('hidden');
-    quizFeedbackText.innerHTML = `<strong>答對了！</strong> ${qData.explanation}`;
+    quizFeedbackText.innerHTML = `<strong>答對了！非常優秀！</strong><br>${qData.explanation}`;
     quizFeedbackText.style.color = "var(--color-success)";
     
-    // 答對加 8 位支持買賣成交者，且增加各方支持滿意度
-    convinceLegislators(true, 8);
-    adjustSatisfaction({ student: 3, parent: 3, teacher: 3 });
+    // 答對加 16 席 (5題答對=80席，剩餘由民意機率表決)
+    convinceLegislators(true, 16);
+    adjustSatisfaction({ student: 6, parent: 6, teacher: 6 });
   } else {
     playSound('fail');
-    clickedBtn.classList.add('wrong');
-    allBtns[qData.answer].classList.add('correct');
+    inputField.style.borderColor = "var(--color-danger)";
+    inputField.style.background = "rgba(239, 68, 68, 0.1)";
     
     quizFeedbackBox.classList.remove('hidden');
-    quizFeedbackText.innerHTML = `<strong>答錯了。</strong>正確答案為：<strong>【${qData.options[qData.answer]}】</strong>。<br>${qData.explanation}`;
+    const displayCorrect = qData.answers.join(" 或 ");
+    quizFeedbackText.innerHTML = `<strong>答錯了。</strong>正確答案為：<strong>【${displayCorrect}】</strong>。<br>${qData.explanation}`;
     quizFeedbackText.style.color = "var(--color-danger)";
     
-    // 答錯加 5 位失敗交易者
-    convinceLegislators(false, 5);
+    // 答錯加 10 席反對
+    convinceLegislators(false, 10);
   }
   
   setTimeout(() => {
     gameState.quizCurrentQuestion++;
     loadQuizQuestion();
-  }, 4000);
+  }, 5000);
 }
 
 function convinceLegislators(isYes, num) {

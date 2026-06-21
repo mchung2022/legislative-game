@@ -463,114 +463,29 @@ const BILLS = {
 
 const QUIZ_QUESTIONS = [
   {
-    question: "【法律位階原則】某縣政府因應垃圾減量，自行公布命令要求「全面禁止商家販售所有塑膠製品，違者強制停業」。商家不服，主張該命令違反上位法規。關於「憲法、法律、命令」的位階關係，下列敘述何者正確？",
-    options: [
-      "憲法位階最高，命令是由行政機關制定，其內容不得抵觸法律與憲法，否則無效。",
-      "地方政府的命令位階高於立法院通過的法律，因為地方自治優先。",
-      "只要是為了保護環境，命令可以隨意限制人民財產權與工作權，不受法律約束。",
-      "命令與法律具有同等效力，商家必須無條件遵守停業處分。"
-    ],
-    answer: 0,
-    explanation: "依據法律位階原則（憲法 > 法律 > 命令），命令不得抵觸法律與憲法。限制人民權利的停業處分，必須有法律明文授權，行政機關不能以行政命令任意規定。"
+    question: "【法律保留原則】憲法保障人民之生命、身體、財產及其他自由權利。若要對這些權利施加限制，依據憲法精神，必須由立法院通過「法律」，或由法律明確授權行政機關訂定法規命令規定。這在法理上稱之為【＿＿＿＿原則】。 (請輸入四字詞，如：法律保留)",
+    answers: ["法律保留", "法律保留原則"],
+    explanation: "「法律保留原則」是指限制人民基本權利的重大事項，必須由代表民意的立法機關以「法律」規定，行政機關不得自行發布命令任意限制。"
   },
   {
-    question: "【比例原則：適合性】為了改善學生視力，某立法委員提案「全國中小學生晚上八點後強制斷網」。在法理辯論中，反對者指出「斷網與維護視力無必然因果關係，且學生仍可用離線設備」。此質疑主要是在挑戰該法案是否符合比例原則中的哪一項子原則？",
-    options: [
-      "限制所造成的損害不得大於利益的「衡平性原則」。",
-      "必須選擇侵害最小手段的「必要性原則」。",
-      "手段必須有助於目的達成的「適合性原則」，若手段根本無法有效改善視力，即不具正當性。",
-      "法律內容必須明確的「法律明確性原則」。"
-    ],
-    answer: 2,
-    explanation: "「適合性原則」要求限制人民權利的手段，必須「有助於」達成所欲追求的合法目的。若斷網無法有效達成保護視力的目標，就違反了適合性。"
+    question: "【比例原則】國家為了維護治安或增進公共利益，不得不以法律限制人民權利時，其手段與目的之間必須符合「適合性」、「必要性（侵害最小）」與「衡平性」。這在憲法第 23 條被歸納為【＿＿＿＿原則】。 (請輸入四字詞，如：比例原則)",
+    answers: ["比例原則"],
+    explanation: "「比例原則」是限制人民權利時的最高法理準則，要求國家限制權利的手段必須合理、必要且不能過度侵害。"
   },
   {
-    question: "【比例原則：必要性/最小侵害】政府為了防止行人地獄，保障交通安全，欲減少違規停車。下列四種手段中，何者最符合比例原則中的「必要性（最小侵害）原則」？",
-    options: [
-      "只要違規停車一次，一律直接沒收車輛並銷毀，徹底杜絕違規。",
-      "針對違規停車者處以合理罰鍰並記點，並配合科技執法宣導，而非直接沒收車輛。",
-      "凡違規停車者，由警察機關處以五日拘役，限制其人身自由。",
-      "全面禁止所有私人轎車上路，只允許搭乘大眾運輸，從根本解決違停。"
-    ],
-    answer: 1,
-    explanation: "「必要性原則（最小侵害原則）」要求在所有能達成目的的手段中，必須選擇對人民權利侵害最小的那一個。合理罰鍰與記點已能達到嚇阻效果，直接沒收車輛或拘役都屬於過度侵害。"
+    question: "【立法院三讀程序】在我國立法程序中，一讀會僅朗讀案由後送交審查，而最關鍵的「進行逐條廣泛討論、條文修正與電子表決」的階段是在【＿＿讀會】進行。 (請輸入二字詞，如：二讀)",
+    answers: ["二讀", "二讀會"],
+    explanation: "二讀會是法案審議的核心階段，會進行逐條討論、修正與表決。三讀會原則上僅能作文字修正。"
   },
   {
-    question: "【比例原則：衡平性】某市為了推廣無紙化，規定「市民若未使用電子發票，每次交易需額外繳納100元環保稅」。此舉引起低收入戶與數位弱勢長者的強烈抗議。這項限制主要違反了比例原則中的哪一項？",
-    options: [
-      "「適合性原則」，因為繳納環保稅完全無法減少任何紙張的使用。",
-      "「法律保留原則」，因為環保稅是由財政部所主管，地方政府無權宣導。",
-      "「信賴保護原則」，因為市民過去信賴紙本發票，政府就永遠不能推廣電子發票。",
-      "「衡平性原則（狹義比例原則）」，因為推廣環保無紙化所帶來的公共利益，小於對數位弱勢者生存與經濟權造成的嚴重侵害。"
-    ],
-    answer: 3,
-    explanation: "「衡平性原則」要求限制權利所造成的損害，與保護的公共利益之間必須維持均衡。對弱勢族群課重稅所造成的生存威脅，顯然大於無紙化帶來的環保利益，失去衡平。"
+    question: "【行政院覆議權】立法院三讀通過的法律案送交行政院，行政院若認為有「窒礙難行」之處，得經總統核可後，在法案送達 10 日內移請立法院重新討論。這項行政機關制衡立法的權力稱為【＿＿】。 (請輸入二字詞，如：覆議)",
+    answers: ["覆議", "覆議案"],
+    explanation: "依憲法規定，行政院對於立法院決議之法律案如認為窒礙難行，得移請立法院「覆議」。若立法院維持原案，行政院長應即接受。"
   },
   {
-    question: "【法律保留原則】憲法保障人民之生命、身體、財產及其他自由權利。若要對這些權利施加限制，依據「法律保留原則」，下列何者正確？",
-    options: [
-      "必須由立法院通過「法律」來規定，或由法律明確授權行政機關訂定「法規命令」。",
-      "學校可以自行訂定「校規」處以學生罰鍰或限制其人身自由。",
-      "警察機關可以基於維護治安的行政需求，自行發布命令拘留有犯罪嫌疑的人。",
-      "只要是為了增進公共利益，行政機關可以不經法律授權，隨時限制人民的工作權。"
-    ],
-    answer: 0,
-    explanation: "「法律保留原則」是指限制人民基本權利的重大事項，必須由代表民意的立法機關以「法律」規定，或有法律明確授權的命令，行政機關不得自行發布命令限制。"
-  },
-  {
-    question: "【立法院三讀程序】關於我國立法程序中的「三讀會」，下列哪一項敘述是正確的？",
-    options: [
-      "一讀會時必須由提案委員在議場進行詳細的政策辯論，並逐條表決。",
-      "三讀會通過後，法案就立即在當天午夜起發生法律效力，不需總統公布。",
-      "二讀會是立法最重要的階段，會進行逐條討論、修正與表決；三讀會原則上只做文字修正，除非發現違憲或互相抵觸。",
-      "所有法案都必須在委員會進行十次以上的公聽會，才能送交二讀會表決。"
-    ],
-    answer: 2,
-    explanation: "二讀會是法案審議的核心，會進行廣泛討論、逐條審查、修正與表決。三讀會除了發現法案內容有互相抵觸或違憲外，原則上僅能作文字修正。"
-  },
-  {
-    question: "【行政院覆議權】當立法院三讀通過某一項法律案送交行政院，行政院若認為該法案「窒礙難行」時，可以如何進行權力制衡？",
-    options: [
-      "行政院長可自行宣布該法律案無效，並拒絕執行。",
-      "經總統核可後，在法案送達 10 日內移請立法院覆議；若立法院維持原案，行政院長必須接受該決議。",
-      "行政院可以直接向司法院聲請彈劾全體立法委員，並解散立法院。",
-      "行政院必須無條件接受，因為行政機關完全隸屬於立法機關。"
-    ],
-    answer: 1,
-    explanation: "依憲法增修條文，行政院對於立法院決議之法律案，如認為窒礙難行，得經總統核可，移請立法院覆議。立法院若全體委員過半數維持原案，行政院長即應接受該決議。"
-  },
-  {
-    question: "【權力分立與制衡】某國會通過「官員說謊直接處以徒刑」之法律。若該法律有違憲侵害基本權利之虞，在權力分立的架構下，最終由哪一個機關進行司法審查與解釋，以宣告其違憲無效？",
-    options: [
-      "監察院，可以彈劾立法院，直接撤銷該項法律。",
-      "總統府，總統擁有最終解釋憲法之權，可逕行廢除該法律。",
-      "行政院，因為行政院是最高行政機關，具有最終法律決定權。",
-      "司法院（憲法法庭），藉由審理憲法訴訟案件，行使違憲審查權，以維護憲法秩序。"
-    ],
-    answer: 3,
-    explanation: "司法院憲法法庭是我國行使違憲審查的司法機關。當法律有違憲疑慮，經法官、人民 or 特定機關聲請，憲法法庭可判決該法律违憲並宣告無效，此為司法對立法的制衡。"
-  },
-  {
-    question: "【立法院委員會功能】在法案一讀通過後，通常會「送交委員會審查」。關於立法院委員會的運作，下列敘述何者正確？",
-    options: [
-      "委員會是負責將法案直接送交總統簽署的最終機關，不需再送回大會。",
-      "委員會（如八大常設委員會）能讓不同專業的委員，針對特定法案進行實質審查，並得舉辦公聽會聽取專家與大眾意見。",
-      "委員會是由各黨團助理組成，立法委員不得參與審查。",
-      "委員會的審查只是形式，所有條文都必須送回一讀大會重新表決。"
-    ],
-    answer: 1,
-    explanation: "立法院設有常設委員會，負責在法案送大會二讀前進行專業的實質審查、召開公聽會、並整理各方意見，是立法過程中的專業分工機制。"
-  },
-  {
-    question: "【人身自由與法官保留原則】某條例草案明定：「對於不遵守垃圾分類之市民，得由環保局稽查人員直接當場處以拘役二日」。此條文嚴重侵害了憲法第8條的「人身自由」與「法官保留原則」，其核心理由為何？",
-    options: [
-      "因為環保局稽查人員不是警察，如果改成警察當場處以拘役二日就完全合憲。",
-      "人身自由只保障公務員，一般市民並不享有此項憲法權利。",
-      "拘役屬於刑事處罰，涉及人身自由的剝奪，必須由法院法官依法定程序審理裁判，行政機關無權直接處分。",
-      "限制人身自由不需要法官同意，只要立法院通過任何法律都可以授權行政稽查。"
-    ],
-    answer: 2,
-    explanation: "「法官保留原則」是指凡涉及人身自由剝奪等重大權利限制，必須由中立的「法院法官」依法審理判決，其他行政機關（如環保局、警察局）皆無權直接決定，以防權力濫用。"
+    question: "【司法制衡與權力分立】當立法院通過的法律有違憲侵害基本權利之虞時，在權力分立架構下，最終由司法院的【＿＿＿＿】進行違憲審查，以宣告該法律違憲無效。 (請輸入四字詞，如：憲法法庭)",
+    answers: ["憲法法庭", "大法官"],
+    explanation: "司法院「憲法法庭」是我國行使違憲審查的司法機關，可藉由宣告違憲法律無效來制衡立法權，維護憲法秩序。"
   }
 ];
 
@@ -1338,57 +1253,86 @@ function loadQuizQuestion() {
     quizQNum.textContent = `第 ${gameState.quizCurrentQuestion + 1} / ${QUIZ_QUESTIONS.length} 題`;
     quizQuestion.textContent = qData.question;
     
-    quizOptionsContainer.innerHTML = "";
-    qData.options.forEach((opt, idx) => {
-      const btn = document.createElement('button');
-      btn.className = 'quiz-opt-btn';
-      btn.textContent = opt;
-      btn.addEventListener('click', () => handleQuizAnswer(idx, btn));
-      quizOptionsContainer.appendChild(btn);
+    // 渲染填充題輸入框與送出按鈕
+    quizOptionsContainer.innerHTML = `
+      <div class="fill-blank-box" style="margin-top: 15px; display: flex; flex-direction: column; gap: 15px; width: 100%;">
+        <input type="text" id="quiz-blank-input" 
+               style="width: 100%; padding: 14px 18px; border-radius: 8px; border: 1px solid var(--card-border); background: rgba(255, 255, 255, 0.05); color: white; font-size: 1.05rem; outline: none; transition: border-color 0.2s;" 
+               placeholder="請在此輸入答案..." autocomplete="off">
+        <button id="btn-submit-blank" class="btn btn-primary" style="width: 100%; padding: 12px; font-weight: bold; border-radius: 8px;">提交答案</button>
+      </div>
+    `;
+    
+    const inputField = document.getElementById('quiz-blank-input');
+    const submitBtn = document.getElementById('btn-submit-blank');
+
+    function submitAnswer() {
+      const userAns = inputField.value.trim();
+      if (userAns === "") {
+        alert("請先輸入答案再提交唷！");
+        return;
+      }
+      handleQuizAnswer(userAns, submitBtn);
+    }
+
+    submitBtn.addEventListener('click', submitAnswer);
+    inputField.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        submitAnswer();
+      }
     });
+    inputField.focus();
   } else {
-    quizQNum.textContent = "院會大辯論結束";
+    quizQNum.textContent = "現場答辯結束";
     quizQuestion.textContent = "比例原則辯論完畢！全案進行二讀逐條討論與表決！";
     quizOptionsContainer.innerHTML = "";
     votingTriggerOverlay.classList.remove('hidden');
   }
 }
 
-function handleQuizAnswer(selectedIdx, clickedBtn) {
+function handleQuizAnswer(userAnswerText, submitBtn) {
   const qData = QUIZ_QUESTIONS[gameState.quizCurrentQuestion];
-  const allBtns = quizOptionsContainer.querySelectorAll('.quiz-opt-btn');
+  const inputField = document.getElementById('quiz-blank-input');
   
-  allBtns.forEach(btn => btn.style.pointerEvents = 'none');
+  inputField.disabled = true;
+  submitBtn.disabled = true;
+  submitBtn.style.pointerEvents = 'none';
   
-  if (selectedIdx === qData.answer) {
+  // 比對答案 (不區分大小寫、去空格)
+  const cleanAns = userAnswerText.trim().toLowerCase();
+  const isCorrect = qData.answers.some(ans => ans.trim().toLowerCase() === cleanAns);
+  
+  if (isCorrect) {
     playSound('success');
     gameState.quizScore++;
-    clickedBtn.classList.add('correct');
+    inputField.style.borderColor = "var(--color-success)";
+    inputField.style.background = "rgba(34, 197, 94, 0.1)";
     
     quizFeedbackBox.classList.remove('hidden');
-    quizFeedbackText.innerHTML = `<strong>答對了！</strong> ${qData.explanation}`;
+    quizFeedbackText.innerHTML = `<strong>答對了！非常優秀！</strong><br>${qData.explanation}`;
     quizFeedbackText.style.color = "var(--color-success)";
     
-    // 答對加 8 位支持立委，且稍微增加各方滿意度
-    convinceLegislators(true, 8);
-    adjustSatisfaction({ student: 3, parent: 3, teacher: 3 });
+    // 答對加 16 席 (5題答對=80席，剩餘由民意機率表決)
+    convinceLegislators(true, 16);
+    adjustSatisfaction({ student: 6, parent: 6, teacher: 6 });
   } else {
     playSound('fail');
-    clickedBtn.classList.add('wrong');
-    allBtns[qData.answer].classList.add('correct');
+    inputField.style.borderColor = "var(--color-danger)";
+    inputField.style.background = "rgba(239, 68, 68, 0.1)";
     
     quizFeedbackBox.classList.remove('hidden');
-    quizFeedbackText.innerHTML = `<strong>答錯了。</strong>正確答案為：<strong>【${qData.options[qData.answer]}】</strong>。<br>${qData.explanation}`;
+    const displayCorrect = qData.answers.join(" 或 ");
+    quizFeedbackText.innerHTML = `<strong>答錯了。</strong>正確答案為：<strong>【${displayCorrect}】</strong>。<br>${qData.explanation}`;
     quizFeedbackText.style.color = "var(--color-danger)";
     
-    // 答錯加 5 位反對立委
-    convinceLegislators(false, 5);
+    // 答錯加 10 席反對
+    convinceLegislators(false, 10);
   }
   
   setTimeout(() => {
     gameState.quizCurrentQuestion++;
     loadQuizQuestion();
-  }, 4000);
+  }, 5000);
 }
 
 function convinceLegislators(isYes, num) {
