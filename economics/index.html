@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>立法大師：素養思辨挑戰賽！</title>
+  <title>市場大師：供需平衡大挑戰！</title>
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -30,24 +30,24 @@
     <header class="game-hud" id="game-hud">
       <div class="hud-top">
         <div class="bill-badge">
-          <i class="fas fa-scroll"></i>
-          <span id="hud-bill-title">未選擇法案</span>
+          <i class="fas fa-store"></i>
+          <span id="hud-bill-title">未選擇商品</span>
         </div>
         
         <!-- Stakeholder Satisfaction HUD -->
         <div class="stakeholders-hud" id="stakeholders-hud">
-          <div class="st-item student" title="學生的滿意度">
-            <span class="st-label"><i class="fas fa-child"></i> 學生</span>
+          <div class="st-item student" title="消費者的滿意度">
+            <span class="st-label"><i class="fas fa-shopping-bag"></i> 消費者</span>
             <div class="st-bar"><div class="st-fill" id="st-fill-student" style="width: 50%;"></div></div>
             <span class="st-val" id="st-val-student">50%</span>
           </div>
-          <div class="st-item parent" title="家長的滿意度">
-            <span class="st-label"><i class="fas fa-user-friends"></i> 家長</span>
+          <div class="st-item parent" title="生產者的滿意度">
+            <span class="st-label"><i class="fas fa-store"></i> 生產者</span>
             <div class="st-bar"><div class="st-fill" id="st-fill-parent" style="width: 50%;"></div></div>
             <span class="st-val" id="st-val-parent">50%</span>
           </div>
-          <div class="st-item teacher" title="教師的滿意度">
-            <span class="st-label"><i class="fas fa-chalkboard-teacher"></i> 教師</span>
+          <div class="st-item teacher" title="政府與社會的滿意度">
+            <span class="st-label"><i class="fas fa-landmark"></i> 政府與社會</span>
             <div class="st-bar"><div class="st-fill" id="st-fill-teacher" style="width: 50%;"></div></div>
             <span class="st-val" id="st-val-teacher">50%</span>
           </div>
@@ -59,30 +59,30 @@
         </div>
       </div>
       
-      <!-- Legislative Steps Timeline -->
+      <!-- Legislative Steps Timeline (Mapped to Market Steps) -->
       <div class="timeline">
         <div class="timeline-line">
           <div class="timeline-progress" id="timeline-progress-bar"></div>
         </div>
         <div class="step-node active" data-step="0">
-          <div class="node-circle"><i class="fas fa-file-signature"></i></div>
-          <span class="node-label">起草/提案</span>
+          <div class="node-circle"><i class="fas fa-store-alt"></i></div>
+          <span class="node-label">起步與供需收集</span>
         </div>
         <div class="step-node" data-step="1">
-          <div class="node-circle"><i class="fas fa-users-cog"></i></div>
-          <span class="node-label">委員會公聽會</span>
+          <div class="node-circle"><i class="fas fa-balance-scale"></i></div>
+          <span class="node-label">供需調和與抉擇</span>
         </div>
         <div class="step-node" data-step="2">
-          <div class="node-circle"><i class="fas fa-vote-yea"></i></div>
-          <span class="node-label">二讀比例原則</span>
+          <div class="node-circle"><i class="fas fa-chart-line"></i></div>
+          <span class="node-label">供需法則考驗</span>
         </div>
         <div class="step-node" data-step="3">
-          <div class="node-circle"><i class="fas fa-gavel"></i></div>
-          <span class="node-label">三讀合憲審查</span>
+          <div class="node-circle"><i class="fas fa-shield-alt"></i></div>
+          <span class="node-label">市場公平交易法</span>
         </div>
         <div class="step-node" data-step="4">
-          <div class="node-circle"><i class="fas fa-signature"></i></div>
-          <span class="node-label">公布/覆議</span>
+          <div class="node-circle"><i class="fas fa-exclamation-triangle"></i></div>
+          <span class="node-label">供需危機與挑戰</span>
         </div>
       </div>
     </header>
@@ -94,14 +94,14 @@
       <div class="screen active" id="screen-intro">
         <div class="intro-logo">
           <div class="logo-icon-wrapper">
-            <i class="fas fa-gavel logo-gavel"></i>
-            <i class="fas fa-university logo-court"></i>
+            <i class="fas fa-chart-line logo-gavel"></i>
+            <i class="fas fa-store logo-court"></i>
           </div>
-          <h1>立法大師</h1>
-          <h2>素養思辨挑戰賽！</h2>
+          <h1>市場大師</h1>
+          <h2>供需平衡大挑戰！</h2>
         </div>
         <p class="intro-desc">
-          公共政策沒有絕對的對與錯，只有利益的權衡與價值的抉擇！本遊戲將帶你扮演立法委員，從**起草法案方針、主持公聽會調和衝突、二讀比例原則思辨，到三讀合憲性審查**，體驗一條兼顧法理與民意的法律是如何誕生的！
+          在市場經濟中，價格的變動和供需的平衡決定了資源的分配！本遊戲將帶你扮演市場經營者與決策者，從**制定市場方針、調和消費者與生產者衝突、挑戰供需法則考驗，到審查公平交易市場秩序**，體驗如何兼顧各方利益並在市場危機中穩定供需平衡！
         </p>
         <div class="form-group-row">
           <div class="form-group-item">
@@ -114,118 +114,118 @@
           </div>
         </div>
         <div class="form-group">
-          <label for="player-name-input">輸入你的立法委員大名：</label>
-          <input type="text" id="player-name-input" placeholder="例如：閃亮亮立委" maxlength="10">
+          <label for="player-name-input">輸入你的市場大師名稱：</label>
+          <input type="text" id="player-name-input" placeholder="例如：金牌店長" maxlength="10">
         </div>
         <button id="btn-start-game" class="btn btn-primary btn-pulse">
-          開始思辨冒險 <i class="fas fa-arrow-right"></i>
+          開始經營挑戰 <i class="fas fa-arrow-right"></i>
         </button>
       </div>
 
       <!-- 1. Selection Screen -->
       <div class="screen" id="screen-select">
-        <h3 class="screen-title">選擇你要推動的法規主題與立法角色</h3>
+        <h3 class="screen-title">選擇你要經營的商品主題與夥伴角色</h3>
         
         <!-- Character Selection -->
         <div class="selection-section">
-          <h4><i class="fas fa-user-tag"></i> 選擇你的立法夥伴</h4>
+          <h4><i class="fas fa-user-tag"></i> 選擇你的經營夥伴</h4>
           <div class="card-grid" id="character-grid">
             <div class="select-card character-card active" data-char="dotty">
               <div class="card-image-placeholder">
                 <i class="fas fa-wand-magic-sparkles avatar-icon icon-dotty"></i>
               </div>
-              <h5>點點 (法案精靈)</h5>
-              <p>擁有魔法的法案小助手，能把複雜的法律條文變成有趣的魔法！</p>
+              <h5>阿吉 (市場精靈)</h5>
+              <p>喜歡熱鬧市場的小精靈，用魔法讓經濟學供需關係變簡單！</p>
             </div>
             <div class="select-card character-card" data-char="ray">
               <div class="card-image-placeholder">
-                <i class="fas fa-graduation-cap avatar-icon icon-ray"></i>
+                <i class="fas fa-shopping-bag avatar-icon icon-ray"></i>
               </div>
-              <h5>阿光 (正義小法官)</h5>
-              <p>精通憲法與法規的智慧少年，最講求程序正義與法理嚴謹度。</p>
+              <h5>小雅 (理性消費者)</h5>
+              <p>追求最高 CP 值的聰明學生，最了解買方的心聲與合理定價。</p>
             </div>
             <div class="select-card character-card" data-char="wah">
               <div class="card-image-placeholder">
-                <i class="fas fa-bullhorn avatar-icon icon-wah"></i>
+                <i class="fas fa-store avatar-icon icon-wah"></i>
               </div>
-              <h5>小華 (熱血小議員)</h5>
-              <p>充滿熱情、最聽取民眾心聲的行動派，擅長說服立委與拉票！</p>
+              <h5>大華 (熱血老闆)</h5>
+              <p>經營創意小吃店的年輕老闆，對生產成本與利潤變動超敏感。</p>
             </div>
           </div>
         </div>
 
-        <!-- Bill Selection -->
+        <!-- Bill Selection (Mapped to Product Selection) -->
         <div class="selection-section">
-          <h4><i class="fas fa-file-invoice"></i> 選擇你想要推動的法案</h4>
+          <h4><i class="fas fa-box-open"></i> 選擇你想要經營與挑戰的商品市場</h4>
           <div class="card-grid" id="bill-grid">
-            <div class="select-card bill-card active" data-bill="homework">
-              <div class="bill-icon-box"><i class="fas fa-book-open"></i></div>
-              <h5>「中小學禁止週末作業條例」</h5>
-              <p>思辨核心：學生自主休息權 v.s. 學校教學自主權與家長教育參與權。</p>
+            <div class="select-card bill-card active" data-bill="tea">
+              <div class="bill-icon-box"><i class="fas fa-mug-hot"></i></div>
+              <h5>「手搖黑糖珍奶」市場</h5>
+              <p>思辨核心：消費者健康概念與喜好轉變 v.s. 原料與研發成本的變動。</p>
             </div>
-            <div class="select-card bill-card" data-bill="lunch">
-              <div class="bill-icon-box"><i class="fas fa-cookie-bite"></i></div>
-              <h5>「營養午餐全面加糖與點心法案」</h5>
-              <p>思辨核心：學生飲食幸福權與選擇權 v.s. 健康發育權與學校財政負擔。</p>
+            <div class="select-card bill-card" data-bill="mobile">
+              <div class="bill-icon-box"><i class="fas fa-mobile-alt"></i></div>
+              <h5>「極速電競手機」市場</h5>
+              <p>思辨核心：高科技研發與製造成本 v.s. 消費者保固權益與晶片短缺。</p>
             </div>
-            <div class="select-card bill-card" data-bill="green">
-              <div class="bill-icon-box"><i class="fas fa-leaf"></i></div>
-              <h5>「校園綠能與垃圾減量推廣法」</h5>
-              <p>思辨核心：環境保護與世代公共利益 v.s. 師生生活便利權與高額建置成本。</p>
+            <div class="select-card bill-card" data-bill="veg">
+              <div class="bill-icon-box"><i class="fas fa-seedling"></i></div>
+              <h5>「無毒有機生菜」市場</h5>
+              <p>思辨核心：友善土地與無毒健康好處 v.s. 天災氣候對供給的巨大衝擊。</p>
             </div>
           </div>
         </div>
 
         <button id="btn-confirm-selection" class="btn btn-primary">
-          確認，開始提案！ <i class="fas fa-check"></i>
+          確認，開始經營市場！ <i class="fas fa-check"></i>
         </button>
       </div>
 
-      <!-- 2. Stage 1: Drafting, Proposal & First Reading -->
+      <!-- 2. Stage 1: Drafting & First Reading (Mapped to Entry & Supply/Demand Collection) -->
       <div class="screen" id="screen-stage1">
-        <h3 class="screen-title">第一關：法案政策起草與一讀會</h3>
+        <h3 class="screen-title">第一關：市場方針起草與供需收集</h3>
         
         <div class="stage-intro-card">
           <p>
-            <strong>【起草方針與連署】</strong><br>
-            立法的第一步是「起草法案方針」。不同的條文設計，會對**學生、家長、教師**造成不同程度的影響。起草完畢後，需獲得 **15位以上立委共同連署** 才能正式向院會提案！
+            <strong>【起草方針與交易收集】</strong><br>
+            經營市場的第一步是「制定起草方針」。不同的定價與規格設計，會對**消費者、生產者、社會**造成不同程度的影響。起草完畢後，需要在市場上成功收集 **15 筆買賣雙方的交易意願** 才能正式開啟市場！
           </p>
         </div>
 
         <!-- Step A: Drafting Choices -->
         <div class="minigame-box" id="drafting-game-container">
-          <h4>任務 1：決定您的法案起草方針</h4>
+          <h4>任務 1：決定您的市場經營方針</h4>
           <p class="game-instruction">請點選一個符合您政策理念的起草方針（這將決定初始的三方滿意度）：</p>
           
           <div class="drafting-options-grid" id="drafting-options-container">
-            <!-- Dynamic choices based on selected bill -->
+            <!-- Dynamic choices based on selected bill/product -->
           </div>
         </div>
 
-        <!-- Step B: Signature Collection (Active after choice) -->
+        <!-- Step B: Signature Collection (Mapped to Trading Bubble Game) -->
         <div class="minigame-box hidden" id="sig-game-container">
-          <h4>任務 2：徵求立法委員連署提案</h4>
+          <h4>任務 2：收集買賣雙方交易意願</h4>
           <div class="game-hud-bar">
-            <div class="hud-item"><i class="fas fa-users"></i> 已連署人數: <span id="sig-count" class="counter-highlight">0</span> / 15</div>
+            <div class="hud-item"><i class="fas fa-handshake"></i> 已完成交易媒合數: <span id="sig-count" class="counter-highlight">0</span> / 15</div>
             <div class="hud-item"><i class="fas fa-clock"></i> 剩餘時間: <span id="sig-timer">15</span> 秒</div>
           </div>
           
           <div class="sig-instructions">
-            <p><i class="fas fa-info-circle animate-bounce"></i> 快速點擊畫面上飄浮的「立委支持信件」，收集 15 個連署簽名吧！</p>
+            <p><i class="fas fa-info-circle animate-bounce"></i> 快速點擊畫面上飄浮的「買方/賣方交易氣泡」，媒合 15 筆成交訂單吧！</p>
           </div>
           
           <div class="sig-play-area" id="sig-play-area">
             <div class="start-overlay" id="sig-start-overlay">
-              <button id="btn-start-sig" class="btn btn-secondary">點此開始收集簽名</button>
+              <button id="btn-start-sig" class="btn btn-secondary">點此開始交易媒合</button>
             </div>
           </div>
         </div>
 
-        <!-- First Reading Ceremony (Hidden until game won) -->
+        <!-- First Reading Ceremony (Mapped to Opening Ceremony) -->
         <div class="ceremony-box hidden" id="first-reading-ceremony">
-          <h4><i class="fas fa-university"></i> 立法院院會：一讀程序</h4>
+          <h4><i class="fas fa-store"></i> 市場宣告：開市大典</h4>
           <p class="announcement">
-            「現在朗讀本案案由：<span class="highlight-text" id="ceremony-bill-title">法案名稱</span>。請問院會有無異議？無異議，本案一讀通過，送交委員會審查！」
+            「現在宣告商品市場開啟：<span class="highlight-text" id="ceremony-bill-title">商品名稱</span>。買賣雙方已經順利對接，市場即將開市，送交價格調和與公聽會審查！」
           </p>
           
           <div class="gavel-interactive-area">
@@ -241,7 +241,7 @@
               </svg>
               <div class="gavel-spark" id="gavel-spark-s1"></div>
             </div>
-            <p class="gavel-instruction">點擊議事槌敲擊桌面，完成一讀送交審查！</p>
+            <p class="gavel-instruction">點擊議事槌敲擊桌面，鳴鑼開市！</p>
             <button id="btn-strike-gavel-s1" class="btn btn-danger hidden">
               <i class="fas fa-hammer"></i> 敲擊議事槌
             </button>
@@ -250,26 +250,26 @@
 
         <div class="button-footer">
           <button id="btn-to-stage2" class="btn btn-primary hidden">
-            前往委員會審查 <i class="fas fa-arrow-right"></i>
+            前往價格與供需調和 <i class="fas fa-arrow-right"></i>
           </button>
         </div>
       </div>
 
-      <!-- 3. Stage 2: Committee & Stakeholder Public Hearing -->
+      <!-- 3. Stage 2: Committee & Stakeholder Public Hearing (Mapped to Stakeholder Dialogue & Equilibrium Tuning) -->
       <div class="screen" id="screen-stage2">
-        <h3 class="screen-title">第二關：利益衝突調和！委員會與公聽會審查</h3>
+        <h3 class="screen-title">第二關：供需利益調和！市場與公聽會審查</h3>
         
         <div class="stage-intro-card">
           <p>
-            <strong>【委員會與公聽會審查】</strong><br>
-            法案進入委員會後，必須召開「公聽會」，邀請**學生代表、家長代表、教師代表**列席表達意見。
-            身為法案起草人，您必須面對他們的犀利質疑，做出最能調和利益的**修正案抉擇**！若某方支持度過低，可能會導致朝野黨團協商陷入僵局！
+            <strong>【市場公聽會與價格協商】</strong><br>
+            進入市場後，我們必須舉辦「市場公聽會」，聽取**消費者、生產者、政府官員**列席表達的意見。
+            身為市場經營者，您必須面對他們的犀利訴求做出**經營抉擇**！接著，您需要調整**價格與供需拉桿**，排除超額短缺或超額過剩，讓市場回到「均衡點」！
           </p>
         </div>
 
         <!-- Stakeholder Hearing Panel -->
         <div class="minigame-box" id="hearing-game-container">
-          <h4>任務 1：召開公聽會！答覆各界代表質疑</h4>
+          <h4>任務 1：召開公聽會！答覆市場代表訴求</h4>
           
           <div class="hearing-workspace" id="hearing-workspace">
             <!-- Active stakeholder dialogue will render here dynamically -->
@@ -280,14 +280,14 @@
           </div>
         </div>
 
-        <!-- Party Caucus Negotiation (Unlocked after hearing) -->
+        <!-- Party Caucus Negotiation (Mapped to Equilibrium Tuning Slider) -->
         <div class="minigame-box hidden" id="negotiation-game-container">
-          <h4>任務 2：朝野黨團協商！尋求政黨共識</h4>
-          <p class="game-instruction">法案在委員會中被政黨爭執不下！拉動拉桿調整三方政黨的「讓步值」，讓三個指針都重疊在發光的「共識區」，即可通過協商！</p>
+          <h4>任務 2：市場價格協商！調整供需均衡</h4>
+          <p class="game-instruction">調整價格、需求因子與生產成本拉桿，使「需求量（買方）」與「供給量（賣方）」兩大指針重疊在發光的「均衡區」，即可達成市場均衡！</p>
           
           <div class="negotiation-workspace">
             <div class="party-control">
-              <label for="slider-party-a"><i class="fas fa-square-full party-icon-blue"></i> 藍天黨 (注重行政執行可行性)</label>
+              <label for="slider-party-a"><i class="fas fa-tag party-icon-blue"></i> 商品定價 (調整最終零售價格)</label>
               <div class="slider-wrapper">
                 <input type="range" id="slider-party-a" min="0" max="100" value="20">
                 <span class="value-display" id="val-party-a">20%</span>
@@ -295,7 +295,7 @@
             </div>
 
             <div class="party-control">
-              <label for="slider-party-b"><i class="fas fa-square-full party-icon-green"></i> 綠地黨 (注重學生表意與自主權)</label>
+              <label for="slider-party-b"><i class="fas fa-heart party-icon-green"></i> 買方偏好 (影響消費者購買意願)</label>
               <div class="slider-wrapper">
                 <input type="range" id="slider-party-b" min="0" max="100" value="80">
                 <span class="value-display" id="val-party-b">80%</span>
@@ -303,7 +303,7 @@
             </div>
 
             <div class="party-control">
-              <label for="slider-party-c"><i class="fas fa-square-full party-icon-yellow"></i> 陽光黨 (注重配套輔導與社會平衡)</label>
+              <label for="slider-party-c"><i class="fas fa-cog party-icon-yellow"></i> 生產成本 (影響廠商願意供給的量)</label>
               <div class="slider-wrapper">
                 <input type="range" id="slider-party-c" min="0" max="100" value="50">
                 <span class="value-display" id="val-party-c">50%</span>
@@ -314,29 +314,29 @@
               <div class="target-glow-zone" id="target-glow-zone"></div>
               <div class="pointer pointer-a" id="ptr-party-a"></div>
               <div class="pointer pointer-b" id="ptr-party-b"></div>
-              <div class="pointer pointer-c" id="ptr-party-c"></div>
-              <div class="target-label">共識發光區 (50%)</div>
+              <div class="pointer pointer-c" id="ptr-party-c" style="display: none;"></div>
+              <div class="target-label" id="equilibrium-label">市場均衡區 (50%)</div>
             </div>
           </div>
-          <div class="negotiation-feedback" id="negotiation-feedback">朝野協商中，努力拉近彼此的差距...</div>
+          <div class="negotiation-feedback" id="negotiation-feedback">市場價格調和中，努力拉近供需的差距...</div>
         </div>
 
         <div class="button-footer">
           <button id="btn-to-stage3" class="btn btn-primary hidden">
-            送出審查報告，進入二讀會 <i class="fas fa-arrow-right"></i>
+            送出供需報告，進入供需法則考驗 <i class="fas fa-arrow-right"></i>
           </button>
         </div>
       </div>
 
-      <!-- 4. Stage 3: Second Reading (Proportionality Principle Debate) -->
+      <!-- 4. Stage 3: Second Reading (Mapped to Economics Quiz & Match Board) -->
       <div class="screen" id="screen-stage3">
-        <h3 class="screen-title">第三關：二讀會大辯論！憲法比例原則之思辨</h3>
+        <h3 class="screen-title">第三關：供需大考驗！供需法則與均衡變動之思辨</h3>
         
         <div class="stage-intro-card">
           <p>
-            <strong>【二讀會與比例原則】</strong><br>
-            二讀會是法案審查最關鍵、辯論最激烈的階段！立委們會就法案的合理性進行攻防。
-            根據**中華民國憲法第 23 條（比例原則）**，國家限制人民權利時，必須符合「目的正當性」、「手段適合性」、「限制必要性（最小侵害）」與「衡平性」。請為您的法規做出最符合憲法精神的法理辯護！
+            <strong>【供需法則與價格機制】</strong><br>
+            市場大辯論開始！我們必須在現場針對供需法則進行答辯。
+            根據**經濟學供需法則**，價格與需求量呈反向、與供給量呈同向變動；非價格因素會使供需曲線移動。請展現你的專業，回答 10 題供需關係的情境考題，爭取市場中消費者與生產者的成交意願！
           </p>
         </div>
 
@@ -344,12 +344,12 @@
           <!-- Left: Proportionality Quiz -->
           <div class="quiz-panel">
             <div class="panel-header">
-              <i class="fas fa-balance-scale"></i> 院會大辯論：比例原則答辯
+              <i class="fas fa-balance-scale"></i> 市場大辯論：供需法則答辯
             </div>
             <div class="quiz-box">
               <div class="question-header">
-                <span class="question-number" id="quiz-q-num">第 1 / 3 題</span>
-                <span class="legislator-avatar-hud"><i class="fas fa-user-tie"></i> 院會現場辯論中</span>
+                <span class="question-number" id="quiz-q-num">第 1 / 10 題</span>
+                <span class="legislator-avatar-hud"><i class="fas fa-user-tie"></i> 市場大會現場討論中</span>
               </div>
               <p class="question-text" id="quiz-question">讀取中...</p>
               <div class="quiz-options" id="quiz-options-container">
@@ -361,15 +361,15 @@
             </div>
           </div>
 
-          <!-- Right: Visual Voting Board -->
+          <!-- Right: Visual Match Board (Mapped from Voting Board) -->
           <div class="voting-panel">
             <div class="panel-header">
-              <i class="fas fa-desktop"></i> 立法院院會表決器 (113 席)
+              <i class="fas fa-desktop"></i> 市場交易媒合板 (113 位買賣者)
             </div>
             <div class="voting-hud-stats">
-              <div class="vote-stat support"><span class="label">贊成</span><span class="count" id="vote-count-yes">0</span></div>
-              <div class="vote-stat oppose"><span class="label">反對</span><span class="count" id="vote-count-no">0</span></div>
-              <div class="vote-stat abstain"><span class="label">未決定</span><span class="count" id="vote-count-undecided">113</span></div>
+              <div class="vote-stat support"><span class="label">交易成功</span><span class="count" id="vote-count-yes">0</span></div>
+              <div class="vote-stat oppose"><span class="label">交易失敗</span><span class="count" id="vote-count-no">0</span></div>
+              <div class="vote-stat abstain"><span class="label">媒合中</span><span class="count" id="vote-count-undecided">113</span></div>
             </div>
             
             <!-- Voting seats grid -->
@@ -378,44 +378,44 @@
             </div>
 
             <div class="passing-threshold-marker">
-              過半數通過門檻：57 票
+              市場穩定成交門檻：57 人
             </div>
           </div>
         </div>
 
         <div class="voting-action-overlay hidden" id="voting-trigger-overlay">
           <div class="overlay-content">
-            <h4><i class="fas fa-exclamation-triangle"></i> 二讀廣泛討論結束，準備表決！</h4>
-            <p>你已成功使用憲法比例原則完成法理答辯。現在，請點擊按鈕，啟動院會電子表決器！</p>
+            <h4><i class="fas fa-exclamation-triangle"></i> 市場供需辯論結束，準備媒合交易！</h4>
+            <p>你已完成供需法則答辯。現在，請點擊按鈕，啟動電子交易媒合器！</p>
             <button id="btn-start-electronic-vote" class="btn btn-success btn-large btn-pulse">
-              <i class="fas fa-play"></i> 按下表決鈕！
+              <i class="fas fa-play"></i> 按下媒合交易鈕！
             </button>
           </div>
         </div>
 
         <div class="button-footer">
           <button id="btn-to-stage4" class="btn btn-primary hidden">
-            通過二讀會！前往三讀會 <i class="fas fa-arrow-right"></i>
+            通過供需法則考驗！進入公平交易法審查 <i class="fas fa-arrow-right"></i>
           </button>
         </div>
       </div>
 
-      <!-- 5. Stage 4: Third Reading (Constitutionality Review) -->
+      <!-- 5. Stage 4: Third Reading (Mapped to Fair Trade / Regulation Review) -->
       <div class="screen" id="screen-stage4">
-        <h3 class="screen-title">第四關：三讀會把關！法律合憲性審查</h3>
+        <h3 class="screen-title">第四關：公平交易把關！市場秩序與合理規範審查</h3>
         
         <div class="stage-intro-card">
           <p>
-            <strong>【三讀與合憲性審查】</strong><br>
-            三讀會是立法程序的最後一關。除非發現法案條文與**「憲法」或「其他上位法律」**相牴觸，否則只能做文字修正。
-            天啊！在最後關頭，法制作業人員發現草案中居然包含了一條**「違背憲法基本權利（人身自由）」或「權限逾越」的嚴重違憲條款**！請找出該段條文並予以修正，以避免未來被宣告違憲無效！
+            <strong>【公平交易與市場秩序】</strong><br>
+            市場法規審查的最後一關！我們必須確保規範符合**《公平交易法》與《消費者保護法》**。
+            天啊！在最後關頭，法制作業人員發現草案中居然包含了一條**「聯合壟斷定價」或「侵害人身自由、濫用行政搜查」的違法條款**！請找出該段條文並選擇正確的修正案，以維護市場自由競爭！
           </p>
         </div>
 
         <!-- Constitutionality Quiz -->
         <div class="minigame-box" id="constitution-game-container">
-          <h4>任務：找出違憲條款並進行修正</h4>
-          <p class="game-instruction">請閱讀下方草案，**點擊該段具有違憲疑慮的紅色下底線文字**，並選擇正確的修正條文：</p>
+          <h4>任務：找出違法條款並進行修正</h4>
+          <p class="game-instruction">請閱讀下方草案，**點擊該段具有違法疑慮的紅色下底線文字**，並選擇正確的修正條文：</p>
           
           <div class="proofread-paper">
             <h4 class="paper-bill-title" id="proofread-bill-title">草案標題</h4>
@@ -432,8 +432,8 @@
           <!-- Dialog popup for replacement -->
           <div class="constitution-modal hidden" id="constitution-modal">
             <div class="modal-content">
-              <h5>⚖️ 違憲條款修正案抉擇</h5>
-              <p id="constitution-typo-explain">本段條文限制了自由，且處罰手段違背了法官保留原則與職權限制...</p>
+              <h5>⚖️ 違法條款修正案抉擇</h5>
+              <p id="constitution-typo-explain">本段條文限制了定價自由，且涉及聯合壟斷或濫用行政裁罰權...</p>
               <div class="modal-options" id="constitution-modal-options">
                 <!-- Replacement choices will be generated here -->
               </div>
@@ -443,10 +443,10 @@
 
         <!-- Gavel Striking Box (Hidden until proofread won) -->
         <div class="ceremony-box hidden" id="third-reading-ceremony">
-          <h4><i class="fas fa-university"></i> 立法院院會：三讀敲槌儀式</h4>
+          <h4><i class="fas fa-store"></i> 市場規章公布：三讀敲槌儀式</h4>
           <p class="announcement">
-            「本案經三讀會條文合憲修正整理完竣。現在進行最後表決……表決結果贊成多數！本案通過！<br>
-            <span class="gavel-shout">《<span id="ceremony-bill-title-s4">法案名稱</span>》三讀通過！》</span> turn 」
+            「本案經三讀會條文合理修正整理完竣。現在進行最後表決……表決結果贊成多數！本案通過！<br>
+            <span class="gavel-shout">《<span id="ceremony-bill-title-s4">法案名稱</span>》市場規章三讀通過！</span>」
           </p>
           
           <div class="gavel-interactive-area">
@@ -462,7 +462,7 @@
               </svg>
               <div class="gavel-spark" id="gavel-spark-s4"></div>
             </div>
-            <p class="gavel-instruction">點擊議事槌敲擊桌面，完成三讀通過！</p>
+            <p class="gavel-instruction">點擊議事槌敲擊桌面，公布規章！</p>
             <button id="btn-strike-gavel-s4" class="btn btn-danger hidden">
               <i class="fas fa-hammer"></i> 敲擊議事槌
             </button>
@@ -471,62 +471,62 @@
 
         <div class="button-footer">
           <button id="btn-to-stage5" class="btn btn-primary hidden">
-            送交總統及行政院 <i class="fas fa-arrow-right"></i>
+            進入市場危機應變挑戰 <i class="fas fa-arrow-right"></i>
           </button>
         </div>
       </div>
 
-      <!-- 6. Stage 5: Veto Challenge & Policy Defense -->
+      <!-- 6. Stage 5: Veto Challenge & Policy Defense (Mapped to Supply/Demand Crisis & Inflation) -->
       <div class="screen" id="screen-stage5">
-        <h3 class="screen-title">第五關：行政院覆議案！政策辯護決策</h3>
+        <h3 class="screen-title">第五關：市場供需衝擊！危機應變決策</h3>
         
         <div class="stage-intro-card">
           <p>
-            <strong>【行政院覆議與決策】</strong><br>
-            行政院收到法案後，認為執行上極度窒礙難行，移請立法院覆議。
-            面對行政院的退回，身為提案委員，你必須做出**關鍵性的答辯回應**。若您選擇強硬拒絕或完全妥協，會對民意支持度與表決結果產生不同的後果！
+            <strong>【供需衝擊與危機處理】</strong><br>
+            市場面臨了嚴重的「外部供需衝擊」！天災、晶片廠大火或食安風暴讓市場機制大亂。
+            面對危機，身為經營與決策者，你必須做出**關鍵應變抉擇**。若採用硬性限制價格或消極應對，會引發嚴重的過剩、短缺甚至黑市！做出你的折衷對策並穩定市場交易吧！
           </p>
         </div>
 
-        <!-- Veto Defense Choice -->
+        <!-- Veto Defense Choice (Mapped to Crisis Options) -->
         <div class="veto-alert-box" id="veto-alert-container">
           <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
-          <h4>🚨 行政院提出「覆議」！</h4>
+          <h4>🚨 市場爆發供需衝擊危機！</h4>
           <p class="alert-message">
-            行政院指出，該法案在實務執行上涉及極高的人力編制與財政預算，經總統核可後，決定移請立法院「覆議」！
+            市場遭遇了嚴重的突發狀況，供給或需求急劇萎縮，價格異常波動，引起了消費者與業者的恐慌！
           </p>
           <p class="veto-bill-subtitle" style="text-align: center; margin: 15px 0; font-size: 1.15rem;">
-            覆議法規：<span id="veto-bill-title" class="highlight-text">《法案名稱》</span>
+            受波及商品：<span id="veto-bill-title" class="highlight-text">《商品名稱》</span>
           </p>
-          <p class="game-instruction">身為提案主導者，請選擇您的應對與辯護策略：</p>
+          <p class="game-instruction">身為經營與決策者，請選擇您的關鍵應變與調節策略：</p>
           
           <div class="veto-options-panel" id="veto-options-container">
-            <!-- Dynamic choices will be rendered here based on bill -->
+            <!-- Dynamic choices will be rendered here based on bill/product -->
           </div>
         </div>
 
         <!-- Rapid Clicks Mini-game (Difficulty based on decision) -->
         <div class="minigame-box hidden" id="veto-game-container">
-          <h4>任務：全院表決！維持原案投票戰</h4>
-          <p class="game-instruction" id="veto-game-instruction">快速狂點按鈕以獲得足夠贊成票！</p>
+          <h4>任務：穩定物價！啟動市場防衛機制</h4>
+          <p class="game-instruction" id="veto-game-instruction">快速狂點按鈕以穩定市場交易！</p>
           
           <div class="veto-game-hud">
             <div class="progress-bar-container">
               <div class="progress-bar-fill" id="veto-progress-fill"></div>
               <div class="threshold-line" style="left: 50%;">
-                <span class="threshold-tag">過半數門檻 (57票)</span>
+                <span class="threshold-tag">穩定市場門檻 (57分)</span>
               </div>
             </div>
             <div class="veto-score-board">
-              <div class="score-item">贊成維持原案: <span id="veto-votes" class="counter-highlight">0</span> / 113 票</div>
+              <div class="score-item">市場穩定指數: <span id="veto-votes" class="counter-highlight">0</span> / 113 分</div>
               <div class="score-item">剩餘時間: <span id="veto-timer">8.0</span> 秒</div>
             </div>
           </div>
 
           <div class="veto-click-area">
             <button id="btn-click-vote" class="btn-click-target">
-              <span class="click-text">維持原案！</span>
-              <span class="click-icon"><i class="fas fa-vote-yea"></i></span>
+              <span class="click-text">穩定市場！</span>
+              <span class="click-icon"><i class="fas fa-heartbeat"></i></span>
             </button>
           </div>
         </div>
@@ -534,24 +534,24 @@
         <!-- Outro Story (Success) -->
         <div class="ceremony-box hidden" id="veto-success-box">
           <div class="celebration-icon"><i class="fas fa-award"></i></div>
-          <h4>🎉 挑戰成功！覆議維持原案！</h4>
+          <h4>🎉 挑戰成功！成功度過市場危機！</h4>
           <p>
-            立法院全體委員過半數維持原案，覆議案不成立！行政院長必須接受該法律。總統正式公布，自公布日起算第三日發生效力！
+            你成功展現了高度的供需調和與危機處理能力，市場交易順利恢復穩定，買賣雙方重拾信心！
           </p>
           <button id="btn-to-certificate" class="btn btn-success">
-            查看法案發布證書 <i class="fas fa-scroll"></i>
+            查看市場大師證書 <i class="fas fa-scroll"></i>
           </button>
         </div>
 
         <!-- Outro Story (Fail) -->
         <div class="ceremony-box hidden" id="veto-fail-box">
           <div class="fail-icon"><i class="fas fa-times-circle"></i></div>
-          <h4>❌ 覆議表決未通過！</h4>
+          <h4>❌ 市場失衡崩盤！</h4>
           <p id="veto-fail-message">
-            很遺憾，沒能在時限內凝聚足夠的立委席次（未達過半數 57 票）。原法案失效！
+            很遺憾，沒能在時限內穩定市場交易（未達 57 分門檻）。市場出現嚴重短缺/過剩，交易完全停擺！
           </p>
           <button id="btn-restart-veto" class="btn btn-secondary">
-            重新挑戰覆議表決 <i class="fas fa-redo"></i>
+            重新挑戰穩定市場 <i class="fas fa-redo"></i>
           </button>
         </div>
       </div>
@@ -561,41 +561,41 @@
         <div class="certificate-container" id="certificate-print-area">
           <div class="certificate-border">
             <div class="cert-header">
-              <i class="fas fa-university cert-logo"></i>
-              <h3>中華民國立法院</h3>
-              <h4>素養立法大師認證證書</h4>
+              <i class="fas fa-award cert-logo"></i>
+              <h3>中華民國市場經濟學會</h3>
+              <h4>經濟素養市場大師證書</h4>
             </div>
             
             <div class="cert-body">
-              <p class="cert-text-intro">茲證明立法委員</p>
-              <h2 class="cert-player-name" id="cert-player-name">訪客委員</h2>
-              <p class="cert-text-intro">在推動以下法規案中，展現卓越之利益調和與法理思辨素養：</p>
-              <h1 class="cert-bill-title" id="cert-bill-title">《草案標題》</h1>
+              <p class="cert-text-intro">茲證明市場經營者</p>
+              <h2 class="cert-player-name" id="cert-player-name">訪客老闆</h2>
+              <p class="cert-text-intro">在經營以下商品市場中，展現卓越之供需調和與公平交易素養：</p>
+              <h1 class="cert-bill-title" id="cert-bill-title">《商品標題》</h1>
               
               <div class="cert-evaluation-grid">
                 <div class="eval-card">
-                  <div class="eval-title"><i class="fas fa-balance-scale"></i> 利益平衡度</div>
+                  <div class="eval-title"><i class="fas fa-balance-scale"></i> 供需平衡度</div>
                   <div class="eval-stat" id="cert-balance-score">良好</div>
                 </div>
                 <div class="eval-card">
-                  <div class="eval-title"><i class="fas fa-scroll"></i> 比例原則思辨</div>
+                  <div class="eval-title"><i class="fas fa-chart-line"></i> 供需法則思辨</div>
                   <div class="eval-stat" id="cert-proportionality-score">3 / 3 題</div>
                 </div>
                 <div class="eval-card">
-                  <div class="eval-title"><i class="fas fa-gavel"></i> 合憲性修正</div>
+                  <div class="eval-title"><i class="fas fa-shield-alt"></i> 公平交易修正</div>
                   <div class="eval-stat">完成</div>
                 </div>
               </div>
 
               <p class="cert-desc">
-                本法案歷經起草、公聽會利益調和、朝野黨團協商，並於二讀會中針對比例原則完成答辯表決通過、三讀會進行違憲條款修正。全案符合憲法民主立法程序，特頒此證以茲鼓勵其公民素養思辨之表現！
+                本商品歷經市場方針制定、公聽會利益調和、供需價格彈性調整，並於大會中針對供需法則完成答辯、規章審查進行違法條款修正。全案符合市場機制與公平競爭原則，特頒此證以茲鼓勵其經濟公民素養之表現！
               </p>
             </div>
 
             <div class="cert-footer">
               <div class="cert-sign">
-                <span class="label">立法院長</span>
-                <span class="sign-name">遊 戲 院 長 <span class="seal">印</span></span>
+                <span class="label">市場公會理事長</span>
+                <span class="sign-name">市 場 理 事 長 <span class="seal">印</span></span>
               </div>
               <div class="cert-date">
                 中華民國 <span id="cert-date-year">115</span> 年 <span id="cert-date-month">6</span> 月 <span id="cert-date-day">21</span> 日
@@ -615,10 +615,10 @@
             <i class="fas fa-camera"></i> 另存 PDF 或列印
           </button>
           <button id="btn-restart-all" class="btn btn-primary">
-            再玩一次，挑戰其他法案 <i class="fas fa-redo"></i>
+            再玩一次，挑戰其他商品 <i class="fas fa-redo"></i>
           </button>
         </div>
-        <p class="cert-print-tip"><i class="fas fa-info-circle"></i> 提示：您可以將證書另存為 PDF 檔案提交給公民科老師唷！</p>
+        <p class="cert-print-tip"><i class="fas fa-info-circle"></i> 提示：您可以將證書另存為 PDF 檔案提交給社會科/公民科老師唷！</p>
       </div>
 
     </section>

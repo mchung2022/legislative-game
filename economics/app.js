@@ -1,6 +1,7 @@
 /**
- * 法案大師：素養思辨挑戰賽！
+ * 市場大師：供需平衡大挑戰！
  * 遊戲邏輯與互動控制 JS 檔案
+ * (改編自立法大師素養遊戲，專為國中經濟學供給與需求教學設計)
  */
 
 // --- 後端配置 ---
@@ -11,13 +12,16 @@ const GOOGLE_SHEET_APP_URL = "https://script.google.com/macros/s/AKfycbzQ8H2_-tT
 const gameState = {
   playerClass: "無",
   playerSeat: "無",
-  playerName: "訪客委員",
-  selectedChar: "dotty", // dotty, ray, wah
-  selectedBill: "homework", // homework, lunch, green
+  playerName: "訪客老闆",
+  selectedChar: "dotty", // dotty: 阿吉, ray: 小雅, wah: 大華
+  selectedBill: "tea", // tea: 手搖珍奶, mobile: 電競手機, veg: 有機生菜
   currentStage: 0, // 0: intro, 1: select, 2: stage1, 3: stage2, 4: stage3, 5: stage4, 6: stage5, 7: cert
   soundEnabled: true,
   
-  // 素養指標：利害關係人滿意度 (學生, 家長, 教師) 範圍 0 - 100
+  // 滿意度軌跡對應：
+  // student -> 消費者 (Consumer)
+  // parent -> 生產者 (Producer)
+  // teacher -> 政府與社會 (Government & Society)
   satisfaction: {
     student: 50,
     parent: 50,
@@ -25,436 +29,436 @@ const gameState = {
   },
 
   // 記錄決策選擇，供教師評估素養表現
-  draftChoice: "",      // 起草路線
-  hearingChoices: {},   // 公聽會作答記錄
-  vetoChoice: "",       // 覆議答辯路線
+  draftChoice: "",      // 起草經營方針
+  hearingChoices: {},   // 供需事件抉擇記錄
+  vetoChoice: "",       // 危機處理策略
   
-  signaturesCollected: 0,
+  signaturesCollected: 0, // 交易媒合數
   sigTimer: null,
   sigTimeLeft: 20,
   sigGameActive: false,
   
-  hearingCurrentStakeholder: 0, // 0: student, 1: parent, 2: teacher
+  hearingCurrentStakeholder: 0, // 0: consumer, 1: producer, 2: society
   
   quizCurrentQuestion: 0,
   quizScore: 0,
   
-  yesVotes: 0,
-  noVotes: 0,
+  yesVotes: 0, // 交易成功數
+  noVotes: 0,  // 交易失敗數
   votingActive: false,
   
-  constitutionCorrected: false,
+  constitutionCorrected: false, // 公平交易修正狀態
   
   vetoClicks: 0,
-  vetoClicksRequired: 29, // 預設 29 次點擊 = 58 票 (過半數)
+  vetoClicksRequired: 29, 
   vetoTimer: null,
   vetoTimeLeft: 8.0,
   vetoGameActive: false
 };
 
-// --- 素養情境資料庫 ---
+// --- 經濟學商品與供需情境資料庫 ---
 const BILLS = {
-  homework: {
-    title: "「中小學禁止週末作業條例」",
-    shortTitle: "禁止週末作業條例",
+  tea: {
+    title: "「手搖黑糖珍奶」市場",
+    shortTitle: "手搖珍奶市場",
     drafting: {
       options: [
         {
           id: "strict",
-          title: "【全面禁用型】(強硬管制)",
-          desc: "強制規定週末及連續假期學校絕對不能指派任何作業，違者扣減該校之政府補助款並予以通報。",
-          impact: { student: 30, parent: -25, teacher: -25 },
-          route: "強硬管制"
+          title: "【高價奢華型】(精品定位)",
+          desc: "採用嚴選高山紅茶與紐西蘭進口純鮮奶，珍珠每日手工現熬，定價每杯 100 元，鎖定高消費力市場。",
+          impact: { student: -15, parent: 30, teacher: 10 },
+          route: "精品高價定位"
         },
         {
           id: "balanced",
-          title: "【彈性引導型】(彈性折衷)",
-          desc: "鼓勵週末以「非傳統抄寫」之自主學習任務替代傳統作業（如運動、家事、觀察），由學校提供自主學習資源彈性引導。",
-          impact: { student: 15, parent: 15, teacher: 10 },
-          route: "彈性折衷"
+          title: "【國民平價型】(彈性折衷)",
+          desc: "主打經典茶底配上 Q 彈珍珠，定價 55 元，糖度與配料採標準化管理，兼顧大眾消費力與商家合理利潤。",
+          impact: { student: 20, parent: 15, teacher: 15 },
+          route: "國民平價折衷"
         },
         {
           id: "flexible",
-          title: "【低度規範型】(寬鬆規範)",
-          desc: "原則上週末不指派作業，但若遇到段考前一週、複習週或有特殊教學複習需求，教師仍得視需要指派作業。",
-          impact: { student: -10, parent: 25, teacher: 20 },
-          route: "寬鬆規範"
+          title: "【低價搶市型】(薄利多銷)",
+          desc: "使用人工奶精與平價茶葉，以超高效率量產，定價每杯 30 元。雖受低預算消費者喜好，但引發健康疑慮。",
+          impact: { student: 15, parent: -10, teacher: -25 },
+          route: "低價薄利多銷"
         }
       ]
     },
     hearing: [
       {
-        stakeholder: "student",
-        name: "學生代表 - 阿強",
-        avatar: "fa-child",
-        quote: "如果給學校『特殊教學需求』等太多例外彈性，那最後可能變成天天都是『特殊週』，老師一樣發考卷，我們根本放不到假！",
+        stakeholder: "student", // Consumer
+        name: "消費者代表 - 小萱",
+        avatar: "fa-shopping-bag",
+        quote: "現在很多珍奶一杯賣到 100 元，對國中生來說根本吃不消！而且希望甜度能提供微糖或無糖選項，讓我們喝得健康又沒有負擔！",
         options: [
           {
-            text: "完全同意！修改草案，嚴格限制『例外情況』每學期不得指派超過兩次，違反者予以行政懲處。",
-            impact: { student: 20, parent: -10, teacher: -15 }
+            text: "體貼消費者！全品項降價 15%，且為了健康強制規定全面取消全糖選項，只提供半糖以下與熱量標示。",
+            impact: { student: 25, parent: -15, teacher: 15 }
           },
           {
-            text: "增設『學生會申訴管道』，若班級作業量明顯超標，可向校務會議與教育局提出申訴與調查。",
-            impact: { student: 15, parent: 5, teacher: 5 }
+            text: "引進「健康低卡天然代糖珍奶」，定價維持中平，並提供攜帶環保杯現折 5 元的優惠政策。",
+            impact: { student: 15, parent: 15, teacher: 15 }
           },
           {
-            text: "我們必須尊重教師的第一線專業授課權力，相信學校與導師會適度拿捏，不宜過度限制。",
-            impact: { student: -20, parent: 15, teacher: 20 }
+            text: "尊重店家的獨家糖度配方與品牌定價，相信市場機制，政府不應硬性規定店家的價格與配方。",
+            impact: { student: -20, parent: 25, teacher: -10 }
           }
         ]
       },
       {
-        stakeholder: "parent",
-        name: "家長代表 - 陳媽媽",
-        avatar: "fa-user-friends",
-        quote: "週末如果不指派功課，孩子回家都在玩手機、打電動，學習進度落後怎麼辦？家長不是專業老師，不知道怎麼督促輔導啊！",
+        stakeholder: "parent", // Producer
+        name: "手搖飲商家代表 - 林老闆",
+        avatar: "fa-store",
+        quote: "最近鮮奶和珍珠的原料進口成本、店面租金一直在漲，如果政府強行凍結價格，我們賺不到利潤只能倒閉，大家也喝不到珍奶了！",
         options: [
           {
-            text: "家長應該學會陪伴孩子進行戶外活動或閱讀，而不是把管教與輔導責任全部塞給學校作業！",
-            impact: { student: 15, parent: -25, teacher: -5 }
+            text: "商家賺少一點也是合理的，應強制規定大杯珍奶最高限價 50 元以保障消費者，違反者直接開罰！",
+            impact: { student: 20, parent: -30, teacher: 5 }
           },
           {
-            text: "由教育局編列經費增設『週末線上自主學習資源平台』，提供多元教材，讓家長有資源引導孩子。",
-            impact: { student: 5, parent: 20, teacher: 10 }
+            text: "由政府補貼「在地小農乳源採購」，降低運輸與包裝成本，輔導店家提升效率，穩定供需與物價。",
+            impact: { student: 10, parent: 20, teacher: 15 }
           },
           {
-            text: "條文放寬限制，允許班級經『家長大會過半數同意』後，得指派適量之週末作業。",
-            impact: { student: -15, parent: 15, teacher: 10 }
+            text: "價格由供需自由決定，允許商家因應原料上漲自由浮動調高價格，將成本轉嫁給消費者。",
+            impact: { student: -20, parent: 25, teacher: -15 }
           }
         ]
       },
       {
-        stakeholder: "teacher",
-        name: "教師代表 - 施老師",
-        avatar: "fa-chalkboard-teacher",
-        quote: "週末是段考複習的黃金時期，如果一律不准派作業，學生的進度會嚴重落後，教學目標無法如期達成，教師壓力極大！",
+        stakeholder: "teacher", // Society & Gov
+        name: "社會與政府代表 - 衛福官員",
+        avatar: "fa-landmark",
+        quote: "根據統計，國中生肥胖與蛀牙比例逐年攀升，含糖手搖飲是最大元兇！如果不適度管制，未來健保支出會非常沉重！",
         options: [
           {
-            text: "學生的身心健康是不可妥協的。進度落後應由教師調整授課法，週末仍應無條件禁止作業。",
-            impact: { student: 20, parent: -15, teacher: -20 }
+            text: "為維護青少年健康，全面禁止在國民中小學周邊 500 公尺內販售含糖手搖飲，違者移送法辦！",
+            impact: { student: -25, parent: -25, teacher: 30 }
           },
           {
-            text: "鼓勵教師進行『翻轉學習』，週末僅需指派 10 分鐘以內的教學觀看影片，不指派抄寫型作業。",
-            impact: { student: 10, parent: 10, teacher: 15 }
+            text: "推廣「低糖健康標章認證」，凡店家配合減糖且無添加人工色素，可申請 2% 營業稅減免優惠。",
+            impact: { student: 10, parent: 15, teacher: 20 }
           },
           {
-            text: "修正條文，明定在段考、模擬考前一週，教師得不受限制指派複習性作業。",
-            impact: { student: -10, parent: 15, teacher: 15 }
+            text: "市場經濟中健康是個人選擇，政府不應實施任何干預，由學校加強學生健康衛教宣導即可。",
+            impact: { student: 15, parent: 15, teacher: -25 }
           }
         ]
       }
     ],
     unconstitutional: {
-      title: "「中小學禁止週末作業條例草案」",
-      content: "中華民國國民中小學學生之課業，應以課堂學習為主。為保障學生身心健全發展與充足睡眠，各級學校不得於週五或連續假期指派課後作業。<span class='typo-target' id='typo-unconstitutional'>凡不遵守本條例指派週末作業之教師，應由警察機關處以三日以下之拘役，或由學校直接處以新臺幣三萬元之行政罰鍰。</span>",
-      explain: "本段條文嚴重侵犯了憲法第 8 條之『人身自由與法官保留原則』（拘役為刑事處罰限制人身自由，必須由法院依法審理，警察無權處分）；且學校並非行政處罰機關，無權直接對個人處以罰鍰處分。這已嚴重違背比例原則與法律保留原則。",
+      title: "「手搖珍奶市場公平交易管理草案」",
+      content: "中華民國手搖珍奶市場之發展，應注重公平競爭與消費者權益。為提升產業服務品質，政府應輔導業者標示糖度與熱量，推廣健康減糖。配合減糖標章之店家，得申請經營補助。<span class='typo-target' id='typo-unconstitutional'>為防堵飲料店削價競爭危害利潤，飲料同業公會與全體業者應強制約定大杯珍奶售價不得低於 80 元，違者由公會直接沒收其店面財產並廢止營業執照。</span>",
+      explain: "此草案限制了業者的價格自主權，並構成《公平交易法》所明文禁止的「聯合行為」（限制零售價格，聯合壟斷定價），損害了自由市場競爭與消費者利益；且同業公會並非國家行政機關，根本無權不經正當法律程序沒收私人店面與廢止執照，侵害了工作權及財產權。",
       options: [
         {
-          text: "「違反本條例之學校，由主管教育行政機關限期改善；屆期未改善者，列入學校評鑑參考。」",
+          text: "「飲料業者得依經營成本自由決定商品售價，禁止任何業者或公會進行聯合行為限制價格；違規者由公平交易委員會依法懲處。」",
           isCorrect: true,
-          feedback: "正確！此修正案符合行政指導精神，手段合憲且正當。"
+          feedback: "正確！這符合《公平交易法》保障自由市場競爭之精神，手段合憲且保障消費者權益。"
         },
         {
-          text: "「違反本條例之教師，應由該校家長會聯名予以直接開除，以示懲戒。」",
+          text: "「凡是大杯珍奶售價低於 80 元之店家，家長會得聯合發動社區全民抵制，並強制驅逐出該校園商圈。」",
           isCorrect: false,
-          feedback: "錯誤。這違反了勞動權保障與教師法規定的懲處程序，手段仍屬過當。"
+          feedback: "錯誤。強制驅逐商家違反了商業經營自由與正當法律程序，手段依然過當。"
         },
         {
-          text: "「不服從規定之教師，學校得報請教育部撤銷其教師證書，且終身不得再任教職。」",
+          text: "「同業公會應每日向政府申報原料成本，由政府統一訂定全國每杯珍奶的單一零售價格，違者處有期徒刑。」",
           isCorrect: false,
-          feedback: "錯誤。處罰極度過度，嚴重違反了憲法比例原則中的衡平性與必要性。"
+          feedback: "錯誤。過度硬性的價格管制完全抹煞了市場機制與營業自由，不符比例原則。"
         }
       ]
     },
     veto: {
       options: [
         {
-          text: "【折衷答辯】「我們已於三讀將硬性刑罰修正為校務評鑑指標，並增設自主資源庫之配套，請行政院依法執行。」",
-          impact: { student: 5, parent: 5, teacher: 10 },
-          clicks: 15, // 較簡單
-          route: "折衷妥協說服"
-        },
-        {
-          text: "【強硬對抗】「立法院代表民意，本法案旨在捍衛學生健康權！行政院應克服用人與預算困難立即公布，不可多言！」",
-          impact: { student: 15, parent: -15, teacher: -15 },
-          clicks: 40, // 極難，需要40次點擊
-          route: "強硬政策對抗"
-        },
-        {
-          text: "【棄案退讓】「考量行政院所提預算及人力困難，本院決定不予維持原案，撤回本法案重新審議。」",
-          impact: { student: -30, parent: 10, teacher: 10 },
-          clicks: 0, // 直接失敗
-          route: "撤回放棄法案"
-        }
-      ]
-    }
-  },
-  lunch: {
-    title: "「營養午餐全面加糖與點心法案」",
-    shortTitle: "午餐加糖與點心法案",
-    drafting: {
-      options: [
-        {
-          id: "strict",
-          title: "【全面加糖型】(強硬管制)",
-          desc: "強制營養午餐每天都必須提供含糖飲料或甜點，且主食口味調配應全面提高甜度比例以迎合學生偏好。",
-          impact: { student: 30, parent: -25, teacher: -25 },
-          route: "強硬管制"
-        },
-        {
-          id: "balanced",
-          title: "【每週特餐型】(彈性折衷)",
-          desc: "規定每週五為「快樂點心日」提供精緻甜點，平時則提供水果，並對點心含糖量實施減糖配方管制。",
-          impact: { student: 15, parent: 15, teacher: 15 },
-          route: "彈性折衷"
-        },
-        {
-          id: "flexible",
-          title: "【健康無糖型】(健康規範)",
-          desc: "全面禁止營養午餐提供任何精緻糖點心與飲料，改為提供新鮮水果與在地無糖茶飲，以推廣健康飲食。",
-          impact: { student: -15, parent: 25, teacher: 20 },
-          route: "健康規範"
-        }
-      ]
-    },
-    hearing: [
-      {
-        stakeholder: "student",
-        name: "學生代表 - 小美",
-        avatar: "fa-child",
-        quote: "如果改成無糖健康水果，那根本就不叫點心！上課已經夠辛苦了，我們連中午吃點甜的、喝珍奶的小確幸權利都要被剝奪嗎？",
-        options: [
-          {
-            text: "支持學生的自主權！維持每天供應甜點，但改用赤藻糖醇等天然代糖降低身體負擔。",
-            impact: { student: 20, parent: -5, teacher: -10 }
-          },
-          {
-            text: "由各校學生會定期舉辦『點心民主投票』，讓學生參與共同決定每月水果與點心的比例。",
-            impact: { student: 15, parent: 10, teacher: 10 }
-          },
-          {
-            text: "健康是首要之務。精緻糖百害無一利，學生應多吃水果，我們將維持無糖政策。",
-            impact: { student: -25, parent: 20, teacher: 20 }
-          }
-        ]
-      },
-      {
-        stakeholder: "parent",
-        name: "家長代表 - 林爸爸",
-        avatar: "fa-user-friends",
-        quote: "現在國中生肥胖跟蛀牙比例這麼高，如果在學校天天吃含糖點心，回家又不運動，做家長的非常擔心孩子健康！",
-        options: [
-          {
-            text: "學校的體育課與社團活動會加強消耗熱量，家長不用過度限制孩子的飲食樂趣！",
-            impact: { student: 15, parent: -20, teacher: -5 }
-          },
-          {
-            text: "嚴格規範所有供應點心之含糖量，必須符合國家級健康食品低糖標準，並定期公布檢驗報告。",
-            impact: { student: 5, parent: 20, teacher: 15 }
-          },
-          {
-            text: "改為家長自由選購制，若家長反對孩子吃甜食，可申請不發放，退還該部分營養午餐費。",
-            impact: { student: -15, parent: 15, teacher: 10 }
-          }
-        ]
-      },
-      {
-        stakeholder: "teacher",
-        name: "教師代表 - 黃老師",
-        avatar: "fa-chalkboard-teacher",
-        quote: "下午多塞一個點心時間會打亂打掃與授課作息，廚房阿姨的人力根本不夠做，且每天廚餘與垃圾分類量會暴增！",
-        options: [
-          {
-            text: "學生福利至上。請教師調整授課進度，廚房阿姨的人力不足可向地方政府申請擴編預算。",
-            impact: { student: 20, parent: -10, teacher: -20 }
-          },
-          {
-            text: "點心直接隨午餐一起發放，免除下午額外吃點心的時間，減少廚餘與打亂作息的機會。",
-            impact: { student: 10, parent: 10, teacher: 20 }
-          },
-          {
-            text: "縮小規模，將每日點心時間改為每月一次的「慶生茶會」，將負擔降到最低。",
-            impact: { student: -20, parent: 15, teacher: 15 }
-          }
-        ]
-      }
-    ],
-    unconstitutional: {
-      title: "「營養午餐全面加糖與點心法案草案」",
-      content: "中華民國各級中小學校營養午餐之設計，應注重膳食均衡。為提升學生學習動能與上學幸福感，學校餐廳得於每日下午加設點心之免費供應時段。<span class='typo-target' id='typo-unconstitutional'>凡對甜點分配、口味提出爭議或挑食之學生，應由學校直接送交少年法院，處以十日以下之感化教育。</span>",
-      explain: "本條文將「個人挑食或對口味有爭議」等純屬個人飲食習慣問題，直接施以限制人身自由的「少年法庭感化教育」，手段與目的完全失去均衡（違反手段適合性與衡平性），嚴重違反憲法第 8 條之人身自由保障與第 23 條之比例原則。",
-      options: [
-        {
-          text: "「學校應加強飲食與環境教育，引導挑食學生建立健康飲食習慣，並尊重學生膳食選擇權。」",
-          isCorrect: true,
-          feedback: "正確！這符合教育基本精神，手段溫和且保障了基本尊嚴。"
-        },
-        {
-          text: "「挑食之學生，學校得逕行禁止其參與校外教學、社團活動及體育課，以示懲罰。」",
-          isCorrect: false,
-          feedback: "錯誤。這過度限制了學生的學習權與受教權，手段依然違反比例原則。"
-        },
-        {
-          text: "「不服從分配之學生，導師應通知家長帶回自行管教三日，期間視為無故曠課。」",
-          isCorrect: false,
-          feedback: "錯誤。這剝奪了學生的受教權，作為挑食的處分手段過於嚴苛且過當。"
-        }
-      ]
-    },
-    veto: {
-      options: [
-        {
-          text: "【折衷答辯】「我們已於三讀修正口味為低糖配方，且隨午餐隨餐發放，解決了廚房人力與作息困難，請依法公布。」",
-          impact: { student: 5, parent: 5, teacher: 10 },
+          text: "【折衷平衡】「停售並回收問題批次珍珠，由第三方機構檢驗合格後重新上架；政府對受災店家提供檢驗費補貼與行銷宣傳，重建市場信心。」",
+          impact: { student: 10, parent: 10, teacher: 15 },
           clicks: 15,
-          route: "折衷妥協說服"
+          route: "檢驗補貼重整信心"
         },
         {
-          text: "【強硬對抗】「學生權益不可打折！行政院不應以行政程序或財政為藉口拖延，立法院堅持原案，請立即公布！」",
-          impact: { student: 15, parent: -15, teacher: -15 },
+          text: "【強硬對抗】「宣稱食安事件是競爭品牌惡意造謠，照常販售不予檢驗，並舉辦『大杯珍奶買一送一』促銷，迅速出清庫存！」",
+          impact: { student: -25, parent: 15, teacher: -30 },
           clicks: 40,
-          route: "強硬政策對抗"
+          route: "強硬促銷逃避責任"
         },
         {
-          text: "【棄案退讓】「考量地方政府經費編列困難與學校廚餘處理問題，本院決定撤回本法案。」",
-          impact: { student: -30, parent: 10, teacher: 10 },
+          text: "【放棄市場】「食安風波太難解決，決定永久關閉所有珍奶連鎖店，全面轉行改賣美式黑咖啡。」",
+          impact: { student: -20, parent: -30, teacher: 10 },
           clicks: 0,
-          route: "撤回放棄法案"
+          route: "關閉店面全面轉行"
         }
       ]
     }
   },
-  green: {
-    title: "「校園綠能與垃圾減量推廣法」",
-    shortTitle: "校園綠能與垃圾減量法",
+  mobile: {
+    title: "「極速電競手機」市場",
+    shortTitle: "電競手機市場",
     drafting: {
       options: [
         {
           id: "strict",
-          title: "【強制禁用型】(強硬管制)",
-          desc: "強制校園內合作社與學生餐廳完全禁用任何一次性塑膠餐具，且新建大樓屋頂必須 100% 覆蓋太陽能發電設備。",
-          impact: { student: -20, parent: -10, teacher: 10 },
-          route: "強硬管制"
+          title: "【頂級旗艦型】(高價效能)",
+          desc: "配備頂級 5G 處理器、極速更新率螢幕與主動散熱系統，定價 30000 元，瞄準高階玩家群體。",
+          impact: { student: -10, parent: 25, teacher: 10 },
+          route: "頂級旗艦定位"
         },
         {
           id: "balanced",
-          title: "【漸進引導型】(彈性折衷)",
-          desc: "內用禁用一次性塑膠製品，外帶則鼓勵自備；太陽能建置依學校經費逐步裝設，並增設無紙化教學輔導期。",
-          impact: { student: 15, parent: 15, teacher: 15 },
-          route: "彈性折衷"
+          title: "【主流性價型】(性價平衡)",
+          desc: "搭載主流高效能晶片、大容量電池與實用液冷散熱，定價 15000 元，提供流暢遊戲體驗與合理價格。",
+          impact: { student: 20, parent: 15, teacher: 15 },
+          route: "性價平衡定位"
         },
         {
           id: "flexible",
-          title: "【宣導鼓勵型】(寬鬆規範)",
-          desc: "不採強制禁用或罰則，改以「自備餐具加分制度」與「節能減碳競賽」等方式，引導學生自主環保。",
-          impact: { student: 20, parent: 20, teacher: -10 },
-          route: "寬鬆規範"
+          title: "【學生普及型】(入門超低價)",
+          desc: "採用入門處理器與一般螢幕，定價僅 6000 元。雖對低預算學生極具吸引力，但廠商獲利極低且效能有限。",
+          impact: { student: 15, parent: -5, teacher: -10 },
+          route: "學生普及定位"
         }
       ]
     },
     hearing: [
       {
-        stakeholder: "student",
-        name: "學生代表 - 小豪",
-        avatar: "fa-child",
-        quote: "如果完全不提供一次性餐盒，我們中午忘了帶環保便當盒的話，不就沒辦法打包吃飯了？這樣真的很不方便！",
+        stakeholder: "student", // Consumer
+        name: "消費者代表 - 阿儒",
+        avatar: "fa-shopping-bag",
+        quote: "有些電競手機玩重度遊戲時發燙得像暖暖包！而且有些廠商在保固期內就推卸責任，希望法規能加強七天網購鑑賞期與原廠保固！",
         options: [
           {
-            text: "不便是環保的代價！大家應該學會為地球負責，請養成隨身攜帶餐具的習慣。",
-            impact: { student: -25, parent: -5, teacher: 15 }
+            text: "力挺買方權益！規定所有電競手機必須提供 3 年免費保固，且發熱只要超過 40 度，廠商應立刻無條件更換新機。",
+            impact: { student: 30, parent: -25, teacher: 5 }
           },
           {
-            text: "增設『校園環保便當盒押金租借點』，學生忘記帶時可付押金租借，歸還時退款，兼顧便利與環保。",
-            impact: { student: 15, parent: 10, teacher: 10 }
+            text: "明定網購 7 天無條件退貨權益，並輔導業者建立「手機散熱安全國家標準」，健全透明的保固修繕程序。",
+            impact: { student: 15, parent: 15, teacher: 15 }
           },
           {
-            text: "放寬規定，僅限制在內用區禁用，外帶部分則允許合作社提供可分解紙盒。",
-            impact: { student: 10, parent: 5, teacher: -5 }
+            text: "買手機玩遊戲應自負風險，過度保障消費者會拖垮廠商營收，消費者應自行承擔保固損壞風險。",
+            impact: { student: -25, parent: 20, teacher: -10 }
           }
         ]
       },
       {
-        stakeholder: "parent",
-        name: "家長代表 - 張媽媽",
-        avatar: "fa-user-friends",
-        quote: "強迫學校屋頂裝滿太陽能板，電磁波會不會危害孩子健康？而且高昂的建置費用會不會轉移到我們的註冊費或冷氣費中？",
+        stakeholder: "parent", // Producer
+        name: "晶片及製造商代表 - 林總經理",
+        avatar: "fa-store",
+        quote: "全球半導體晶片短缺、上游代工費和研發成本高昂！如果政府強行要求低定價，我們根本無法負擔成本，只能停止供應電競手機！",
         options: [
           {
-            text: "科學研究顯示太陽能板電磁波極低，建置成本有國家專案補助，請家長不要因盲目恐慌阻礙綠能發展！",
-            impact: { student: 5, parent: -20, teacher: 5 }
+            text: "這是商家的藉口！應強制規定所有電競手機最高定價不得超過 10000 元，違反者查封生產廠房！",
+            impact: { student: 20, parent: -35, teacher: -10 }
           },
           {
-            text: "法案明定綠能收益將全數專款專用於『學生學雜費與電費補貼』，並規範發電變壓設備需設置於教學區 50 公尺外。",
-            impact: { student: 5, parent: 25, teacher: 10 }
+            text: "推動「國內晶片研發租稅減免專案」，補貼關鍵電子元件的進口稅，以降低生產成本、穩定產品供給。",
+            impact: { student: 10, parent: 25, teacher: 15 }
           },
           {
-            text: "如果班級家長會過半數反對，該班教室大樓的屋頂便免予設置發電設備，保留家長選擇權。",
-            impact: { student: -10, parent: 15, teacher: -5 }
+            text: "允許廠商自行調降部分硬體規格，或採取「環保包裝」不附充電頭與傳輸線，藉此轉嫁成本給買方以維持原價。",
+            impact: { student: -15, parent: 15, teacher: 10 }
           }
         ]
       },
       {
-        stakeholder: "teacher",
-        name: "教師代表 - 羅老師",
-        avatar: "fa-chalkboard-teacher",
-        quote: "強制無紙化教學推行過快，教案全改電子版，老師不僅培訓負擔重，學生整天盯著平板看，眼睛近視視力惡化，誰來負責？",
+        stakeholder: "teacher", // Society & Gov
+        name: "社會與政府代表 - 資安局長",
+        avatar: "fa-landmark",
+        quote: "部分低價手機為了降低研發成本，電磁波輻射與資安防火牆檢驗不合格，這嚴重威脅國民健康與國家資訊安全！",
         options: [
           {
-            text: "數位化是國際趨勢，教師應積極參加資訊素養研習，克服困難調整教學法。",
-            impact: { student: 10, parent: -15, teacher: -25 }
+            text: "國家資安至上！凡是電磁波或資安有疑慮的品牌，警政機關一律直接沒收在台資產，並將其官網永久封鎖！",
+            impact: { student: -20, parent: -20, teacher: 30 }
           },
           {
-            text: "採取混成式教學，僅將課堂作業繳交、聯絡簿改為數位，紙本教科書仍予保留，減少師生用眼時間。",
-            impact: { student: 15, parent: 15, teacher: 20 }
+            text: "實施「智慧行動裝置資安合格標章認證」，未通過認證者禁止在主流通路銷售，並補貼廠商首次檢驗費。",
+            impact: { student: 10, parent: 15, teacher: 20 }
           },
           {
-            text: "不強制規定，由各學科領域教學研究會自行決定無紙化教材的比例與進度。",
-            impact: { student: -5, parent: 10, teacher: 10 }
+            text: "自由市場競爭，資安問題應由消費者個人安裝防毒軟體來解決，政府不宜設定多餘檢驗關卡阻礙貿易。",
+            impact: { student: 15, parent: 15, teacher: -25 }
           }
         ]
       }
     ],
     unconstitutional: {
-      title: "「校園綠能與垃圾減量推廣法草案」",
-      content: "中華民國各級學校應落實綠色校園政策。校區新設建築應規劃屋頂發電系統；且校園合作社與餐廳禁止提供一次性塑膠製品。<span class='typo-target' id='typo-unconstitutional'>為徹底查緝违規行為，學校環保稽查人員得不經通知，隨時對在校師生之書包、衣物、個人私人物品進行無預警搜查。</span>",
-      explain: "這段條文嚴重侵犯了憲法第 22 條保障之「人民隱私權」。在無犯罪嫌疑且缺乏法院法官令狀等程序保障下，學校行政人員隨時隨地搜查師生書包及私人物品，手段對基本權利的限制已嚴重過當，完全違背比例原則中的必要性與法治國原則。",
+      title: "「極速電競手機市場秩序管理草案」",
+      content: "中華民國智慧通訊與電競手機之發展，應注重安全防護與技術創新。為保護消費者通信隱私，政府應健全設備安全檢驗。通過資安與電磁波認證之手機，得標示認證標章。<span class='typo-target' id='typo-unconstitutional'>為防堵國外品牌手機搶佔市場以保障本土產業，本國通路商若販售非國產手機，警政單位得不經司法程序與審判，直接沒收該進口手機並驅逐境外。</span>",
+      explain: "此條文嚴重侵害了外國企業在我國的平等工作權、財產權及一般人權保障；且沒收私人物產與驅逐出境屬於重大的司法處分，必須有明確法律依據且經由法院依法審判裁定，行政或警政機關無權在不經司法程序下逕行實施，這違反了憲法正當法律程序與比例原則。",
       options: [
         {
-          text: "「學校應以教育宣導為主，引導師生實踐無塑生活；除有危害校園安全之緊急情事外，不得搜查學生私人物品。」",
+          text: "「對於進口及國產手機，應一律依國家安全標準進行平等檢驗，未達標準者依法限制輸入，廠商得依法提起行政救濟。」",
           isCorrect: true,
-          feedback: "正確！這合理限縮了搜查權限，有效保障了校園內的隱私權與合理管教界線。"
+          feedback: "正確！這建立公平、平等且合法的安全檢驗機制，維護自由貿易與法治精神。"
         },
         {
-          text: "「對私帶塑膠吸管之學生，學校得公告其班級姓名於校門口布告欄，以收警惕之效。」",
+          text: "「對所有非國產手機課予 500% 的懲罰性關稅，並規定凡購買國外品牌手機者，一律列入資安高風險信用黑名單。」",
           isCorrect: false,
-          feedback: "錯誤。公開揭露姓名依然涉嫌侵害學生姓名權與個人隱私，且處罰過度，不符比例原則。"
+          feedback: "錯誤。懲罰性關稅與信用黑名單嚴重侵犯人民的消費自由權，手段顯屬過當。"
         },
         {
-          text: "「搜查時應有班級導師在場陪同，且搜查所得之違規塑膠餐具應一律予以沒收銷毀。」",
+          text: "「外國品牌手機必須將核心技術與通訊原始碼無條件移交給政府審查，否則直接逮捕該公司在台所有主管。」",
           isCorrect: false,
-          feedback: "錯誤。這並未解決「無端搜查書包隱私權受損」的違憲核心問題。"
+          feedback: "錯誤。這嚴重侵害智慧財產權與人身自由，手段完全失衡。"
         }
       ]
     },
     veto: {
       options: [
         {
-          text: "【折衷答辯】「我們已於三讀增設餐具押金租借與漸進教學配套，且建置費全額獲教育部專案補助，已化解窒礙難行，請依法公布。」",
-          impact: { student: 5, parent: 5, teacher: 10 },
+          text: "【折衷平衡】「啟動實名制登記限量預購以防堵黃牛，協助通路商與代工廠接洽第二晶片備用來源，引導市場供需平穩。」",
+          impact: { student: 10, parent: 10, teacher: 15 },
           clicks: 15,
-          route: "折衷妥協說服"
+          route: "實名登記開拓客源"
         },
         {
-          text: "【強硬對抗】「地球環境沒有退路！減碳是攸關下一代的最高道德價值，行政院不應只算商業帳，必須強行公布！」",
-          impact: { student: -10, parent: -15, teacher: -15 },
-          clicks: 45,
-          route: "強硬政策對抗"
+          text: "【強硬對抗】「政府下達價格管制命令，限制手機最高售價絕對不得高於原定價，導致通路商直接將手機轉入黑市高價私下交易！」",
+          impact: { student: -20, parent: -25, teacher: -15 },
+          clicks: 40,
+          route: "強行限價導致黑市"
         },
         {
-          text: "【棄案退讓】「考量禁用塑膠執行困難度與高昂的太陽能建置維護費，本院決定撤回本法案。」",
-          impact: { student: -20, parent: 10, teacher: 10 },
+          text: "【放棄市場】「半導體晶片大火無藥可解，宣布電競手機產業全面無限期停業，原定訂單全數作廢。」",
+          impact: { student: -30, parent: -30, teacher: 10 },
           clicks: 0,
-          route: "撤回放棄法案"
+          route: "宣布停業作廢訂單"
+        }
+      ]
+    }
+  },
+  veg: {
+    title: "「無毒有機生菜」市場",
+    shortTitle: "有機生菜市場",
+    drafting: {
+      options: [
+        {
+          id: "strict",
+          title: "【極致有機型】(高品質高單價)",
+          desc: "全程在無塵溫室內進行水耕栽培，並取得國際與國內有機雙標章，定價每包 120 元，鎖定高所得養生群體。",
+          impact: { student: -15, parent: 30, teacher: 10 },
+          route: "極致高品質定位"
+        },
+        {
+          id: "balanced",
+          title: "【在地無毒型】(普及折衷)",
+          desc: "採用在地網室土壤耕作，不噴灑任何化學農藥，定價每包 60 元。兼顧大眾消費者採購預算與農民合理生計。",
+          impact: { student: 20, parent: 15, teacher: 15 },
+          route: "在地無毒折衷定位"
+        },
+        {
+          id: "flexible",
+          title: "【自主宣導型】(低成本低價)",
+          desc: "採一般露地種植，僅在採收前兩週停藥以通過殘留檢測，無有機標章，定價每包 35 元。生產成本極低但缺乏信任。",
+          impact: { student: 15, parent: -5, teacher: -15 },
+          route: "自主宣導低價定位"
+        }
+      ]
+    },
+    hearing: [
+      {
+        stakeholder: "student", // Consumer
+        name: "消費者代表 - 曉明",
+        avatar: "fa-shopping-bag",
+        quote: "有機蔬菜雖然健康，但經常買到裡面有小蟲咬過或葉面枯黃的。而且價格通常是普通蔬菜的 3 倍，每天吃荷包真的吃不消！",
+        options: [
+          {
+            text: "保障買方權益！立法規定有機生菜只要發現一片有蟲咬，農民必須無條件全額退費並賠償 3 倍差價。",
+            impact: { student: 30, parent: -30, teacher: 5 }
+          },
+          {
+            text: "輔導農民將外觀微瑕的生菜包裝為「格外品/惜食級生菜」打 6 折特價銷售，將精緻級與惜食級分流，兼顧環保與實惠。",
+            impact: { student: 15, parent: 15, teacher: 15 }
+          },
+          {
+            text: "有機種植本就天然，有蟲咬是無農藥的健康鐵證！嫌貴的消費者可以去買普通噴灑農藥的蔬菜，我們不予調降。",
+            impact: { student: -25, parent: 20, teacher: -10 }
+          }
+        ]
+      },
+      {
+        stakeholder: "parent", // Producer
+        name: "生菜農友代表 - 菜農老張",
+        avatar: "fa-store",
+        quote: "有機種植完全靠人工除草除蟲，人力成本非常高！要是遇到颱風或梅雨季，整片菜園爛光，供給直接歸零，我們農民拿什麼吃飯？",
+        options: [
+          {
+            text: "不論天災如何，農民有義務穩定物價！天災時強制要求農民依原定價格補足蔬菜差額，違者沒收農地！",
+            impact: { student: 15, parent: -35, teacher: -15 }
+          },
+          {
+            text: "政府建立「農業天然災害補助保險」，補貼農民興建耐災溫室，天災後調撥冷藏備用蔬菜以穩定供需。",
+            impact: { student: 10, parent: 25, teacher: 15 }
+          },
+          {
+            text: "物以稀為貴，天災後菜價上漲是市場機制，允許農民因產量大跌調漲價格 10 倍，以保障農民收益。",
+            impact: { student: -25, parent: 20, teacher: -10 }
+          }
+        ]
+      },
+      {
+        stakeholder: "teacher", // Society & Gov
+        name: "社會與政府代表 - 農業署長",
+        avatar: "fa-landmark",
+        quote: "市面上近年出現許多偽造的「有機認證貼紙」，魚目混珠欺騙消費者，嚴重敗壞了綠色低碳農業的市場誠信！",
+        options: [
+          {
+            text: "亂貼者罰死！只要發現偽造有機標章，地方政府得直接查封沒收該農場，並將負責人移送法院收歸國有。",
+            impact: { student: -15, parent: -25, teacher: 30 }
+          },
+          {
+            text: "建置「生產履歷區塊鏈追溯系統」，由政府全額補貼首期檢驗費，對偽造標章的源頭依法重罰。",
+            impact: { student: 15, parent: 20, teacher: 25 }
+          },
+          {
+            text: "防範標章偽造是消費者的義務，消費者應自我提高判讀能力，買錯自認倒楣，政府人力有限不進行干預。",
+            impact: { student: 10, parent: 15, teacher: -25 }
+          }
+        ]
+      }
+    ],
+    unconstitutional: {
+      title: "「校園綠色有機生菜推廣管理條例草案」",
+      content: "中華民國各級中小學校推廣綠色低碳飲食與有機生菜，應注重師生營養均衡。為擴大在地農業消費，政府應獎勵採購優良菜農之生菜。符合標準之菜農，得向政府申請運銷補貼。<span class='typo-target' id='typo-unconstitutional'>為保證有機農民利潤，各級學校周邊所有民營餐廳必須強制採購政府指定特定農場之生菜，拒絕採購之餐飲負責人由地方行政機關直接處以行政拘留七日，並無限期停業。</span>",
+      explain: "此條文強迫民營餐廳必須向『指定特定農場』採購蔬菜，違反了《公平交易法》保障的自由經營、公平競爭與搭售限制原則，涉嫌圖利壟斷；且對於拒絕採購之行政處分，地方行政機關無權直接限制人身自由處以『行政拘留』，這嚴重侵害了《憲法》人身自由、工作權與財產權，且違背法官保留原則與正當法律程序。",
+      options: [
+        {
+          text: "「學校應優先鼓勵採購具在地產銷履歷之蔬菜；對於配合採購之周邊民營餐廳，政府得給予綠色友善店家獎勵與認證宣傳。」",
+          isCorrect: true,
+          feedback: "正確！這採取正向鼓勵替代強硬行政拘留，符合市場公平競爭與比例原則。"
+        },
+        {
+          text: "「不採購有機蔬菜之餐廳，衛生局應每日派員進行無預警突擊安檢與消防檢查，直到其妥協或倒閉為止。」",
+          isCorrect: false,
+          feedback: "錯誤。這屬於行政權濫用，違反行政中立與限制競爭原則，手段過當。"
+        },
+        {
+          text: "「強制規定所有學校周邊餐廳全面轉型為素食有機餐廳，禁止販售任何肉類與化學製品，違者沒收店鋪。」",
+          isCorrect: false,
+          feedback: "錯誤。這極度侵害人民的營業權與自主消費權，嚴重違反比例原則的衡平性。"
+        }
+      ]
+    },
+    veto: {
+      options: [
+        {
+          text: "【折衷平衡】「緊急調撥釋出政府冷藏庫存蔬菜以平抑菜價，發放弱勢家庭『蔬菜採購生活津貼券』，並補助菜農重建受災設施。」",
+          impact: { student: 10, parent: 10, teacher: 15 },
+          clicks: 15,
+          route: "釋出庫存發放補貼"
+        },
+        {
+          text: "【強硬對抗】「實施蔬菜最高限價命令，規定每包有機菜售價絕對不得高於平時均價，導致農民血本無歸而紛紛關門拒絕賣菜，市場完全短缺！」",
+          impact: { student: -25, parent: -25, teacher: -15 },
+          clicks: 40,
+          route: "硬性限價農民拒賣"
+        },
+        {
+          text: "【放棄市場】「天災純屬不可抗力，政府宣布廢除本校園生菜推廣條例，任由市場自生自滅。」",
+          impact: { student: -25, parent: 15, teacher: -15 },
+          clicks: 0,
+          route: "撤回政策任其自滅"
         }
       ]
     }
@@ -463,114 +467,114 @@ const BILLS = {
 
 const QUIZ_QUESTIONS = [
   {
-    question: "【法律位階原則】某縣政府因應垃圾減量，自行公布命令要求「全面禁止商家販售所有塑膠製品，違者強制停業」。商家不服，主張該命令違反上位法規。關於「憲法、法律、命令」的位階關係，下列敘述何者正確？",
+    question: "【需求法則】氣溫炎熱時，手搖飲店通常大排長龍。但如果一杯珍奶價格從 50 元暴漲到 150 元，在其他條件不變下，大部分消費者的購買意願會降低。這種「價格上漲，需求量減少；價格下跌，需求量增加」的變動關係，在經濟學上稱之為？",
     options: [
-      "憲法位階最高，命令是由行政機關制定，其內容不得抵觸法律與憲法，否則無效。",
-      "地方政府的命令位階高於立法院通過的法律，因為地方自治優先。",
-      "只要是為了保護環境，命令可以隨意限制人民財產權與工作權，不受法律約束。",
-      "命令與法律具有同等效力，商家必須無條件遵守停業處分。"
+      "需求法則",
+      "供給法則",
+      "比較利益法則",
+      "受益原則"
     ],
     answer: 0,
-    explanation: "依據法律位階原則（憲法 > 法律 > 命令），命令不得抵觸法律與憲法。限制人民權利的停業處分，必須有法律明文授權，行政機關不能以行政命令任意規定。"
+    explanation: "需求法則（Law of Demand）指出，在其他條件不變的情況下，商品的「價格」與「需求量」呈反向變動的關係（價格越高，需求量越低）。"
   },
   {
-    question: "【比例原則：適合性】為了改善學生視力，某立法委員提案「全國中小學生晚上八點後強制斷網」。在法理辯論中，反對者指出「斷網與維護視力無必然因果關係，且學生仍可用離線設備」。此質疑主要是在挑戰該法案是否符合比例原則中的哪一項子原則？",
+    question: "【供給法則】當高麗菜價格崩跌時，農民常因扣除運銷費用後血本無歸而放棄採收；相反地，當颱風過後菜價暴漲時，農民會設法增加採收與種植。這種「價格越高，供給量越多；價格越低，供給量越少」的現象，稱之為？",
     options: [
-      "限制所造成的損害不得大於利益的「衡平性原則」。",
-      "必須選擇侵害最小手段的「必要性原則」。",
-      "手段必須有助於目的達成的「適合性原則」，若手段根本無法有效改善視力，即不具正當性。",
-      "法律內容必須明確的「法律明確性原則」。"
-    ],
-    answer: 2,
-    explanation: "「適合性原則」要求限制人民權利的手段，必須「有助於」達成所欲追求的合法目的。若斷網無法有效達成保護視力的目標，就違反了適合性。"
-  },
-  {
-    question: "【比例原則：必要性/最小侵害】政府為了防止行人地獄，保障交通安全，欲減少違規停車。下列四種手段中，何者最符合比例原則中的「必要性（最小侵害）原則」？",
-    options: [
-      "只要違規停車一次，一律直接沒收車輛並銷毀，徹底杜絕違規。",
-      "針對違規停車者處以合理罰鍰並記點，並配合科技執法宣導，而非直接沒收車輛。",
-      "凡違規停車者，由警察機關處以五日拘役，限制其人身自由。",
-      "全面禁止所有私人轎車上路，只允許搭乘大眾運輸，從根本解決違停。"
+      "需求法則",
+      "供給法則",
+      "分散風險原則",
+      "負擔能力原則"
     ],
     answer: 1,
-    explanation: "「必要性原則（最小侵害原則）」要求在所有能達成目的的手段中，必須選擇對人民權利侵害最小的那一個。合理罰鍰與記點已能達到嚇阻效果，直接沒收車輛或拘役都屬於過度侵害。"
+    explanation: "供給法則（Law of Supply）指出，在其他條件不變的情況下，商品的「價格」與「供給量」呈同向變動的關係（價格越高，生產者的供給意願與數量就越多）。"
   },
   {
-    question: "【比例原則：衡平性】某市為了推廣無紙化，規定「市民若未使用電子發票，每次交易需額外繳納100元環保稅」。此舉引起低收入戶與數位弱勢長者的強烈抗議。這項限制主要違反了比例原則中的哪一項？",
+    question: "【市場均衡】當市場上某項商品的「需求量」剛好等於「供給量」時，買賣雙方都能買到與賣出想要的數量，價格此時不再波動。此時的狀態與價格在經濟學上稱之為？",
     options: [
-      "「適合性原則」，因為繳納環保稅完全無法減少任何紙張的使用。",
-      "「法律保留原則」，因為環保稅是由財政部所主管，地方政府無權宣導。",
-      "「信賴保護原則」，因為市民過去信賴紙本發票，政府就永遠不能推廣電子發票。",
-      "「衡平性原則（狹義比例原則）」，因為推廣環保無紙化所帶來的公共利益，小於對數位弱勢者生存與經濟權造成的嚴重侵害。"
+      "供不應求，超額價格",
+      "供過於求，剩餘價格",
+      "市場均衡，均衡價格",
+      "政府管制，保證價格"
     ],
-    answer: 3,
-    explanation: "「衡平性原則」要求限制權利所造成的損害，與保護的公共利益之間必須維持均衡。對弱勢族群課重稅所造成的生存威脅，顯然大於無紙化帶來的環保利益，失去衡平。"
+    answer: 2,
+    explanation: "當市場需求量與供給量相等時，達到市場均衡（Market Equilibrium），此時的價格稱為「均衡價格」，交易數量稱為「均衡數量」。"
   },
   {
-    question: "【法律保留原則】憲法保障人民之生命、身體、財產及其他自由權利。若要對這些權利施加限制，依據「法律保留原則」，下列何者正確？",
+    question: "【供不應求（短缺）】當某款限量電競手機定價過低，導致有 1000 位玩家想要搶購（需求量），但廠商受限於產能只生產了 100 支（供給量）。這種「需求量大於供給量」的現象會導致市場如何變動？",
     options: [
-      "必須由立法院通過「法律」來規定，或由法律明確授權行政機關訂定「法規命令」。",
-      "學校可以自行訂定「校規」處以學生罰鍰或限制其人身自由。",
-      "警察機關可以基於維護治安的行政需求，自行發布命令拘留有犯罪嫌疑的人。",
-      "只要是為了增進公共利益，行政機關可以不經法律授權，隨時限制人民的工作權。"
+      "供不應求（短缺），價格有上漲的壓力",
+      "供過於求（過剩），價格有下跌的壓力",
+      "市場均衡，價格維持不變",
+      "供給增加，價格跌到零元"
     ],
     answer: 0,
-    explanation: "「法律保留原則」是指限制人民基本權利的重大事項，必須由代表民意的立法機關以「法律」規定，或有法律明確授權的命令，行政機關不得自行發布命令限制。"
+    explanation: "當需求量大於供給量時，稱為「供不應求」或短缺（Shortage）。因為買不到商品的人願意出更高價搶購，會推動市場價格上漲。"
   },
   {
-    question: "【立法院三讀程序】關於我國立法程序中的「三讀會」，下列哪一項敘述是正確的？",
+    question: "【供過於求（過剩）】某年香蕉大豐收，農民拼命採收送往市場（供給量大增），但消費者每天的胃口有限（需求量未變），導致水果攤上堆滿香蕉賣不出去。這種「供給量大於需求量」的現象會導致市場價格如何變動？",
     options: [
-      "一讀會時必須由提案委員在議場進行詳細的政策辯論，並逐條表決。",
-      "三讀會通過後，法案就立即在當天午夜起發生法律效力，不需總統公布。",
-      "二讀會是立法最重要的階段，會進行逐條討論、修正與表決；三讀會原則上只做文字修正，除非發現違憲或互相抵觸。",
-      "所有法案都必須在委員會進行十次以上的公聽會，才能送交二讀會表決。"
-    ],
-    answer: 2,
-    explanation: "二讀會是法案審議的核心，會進行廣泛討論、逐條審查、修正與表決。三讀會除了發現法案內容有互相抵觸或違憲外，原則上僅能作文字修正。"
-  },
-  {
-    question: "【行政院覆議權】當立法院三讀通過某一項法律案送交行政院，行政院若認為該法案「窒礙難行」時，可以如何進行權力制衡？",
-    options: [
-      "行政院長可自行宣布該法律案無效，並拒絕執行。",
-      "經總統核可後，在法案送達 10 日內移請立法院覆議；若立法院維持原案，行政院長必須接受該決議。",
-      "行政院可以直接向司法院聲請彈劾全體立法委員，並解散立法院。",
-      "行政院必須無條件接受，因為行政機關完全隸屬於立法機關。"
+      "供不應求，價格上漲",
+      "供過於求（過剩），價格下跌",
+      "市場均衡，價格上漲",
+      "需求增加，價格維持不變"
     ],
     answer: 1,
-    explanation: "依憲法增修條文，行政院對於立法院決議之法律案，如認為窒礙難行，得經總統核可，移請立法院覆議。立法院若全體委員過半數維持原案，行政院長即應接受該決議。"
+    explanation: "當供給量大於需求量時，稱為「供過於求」或過剩（Surplus）。商家為了把滯銷的商品賣出去，會降價促銷，導致市場價格下跌。"
   },
   {
-    question: "【權力分立與制衡】某國會通過「官員說謊直接處以徒刑」之法律。若該法律有違憲侵害基本權利之虞，在權力分立的架構下，最終由哪一個機關進行司法審查與解釋，以宣告其違憲無效？",
+    question: "【非價格因素：需求變動】世界衛生組織發表報告證實：「天天喝大杯糖分過高的手搖飲會大幅增加糖尿病風險」。這份報告公布後，即使手搖飲價格完全沒變，市場上的手搖飲銷量依然大幅下滑。這屬於下列哪一種情況？",
     options: [
-      "監察院，可以彈劾立法院，直接撤銷該項法律。",
-      "總統府，總統擁有最終解釋憲法之權，可逕行廢除該法律。",
-      "行政院，因為行政院是最高行政機關，具有最終法律決定權。",
-      "司法院（憲法法庭），藉由審理憲法訴訟案件，行使違憲審查權，以維護憲法秩序。"
-    ],
-    answer: 3,
-    explanation: "司法院憲法法庭是我國行使違憲審查的司法機關。當法律有違憲疑慮，經法官、人民 or 特定機關聲請，憲法法庭可判決該法律违憲並宣告無效，此為司法對立法的制衡。"
-  },
-  {
-    question: "【立法院委員會功能】在法案一讀通過後，通常會「送交委員會審查」。關於立法院委員會的運作，下列敘述何者正確？",
-    options: [
-      "委員會是負責將法案直接送交總統簽署的最終機關，不需再送回大會。",
-      "委員會（如八大常設委員會）能讓不同專業的委員，針對特定法案進行實質審查，並得舉辦公聽會聽取專家與大眾意見。",
-      "委員會是由各黨團助理組成，立法委員不得參與審查。",
-      "委員會的審查只是形式，所有條文都必須送回一讀大會重新表決。"
+      "價格上漲導致的需求量減少",
+      "消費者喜好（偏好）轉變導致的「需求減少」",
+      "生產成本增加導致的「供給減少」",
+      "消費者所得增加導致的「需求增加」"
     ],
     answer: 1,
-    explanation: "立法院設有常設委員會，負責在法案送大會二讀前進行專業的實質審查、召開公聽會、並整理各方意見，是立法過程中的專業分工機制。"
+    explanation: "醫學與健康觀念轉變了消費者的偏好（非價格因素），使得在相同價格下購買意願整體下滑，這在經濟學上稱為「需求減少」（需求曲線向左移）。"
   },
   {
-    question: "【人身自由與法官保留原則】某條例草案明定：「對於不遵守垃圾分類之市民，得由環保局稽查人員直接當場處以拘役二日」。此條文嚴重侵害了憲法第8條的「人身自由」與「法官保留原則」，其核心理由為何？",
+    question: "【非價格因素：供給變動】今年因為乾旱缺水，加上工人工資上漲，導致手搖飲的茶葉與珍珠原料人力成本大幅提高。在茶飲零售價不變的情況下，許多飲料店決定縮減每日營業時段與出貨量。這在經濟學上稱之為？",
     options: [
-      "因為環保局稽查人員不是警察，如果改成警察當場處以拘役二日就完全合憲。",
-      "人身自由只保障公務員，一般市民並不享有此項憲法權利。",
-      "拘役屬於刑事處罰，涉及人身自由的剝奪，必須由法院法官依法定程序審理裁判，行政機關無權直接處分。",
-      "限制人身自由不需要法官同意，只要立法院通過任何法律都可以授權行政稽查。"
+      "生產成本增加導致的「供給減少」",
+      "消費者所得減少導致的「需求減少」",
+      "生產技術進步導致的「供給增加」",
+      "商品價格下跌導致的「供給量減少」"
+    ],
+    answer: 0,
+    explanation: "生產成本（如原料、工資）是影響供給的非價格因素。成本增加會降低商家的利潤率，使商家在相同價格下的供給意願降低，稱為「供給減少」（供給曲線向左移）。"
+  },
+  {
+    question: "【替代品與互補品】當鮮奶的價格大幅暴漲時，很多咖啡店紛紛減少調製鮮奶茶，許多消費者不願意喝昂貴的鮮奶，改為選購燕麥奶來替代。在經濟學上，當鮮奶價格上漲，導致燕麥奶的需求量增加時，這兩種商品互為什麼關係？",
+    options: [
+      "互補品 (必須搭配一起使用)",
+      "替代品 (功能相似，可互相取代)",
+      "無關品",
+      "奢侈品"
+    ],
+    answer: 1,
+    explanation: "當兩種商品具有相似功能，且其中一種商品的價格上漲時，會導致另一種商品的需求量增加，這兩種商品互為「替代品」（Substitutes）。"
+  },
+  {
+    question: "【政府干預：最高限價】當颱風過後有機蔬菜價格狂飆，政府為了平息買方民怨，強行規定：「一把生菜最高只能賣 20 元（遠低於市場均衡價格）」。這種「最高限價（價格上限）」政策，通常會在市場上導致什麼後果？",
+    options: [
+      "菜農瘋狂採收，市場出現大量蔬菜過剩",
+      "菜農因無利可圖而拒絕賣菜，消費者排隊買不到，甚至出現黃牛黑市（短缺）",
+      "買賣雙方皆大歡喜，市場立刻達到完美的均衡",
+      "蔬菜品質變得更好，分量變得更多"
+    ],
+    answer: 1,
+    explanation: "政府設定低於均衡價格的「最高限價」旨在保護消費者，但這會壓低生產者利潤，導致供給量急縮，而低價又吸引更多需求量，造成嚴重的「供不應求（短缺）」，常伴隨排隊與黑市炒作。"
+  },
+  {
+    question: "【政府干預：最低限價】政府為了保障基層勞工的最低生活水準，強制實施「最低基本工資（勞動市場的最低限價）」。如果基本工資設定在遠高於市場均衡工資的水平，在其他條件不變下，勞動市場可能出現什麼現象？",
+    options: [
+      "所有老闆都拼命招募更多員工，失業率降為零",
+      "勞工找工作的意願降低，工廠找不到人",
+      "老闆因成本過高而減少僱用（需求量減），想工作的勞工增加（供給量增），導致供過於求（失業人口增加）",
+      "勞工工作效率立刻提升十倍，薪水大降"
     ],
     answer: 2,
-    explanation: "「法官保留原則」是指凡涉及人身自由剝奪等重大權利限制，必須由中立的「法院法官」依法審理判決，其他行政機關（如環保局、警察局）皆無權直接決定，以防權力濫用。"
+    explanation: "基本工資高於均衡工資是政府施行的「最低限價」政策。雖然保障了在職勞工，但由於僱用成本增加，老闆僱用人數（需求量）減少，而想工作的人數（供給量）增加，導致超額供給，在市場上表現為失業人口增加。"
   }
 ];
 
@@ -775,7 +779,6 @@ function updateSatisfactionHUD() {
     } else if (val < 40) {
       satisfactionBars[key].style.backgroundColor = "var(--color-danger)";
     } else {
-      // 還原原本設計設定的色系
       satisfactionBars[key].style.backgroundColor = "";
     }
   });
@@ -864,7 +867,7 @@ btnStartGame.addEventListener('click', () => {
   const seatVal = playerSeatInput.value.trim();
   
   if (nameVal === "" || classVal === "" || seatVal === "") {
-    alert("請填寫完整的班級、座號與姓名，才能開始推動法案唷！");
+    alert("請填寫完整的班級、座號與姓名，才能開始經營挑戰唷！");
     return;
   }
   
@@ -874,7 +877,7 @@ btnStartGame.addEventListener('click', () => {
   switchScreen('select');
 });
 
-// --- 1. 角色與法案選擇邏輯 ---
+// --- 1. 角色與商品選擇邏輯 ---
 const charCards = document.querySelectorAll('.character-card');
 const billCards = document.querySelectorAll('.bill-card');
 const btnConfirmSelection = document.getElementById('btn-confirm-selection');
@@ -903,8 +906,8 @@ btnConfirmSelection.addEventListener('click', () => {
   hudCharName.textContent = gameState.playerName;
   
   let iconClass = "fa-wand-magic-sparkles";
-  if (gameState.selectedChar === "ray") iconClass = "fa-graduation-cap";
-  if (gameState.selectedChar === "wah") iconClass = "fa-bullhorn";
+  if (gameState.selectedChar === "ray") iconClass = "fa-shopping-bag";
+  if (gameState.selectedChar === "wah") iconClass = "fa-store";
   
   hudCharAvatar.className = "hidden";
   const avatarSpan = document.createElement('i');
@@ -920,7 +923,7 @@ btnConfirmSelection.addEventListener('click', () => {
   switchScreen('stage1');
 });
 
-// --- 2. 第一關：起草與一讀會邏輯 ---
+// --- 2. 第一關：起草與開市大典邏輯 ---
 const draftingGameContainer = document.getElementById('drafting-game-container');
 const draftingOptionsContainer = document.getElementById('drafting-options-container');
 
@@ -946,18 +949,15 @@ function initStage1() {
   sigCountSpan.textContent = "0";
   sigTimerSpan.textContent = "20";
   
-  // 顯示起草任務，隱藏連署與典禮
   draftingGameContainer.classList.remove('hidden');
   sigGameContainer.classList.add('hidden');
   firstReadingCeremony.classList.add('hidden');
   btnToStage2.classList.add('hidden');
   
-  // 清理連署泡泡
   const bubbles = sigPlayArea.querySelectorAll('.sig-bubble');
   bubbles.forEach(b => b.remove());
   sigStartOverlay.classList.remove('hidden');
   
-  // 生成起草政策選項卡
   const billInfo = BILLS[gameState.selectedBill];
   draftingOptionsContainer.innerHTML = "";
   
@@ -966,16 +966,15 @@ function initStage1() {
     card.className = 'draft-opt-card';
     card.dataset.id = opt.id;
     
-    // 生成影響標籤字串
     const getImpactText = (val) => val > 0 ? `+${val}` : `${val}`;
     
     card.innerHTML = `
       <div class="draft-opt-title">${opt.title}</div>
       <div class="draft-opt-desc">${opt.desc}</div>
       <div class="draft-opt-impact">
-        <span class="student"><i class="fas fa-child"></i> 學生: ${getImpactText(opt.impact.student)}%</span>
-        <span class="parent"><i class="fas fa-user-friends"></i> 家長: ${getImpactText(opt.impact.parent)}%</span>
-        <span class="teacher"><i class="fas fa-chalkboard-teacher"></i> 教師: ${getImpactText(opt.impact.teacher)}%</span>
+        <span class="student"><i class="fas fa-shopping-bag"></i> 消費者: ${getImpactText(opt.impact.student)}%</span>
+        <span class="parent"><i class="fas fa-store"></i> 生產者: ${getImpactText(opt.impact.parent)}%</span>
+        <span class="teacher"><i class="fas fa-landmark"></i> 政府社會: ${getImpactText(opt.impact.teacher)}%</span>
       </div>
     `;
     
@@ -984,10 +983,8 @@ function initStage1() {
       document.querySelectorAll('.draft-opt-card').forEach(c => c.classList.remove('selected'));
       card.classList.add('selected');
       
-      // 保存玩家起草抉擇
       gameState.draftChoice = opt.route;
       
-      // 延遲更新滿意度 HUD 並解鎖下一步
       setTimeout(() => {
         adjustSatisfaction(opt.impact);
         draftingGameContainer.classList.add('hidden');
@@ -1000,7 +997,7 @@ function initStage1() {
   });
 }
 
-// 連署泡泡小遊戲
+// 交易媒合泡泡小遊戲
 btnStartSig.addEventListener('click', () => {
   playSound('click');
   sigStartOverlay.classList.add('hidden');
@@ -1020,10 +1017,10 @@ btnStartSig.addEventListener('click', () => {
   spawnBubbles();
 });
 
-const legislatorNames = [
-  "林立委", "張立委", "王立委", "李立委", "陳立委", 
-  "黃立委", "蔡立委", "吳立委", "徐立委", "趙立委",
-  "美美委員", "阿明委員", "強強委員", "小華委員", "國安委員"
+const traderKeywords = [
+  "買方意願", "賣方供應", "成交訂單", "市場訂單", "買家買單", 
+  "商家出貨", "買賣對接", "交易媒合", "訂單成立", "供給契約",
+  "合理價格", "安心消費", "穩定利潤", "品質承諾", "產銷保障"
 ];
 
 function spawnBubbles() {
@@ -1032,7 +1029,7 @@ function spawnBubbles() {
   for (let i = 0; i < count; i++) {
     createBubble();
   }
-  setTimeout(spawnBubbles, 1000); // 浮現頻率
+  setTimeout(spawnBubbles, 1000);
 }
 
 function createBubble() {
@@ -1040,8 +1037,8 @@ function createBubble() {
   
   const bubble = document.createElement('div');
   bubble.className = 'sig-bubble';
-  const name = legislatorNames[Math.floor(Math.random() * legislatorNames.length)];
-  bubble.innerHTML = `<i class="fas fa-pen-nib"></i> ${name}`;
+  const txt = traderKeywords[Math.floor(Math.random() * traderKeywords.length)];
+  bubble.innerHTML = `<i class="fas fa-handshake"></i> ${txt}`;
   
   const posX = Math.random() * (sigPlayArea.clientWidth - 100);
   bubble.style.left = `${posX}px`;
@@ -1052,7 +1049,7 @@ function createBubble() {
   bubble.addEventListener('click', () => {
     if (bubble.classList.contains('signed')) return;
     bubble.classList.add('signed');
-    bubble.innerHTML = `<i class="fas fa-check-circle"></i> 已連署`;
+    bubble.innerHTML = `<i class="fas fa-check-circle"></i> 媒合成功`;
     gameState.signaturesCollected++;
     sigCountSpan.textContent = gameState.signaturesCollected;
     playSound('bubble');
@@ -1079,7 +1076,7 @@ function endSigGame(isWon) {
     firstReadingCeremony.scrollIntoView({ behavior: 'smooth' });
   } else {
     playSound('fail');
-    alert("連署時間到！我們需要至少 15 位立委簽名才能提案。請再挑戰一次！");
+    alert("開市失敗！我們需要至少 15 筆市場交易媒合才能成功啟動開市。請再挑戰一次！");
     initStage1();
   }
 }
@@ -1103,14 +1100,13 @@ btnToStage2.addEventListener('click', () => {
   switchScreen('stage2');
 });
 
-// --- 3. 第二關：公聽會與協商邏輯 ---
+// --- 3. 第二關：公聽會與價格/供需協商邏輯 ---
 const hearingGameContainer = document.getElementById('hearing-game-container');
 const hearingWorkspace = document.getElementById('hearing-workspace');
 const hearingOptionsContainer = document.getElementById('hearing-options-container');
 const negGameContainer = document.getElementById('negotiation-game-container');
 const btnToStage3 = document.getElementById('btn-to-stage3');
 
-// 協商拉桿對應
 const sliders = {
   a: document.getElementById('slider-party-a'),
   b: document.getElementById('slider-party-b'),
@@ -1138,13 +1134,16 @@ function initStage2() {
   negGameContainer.classList.add('hidden');
   btnToStage3.classList.add('hidden');
   
-  // 載入第一個利害關係人提問
   loadHearingQuestion();
   
-  // 初始化協商拉桿
-  sliders.a.value = 20;
-  sliders.b.value = 80;
-  sliders.c.value = 50;
+  // 初始化滑塊數值
+  sliders.a.value = 50; // Price
+  sliders.b.value = 50; // Preference
+  sliders.c.value = 50; // Cost
+  
+  // 隱藏第三個無用指針
+  pointers.c.style.display = 'none';
+  
   updateNegotiationSliders();
 }
 
@@ -1154,7 +1153,6 @@ function loadHearingQuestion() {
   if (gameState.hearingCurrentStakeholder < billInfo.hearing.length) {
     const qData = billInfo.hearing[gameState.hearingCurrentStakeholder];
     
-    // 渲染對話氣泡
     hearingWorkspace.innerHTML = `
       <div class="stakeholder-bubble-box">
         <div class="sh-avatar ${qData.stakeholder}">
@@ -1167,7 +1165,6 @@ function loadHearingQuestion() {
       </div>
     `;
     
-    // 渲染答辯選項
     hearingOptionsContainer.innerHTML = "";
     qData.options.forEach((opt, idx) => {
       const btn = document.createElement('button');
@@ -1176,15 +1173,11 @@ function loadHearingQuestion() {
       
       btn.addEventListener('click', () => {
         playSound('click');
-        // 保存決策
         gameState.hearingChoices[qData.stakeholder] = opt.text;
-        
-        // 增減滿意度
         adjustSatisfaction(opt.impact);
         
-        // 載入下一個利害關係人或進入協商
         gameState.hearingCurrentStakeholder++;
-        hearingWorkspace.classList.add('hidden'); // 轉場閃爍
+        hearingWorkspace.classList.add('hidden');
         setTimeout(() => {
           hearingWorkspace.classList.remove('hidden');
           loadHearingQuestion();
@@ -1194,30 +1187,10 @@ function loadHearingQuestion() {
       hearingOptionsContainer.appendChild(btn);
     });
   } else {
-    // 公聽會結束，開啟朝野協商
     hearingGameContainer.classList.add('hidden');
     negGameContainer.classList.remove('hidden');
     
-    // 素養動態難度機制：
-    // 計算三方支持度的「標準差/分歧度」。若某一方極度不滿，協商共識發光區會縮小！
-    const vals = Object.values(gameState.satisfaction);
-    const minVal = Math.min(...vals);
-    
-    // 如果有任一方支持度低於 35%，共識發光區縮小至 5% (難度增加！)，否則為 10%
-    if (minVal < 35) {
-      targetGlowZone.style.left = "48%";
-      targetGlowZone.style.width = "4%";
-      document.querySelector('.target-label').textContent = "意見嚴重對立！極小共識區 (48%~52%)";
-      negFeedback.textContent = "🚨 注意：因公聽會上有利益代表非常不滿，導致朝野政黨對立，協商共識範圍大幅縮減！";
-      negFeedback.style.color = "var(--color-danger)";
-    } else {
-      targetGlowZone.style.left = "45%";
-      targetGlowZone.style.width = "10%";
-      document.querySelector('.target-label').textContent = "朝野共識區 (45%~55%)";
-      negFeedback.textContent = "公聽會順利結束，利益相對平衡，朝野協商難度適中。請對齊指針！";
-      negFeedback.style.color = "var(--color-warning)";
-    }
-    
+    updateNegotiationSliders();
     negGameContainer.scrollIntoView({ behavior: 'smooth' });
   }
 }
@@ -1230,52 +1203,58 @@ Object.keys(sliders).forEach(key => {
 });
 
 function updateNegotiationSliders() {
-  const valA = parseInt(sliders.a.value);
-  const valB = parseInt(sliders.b.value);
-  const valC = parseInt(sliders.c.value);
+  const valA = parseInt(sliders.a.value); // Price (定價)
+  const valB = parseInt(sliders.b.value); // Preference (偏好)
+  const valC = parseInt(sliders.c.value); // Cost (成本)
   
   valDisplays.a.textContent = `${valA}%`;
   valDisplays.b.textContent = `${valB}%`;
   valDisplays.c.textContent = `${valC}%`;
   
-  pointers.a.style.left = `${valA}%`;
-  pointers.b.style.left = `${valB}%`;
-  pointers.c.style.left = `${valC}%`;
+  // 計算買方需求與賣方供給 (經濟學曲線模擬)
+  // 需求 Qd = 偏好 - 0.6 * 價格 + 30
+  // 供給 Qs = 0.6 * 價格 - 成本 + 50
+  const Qd = Math.max(5, Math.min(95, Math.round(valB - 0.6 * valA + 30)));
+  const Qs = Math.max(5, Math.min(95, Math.round(0.6 * valA - valC + 50)));
+  
+  pointers.a.style.left = `${Qd}%`; // 需求量指針
+  pointers.b.style.left = `${Qs}%`; // 供給量指針
   
   playSound('tick');
   
-  // 檢查是否都在共識區
+  // 檢查是否都在均衡區
   const vals = Object.values(gameState.satisfaction);
   const minVal = Math.min(...vals);
   
-  // 根據是否有嚴重衝突，決定共識區的界線
-  let minTarget = 45;
-  let maxTarget = 55;
+  // 根據是否有嚴重滿意度衝突，決定均衡共識區的界線
+  let minTarget = 42;
+  let maxTarget = 58;
   if (minVal < 35) {
-    minTarget = 48;
-    maxTarget = 52;
+    minTarget = 47;
+    maxTarget = 53;
+    targetGlowZone.style.left = "47%";
+    targetGlowZone.style.width = "6%";
+    document.getElementById('equilibrium-label').textContent = "市場意見嚴重分歧！極窄均衡區 (47%~53%)";
+    negFeedback.textContent = "🚨 由於各方利益代表衝突極大，市場信心脆弱，供需指針必須完美對齊在中央均衡區內！";
+    negFeedback.style.color = "var(--color-danger)";
+  } else {
+    targetGlowZone.style.left = "42%";
+    targetGlowZone.style.width = "16%";
+    document.getElementById('equilibrium-label').textContent = "市場均衡區 (42%~58%)";
+    negFeedback.textContent = "市場利益調和中，調整價格、偏好與成本，讓「需求量（買方）」與「供給量（賣方）」指針均落入綠色均衡區！";
+    negFeedback.style.color = "var(--color-warning)";
   }
   
-  if (valA >= minTarget && valA <= maxTarget &&
-      valB >= minTarget && valB <= maxTarget &&
-      valC >= minTarget && valC <= maxTarget) {
-    
+  if (Qd >= minTarget && Qd <= maxTarget && Qs >= minTarget && Qs <= maxTarget) {
     if (!gameState.negotiationSolved) {
       gameState.negotiationSolved = true;
       playSound('success');
-      negFeedback.textContent = "🎉 協商成功！各黨完成讓步，本案送出審查報告，進入二讀會！";
+      negFeedback.textContent = "🎉 市場達成均衡！價格合理，供需雙方交易順暢，進入下一關！";
       negFeedback.style.color = "var(--color-success)";
       btnToStage3.classList.remove('hidden');
     }
   } else {
     gameState.negotiationSolved = false;
-    if (minVal < 35) {
-      negFeedback.textContent = "🚨 政黨意見陷入冰點，請小心微調讓指針重合在紅色極窄共識區內！";
-      negFeedback.style.color = "var(--color-danger)";
-    } else {
-      negFeedback.textContent = "朝野協商中，努力調和立場...（請將三方指針都調整至發光的共識區）";
-      negFeedback.style.color = "var(--color-warning)";
-    }
     btnToStage3.classList.add('hidden');
   }
 }
@@ -1284,7 +1263,7 @@ btnToStage3.addEventListener('click', () => {
   switchScreen('stage3');
 });
 
-// --- 4. 第三關：二讀會大辯論 (比例原則思辨) ---
+// --- 4. 第三關：供需考驗大辯論 ---
 const quizQNum = document.getElementById('quiz-q-num');
 const quizQuestion = document.getElementById('quiz-question');
 const quizOptionsContainer = document.getElementById('quiz-options-container');
@@ -1347,8 +1326,8 @@ function loadQuizQuestion() {
       quizOptionsContainer.appendChild(btn);
     });
   } else {
-    quizQNum.textContent = "院會大辯論結束";
-    quizQuestion.textContent = "比例原則辯論完畢！全案進行二讀逐條討論與表決！";
+    quizQNum.textContent = "現場答辯結束";
+    quizQuestion.textContent = "供需法則答辯完畢！全案進行二讀市場交易電子媒合！";
     quizOptionsContainer.innerHTML = "";
     votingTriggerOverlay.classList.remove('hidden');
   }
@@ -1369,7 +1348,7 @@ function handleQuizAnswer(selectedIdx, clickedBtn) {
     quizFeedbackText.innerHTML = `<strong>答對了！</strong> ${qData.explanation}`;
     quizFeedbackText.style.color = "var(--color-success)";
     
-    // 答對加 8 位支持立委，且稍微增加各方滿意度
+    // 答對加 8 位支持買賣成交者，且增加各方支持滿意度
     convinceLegislators(true, 8);
     adjustSatisfaction({ student: 3, parent: 3, teacher: 3 });
   } else {
@@ -1381,7 +1360,7 @@ function handleQuizAnswer(selectedIdx, clickedBtn) {
     quizFeedbackText.innerHTML = `<strong>答錯了。</strong>正確答案為：<strong>【${qData.options[qData.answer]}】</strong>。<br>${qData.explanation}`;
     quizFeedbackText.style.color = "var(--color-danger)";
     
-    // 答錯加 5 位反對立委
+    // 答錯加 5 位失敗交易者
     convinceLegislators(false, 5);
   }
   
@@ -1434,18 +1413,15 @@ function runVotingSimulation() {
   
   let i = 0;
   
-  // 素養答題影響機率與利害關係人滿意度均值加權
   const satisfactionAverage = Object.values(gameState.satisfaction).reduce((a,b)=>a+b, 0) / 3;
-  let passProbability = 0.2; // 基礎投贊成率
+  let passProbability = 0.2; 
   
-  // 答對題數加權
   const correctRatio = gameState.quizScore / QUIZ_QUESTIONS.length;
-  if (correctRatio >= 0.8) passProbability += 0.5;       // 答對 8 題以上
-  else if (correctRatio >= 0.5) passProbability += 0.3;  // 答對 5 題以上
-  else if (correctRatio >= 0.3) passProbability += 0.15; // 答對 3 題以上
+  if (correctRatio >= 0.8) passProbability += 0.5;       
+  else if (correctRatio >= 0.5) passProbability += 0.3;  
+  else if (correctRatio >= 0.3) passProbability += 0.15; 
   else if (correctRatio < 0.1) passProbability -= 0.1;
   
-  // 民意支持度加權
   if (satisfactionAverage >= 60) passProbability += 0.15;
   if (satisfactionAverage < 40) passProbability -= 0.15;
 
@@ -1480,12 +1456,12 @@ function finishVote() {
   gameState.votingActive = false;
   if (gameState.yesVotes >= 57) {
     playSound('cheer');
-    alert(`二讀表決通過！\n贊成：${gameState.yesVotes}票，反對：${gameState.noVotes}票。\n法案成功維持過半數優勢，通過二讀會！`);
+    alert(`市場電子媒合成功！\n交易成功：${gameState.yesVotes}人，交易失敗：${gameState.noVotes}人。\n成功跨越 57 人成交門檻，市場進入常態運作！`);
     btnToStage4.classList.remove('hidden');
     btnToStage4.scrollIntoView({ behavior: 'smooth' });
   } else {
     playSound('fail');
-    alert(`表決被否決！\n贊成：${gameState.yesVotes}票，反對：${gameState.noVotes}票。\n因利益衝突未調和或法理答辯失敗，支持票未達57票門檻。請重新答辯爭取立委支持！`);
+    alert(`市場成交量嚴重低迷！\n交易成功：${gameState.yesVotes}人，交易失敗：${gameState.noVotes}人。\n因供需法則答辯失敗且市場支持度過低，未達 57 人成交門檻。請重新大辯論！`);
     initStage3();
   }
 }
@@ -1494,7 +1470,7 @@ btnToStage4.addEventListener('click', () => {
   switchScreen('stage4');
 });
 
-// --- 5. 第四關：三讀會 (合憲性審查) ---
+// --- 5. 第四關：三讀規章公平性審查 ---
 const proofreadBillTitle = document.getElementById('proofread-bill-title');
 const proofreadBillContent = document.getElementById('proofread-bill-content');
 const proofreadCorrectedCount = document.getElementById('proofread-corrected-count');
@@ -1521,10 +1497,9 @@ function initStage4() {
   btnToStage5.classList.add('hidden');
   
   const billInfo = BILLS[gameState.selectedBill];
-  proofreadBillTitle.textContent = billInfo.title + " (草案最終審)";
+  proofreadBillTitle.textContent = billInfo.title + " (規章最終審)";
   proofreadBillContent.innerHTML = billInfo.unconstitutional.content;
   
-  // 綁定違憲下底線點擊事件
   const target = document.getElementById('typo-unconstitutional');
   if (target) {
     target.addEventListener('click', openConstitutionModal);
@@ -1538,7 +1513,6 @@ function openConstitutionModal() {
   const billInfo = BILLS[gameState.selectedBill];
   constitutionTypoExplain.textContent = billInfo.unconstitutional.explain;
   
-  // 產生修正條文按鈕
   constitutionModalOptions.innerHTML = "";
   billInfo.unconstitutional.options.forEach(opt => {
     const btn = document.createElement('button');
@@ -1550,17 +1524,15 @@ function openConstitutionModal() {
         playSound('success');
         btn.classList.add('correct');
         
-        // 修正條文
         const target = document.getElementById('typo-unconstitutional');
         target.textContent = opt.text;
         target.className = "typo-target fixed";
         
         gameState.constitutionCorrected = true;
-        proofreadCorrectedCount.textContent = "已合憲修正";
+        proofreadCorrectedCount.textContent = "已合理修正";
         proofreadCorrectedCount.style.color = "var(--color-success)";
         proofreadFeedback.textContent = opt.feedback;
         
-        // 增加各方滿意度 (保護隱私與人權)
         adjustSatisfaction({ student: 10, parent: 10, teacher: 10 });
         
         setTimeout(() => {
@@ -1572,7 +1544,7 @@ function openConstitutionModal() {
         }, 1500);
       } else {
         playSound('fail');
-        alert(`${opt.feedback} 請重新審查與衡平考量！`);
+        alert(`${opt.feedback} 請重新考慮對公平競爭與正當程序的影響！`);
       }
     });
     
@@ -1582,7 +1554,7 @@ function openConstitutionModal() {
   constitutionModal.classList.remove('hidden');
 }
 
-// 敲三讀槌
+// 敲規章三讀槌
 gavelAnimS4.addEventListener('click', strikeGavelS4);
 btnStrikeGavelS4.addEventListener('click', strikeGavelS4);
 
@@ -1602,7 +1574,7 @@ btnToStage5.addEventListener('click', () => {
   switchScreen('stage5');
 });
 
-// --- 6. 第五關：總統公布與行政院覆議挑戰 ---
+// --- 6. 第五關：外部危機衝擊與市場調控 ---
 const vetoBillTitle = document.getElementById('veto-bill-title');
 const vetoAlertContainer = document.getElementById('veto-alert-container');
 const vetoOptionsContainer = document.getElementById('veto-options-container');
@@ -1638,7 +1610,6 @@ function initStage5() {
   vetoVotesSpan.textContent = "0";
   vetoTimerSpan.textContent = "8.0";
   
-  // 生成覆議答辯決策選項
   const billInfo = BILLS[gameState.selectedBill];
   vetoOptionsContainer.innerHTML = "";
   
@@ -1650,23 +1621,17 @@ function initStage5() {
     btn.addEventListener('click', () => {
       playSound('click');
       gameState.vetoChoice = opt.route;
-      
-      // 更新滿意度影響
       adjustSatisfaction(opt.impact);
       
-      // 如果選擇的是「撤回/放棄」，直接失敗結束
       if (opt.clicks === 0) {
         vetoAlertContainer.classList.add('hidden');
         playSound('fail');
         vetoFailBox.classList.remove('hidden');
-        vetoFailMessage.textContent = "您選擇了『撤回法案』放棄政策防衛。本法規草案就此宣告失效，挑戰失敗！";
+        vetoFailMessage.textContent = "您選擇了『撤回政策任其自滅』，放棄調控市場。市場交易完全停擺，挑戰失敗！";
         return;
       }
       
-      // 設定覆議點擊門檻
       gameState.vetoClicksRequired = opt.clicks;
-      
-      // 進入點擊小遊戲
       vetoAlertContainer.classList.add('hidden');
       startVetoClickGame();
     });
@@ -1679,11 +1644,10 @@ function startVetoClickGame() {
   vetoGameContainer.classList.remove('hidden');
   gameState.vetoGameActive = true;
   
-  // 設定指令說明
   vetoGameInstruction.innerHTML = `
     <i class="fas fa-mouse-pointer animate-ping"></i> 
-    您的防衛策略為：<strong>${gameState.vetoChoice}</strong>。<br>
-    需在 8 秒內狂點按鈕累計滿 <strong>${gameState.vetoClicksRequired} 次</strong>（過半數席次）以維持原案！
+    您的危機調控策略為：<strong>${gameState.vetoChoice}</strong>。<br>
+    需在 8 秒內狂點按鈕累計滿 <strong>${gameState.vetoClicksRequired} 次</strong>（穩定指數 57 點）以度過難關！
   `;
   
   gameState.vetoTimer = setInterval(() => {
@@ -1704,9 +1668,6 @@ btnClickVote.addEventListener('click', () => {
   if (!gameState.vetoGameActive) return;
   
   gameState.vetoClicks++;
-  
-  // 換算票數比例： 達到所需點擊數 = 58 票。
-  // 票數 = Math.floor((點擊數 / 所需點擊數) * 58) 
   const totalVotes = Math.min(113, Math.floor((gameState.vetoClicks / gameState.vetoClicksRequired) * 58));
   vetoVotesSpan.textContent = totalVotes;
   
@@ -1730,7 +1691,7 @@ function endVetoGame() {
   } else {
     playSound('fail');
     vetoFailBox.classList.remove('hidden');
-    vetoFailMessage.textContent = `覆議挑戰失敗！\n贊成維持原案票數僅 ${finalVotes} 票，未達過半數 57 票門檻，法案就此失效。請重擬政策辯護防線！`;
+    vetoFailMessage.textContent = `市場防衛失敗！\n市場穩定指數僅 ${finalVotes} 分，未達最低穩定門檻 57 分，市場遭遇失衡崩盤。請重擬調控策略！`;
     vetoFailBox.scrollIntoView({ behavior: 'smooth' });
   }
 }
@@ -1760,7 +1721,6 @@ function initCertificate() {
   certPlayerName.textContent = gameState.playerName;
   certBillTitle.textContent = BILLS[gameState.selectedBill].title;
   
-  // 設定當前民國日期
   const today = new Date();
   const year = today.getFullYear();
   const month = today.getMonth() + 1;
@@ -1769,7 +1729,7 @@ function initCertificate() {
   certDateMonth.textContent = month.toString();
   certDateDay.textContent = day.toString();
   
-  // 評估學生素養指標：利益平衡度 (即學生、家長、教師滿意度是否差距很大)
+  // 評估學生素養指標：利益平衡度 (即消費者、生產者、政府社會滿意度是否差距很大)
   const vals = Object.values(gameState.satisfaction);
   const maxVal = Math.max(...vals);
   const minVal = Math.min(...vals);
@@ -1812,10 +1772,10 @@ function sendDataToBackend(balanceRating) {
     seat: gameState.playerSeat,
     name: gameState.playerName,
     bill: BILLS[gameState.selectedBill].title,
-    draft: gameState.draftChoice,               // 起草路線
+    draft: gameState.draftChoice,               // 經營路線
     balance: `${balanceRating} (差值:${Math.max(...Object.values(gameState.satisfaction))-Math.min(...Object.values(gameState.satisfaction))}%)`, // 滿意度差
-    score: gameState.quizScore,                 // 比例原則得分
-    vetoStrategy: gameState.vetoChoice,         // 覆議答辯路線
+    score: gameState.quizScore,                 // 供需法则得分
+    vetoStrategy: gameState.vetoChoice,         // 危機應變策略
     passed: "是",
     timestamp: new Date().toLocaleString("zh-TW", { timeZone: "Asia/Taipei" })
   };
@@ -1918,4 +1878,4 @@ function animateConfetti() {
 
 // --- 初始化啟動 ---
 switchScreen('intro');
-console.log("立法大師：素養思辨挑戰賽載入完成！");
+console.log("市場大師：供需平衡大挑戰載入完成！");
