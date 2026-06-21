@@ -31,7 +31,7 @@ const gameState = {
   
   signaturesCollected: 0,
   sigTimer: null,
-  sigTimeLeft: 10,
+  sigTimeLeft: 20,
   sigGameActive: false,
   
   hearingCurrentStakeholder: 0, // 0: student, 1: parent, 2: teacher
@@ -862,12 +862,12 @@ const gavelAnimS1 = document.getElementById('gavel-anim-s1');
 
 function initStage1() {
   gameState.signaturesCollected = 0;
-  gameState.sigTimeLeft = 10;
+  gameState.sigTimeLeft = 20;
   gameState.sigGameActive = false;
   gameState.satisfaction = { student: 50, parent: 50, teacher: 50 }; // 重置滿意度
   
   sigCountSpan.textContent = "0";
-  sigTimerSpan.textContent = "10";
+  sigTimerSpan.textContent = "20";
   
   // 顯示起草任務，隱藏連署與典禮
   draftingGameContainer.classList.remove('hidden');
