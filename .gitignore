@@ -1,0 +1,14 @@
+# Ignore python scripts
+*.py
+generate_report.py
+generate_final_report.py
+
+# Ignore document files from previous tasks
+*.docx
+*.txt
+
+# Ignore temporary/scratch folders
+scratch/
+.idea/
+.vscode/
+.gemini/
