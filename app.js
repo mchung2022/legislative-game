@@ -1,12 +1,11 @@
 /**
- * 法案奇幻冒險：三讀闖關大作戰！
+ * 法案大師：素養思辨挑戰賽！
  * 遊戲邏輯與互動控制 JS 檔案
  */
 
 // --- 後端配置 ---
 // 教師部署 Google Apps Script 後，請將產生的網頁應用程式 URL 貼在下方雙引號內：
-// 例如："https://script.google.com/macros/s/AKfycb.../exec"
-const GOOGLE_SHEET_APP_URL = "https://script.google.com/macros/s/AKfycbzQ8H2_-tT-TUOSC0rOBE-xPGXlWVPm--MkO4XAWMFz_JQb6_3OaCnlHWuLPYks1ZYc/exec";
+const GOOGLE_SHEET_APP_URL = "https://script.google.com/macros/s/AKfycbzQ8H2_-tT-TUOSC0rOBE-xPGXlWVPm--MkO4XAWMFz_JQb6_3OaCnlHWuLPYks1ZYc/exec"; 
 
 // --- 遊戲狀態管理 ---
 const gameState = {
@@ -17,107 +16,488 @@ const gameState = {
   selectedBill: "homework", // homework, lunch, green
   currentStage: 0, // 0: intro, 1: select, 2: stage1, 3: stage2, 4: stage3, 5: stage4, 6: stage5, 7: cert
   soundEnabled: true,
+  
+  // 素養指標：利害關係人滿意度 (學生, 家長, 教師) 範圍 0 - 100
+  satisfaction: {
+    student: 50,
+    parent: 50,
+    teacher: 50
+  },
+
+  // 記錄決策選擇，供教師評估素養表現
+  draftChoice: "",      // 起草路線
+  hearingChoices: {},   // 公聽會作答記錄
+  vetoChoice: "",       // 覆議答辯路線
+  
   signaturesCollected: 0,
   sigTimer: null,
-  sigTimeLeft: 15,
+  sigTimeLeft: 10,
   sigGameActive: false,
-  sortingCorrectCount: 0,
-  sortingTotal: 6,
-  negotiationSolved: false,
+  
+  hearingCurrentStakeholder: 0, // 0: student, 1: parent, 2: teacher
+  
   quizCurrentQuestion: 0,
   quizScore: 0,
-  quizQuestions: [],
-  votingActive: false,
+  
   yesVotes: 0,
   noVotes: 0,
-  proofreadCorrected: 0,
-  proofreadTotal: 2,
+  votingActive: false,
+  
+  constitutionCorrected: false,
+  
   vetoClicks: 0,
+  vetoClicksRequired: 29, // 預設 29 次點擊 = 58 票 (過半數)
   vetoTimer: null,
   vetoTimeLeft: 8.0,
   vetoGameActive: false
 };
 
-// --- 靜態資料定義 ---
+// --- 素養情境資料庫 ---
 const BILLS = {
   homework: {
     title: "「中小學禁止週末作業條例」",
     shortTitle: "禁止週末作業條例",
-    content: "國民中小學學生之課業，<span class='typo-target' id='typo1' data-correct='應'>英</span>以課堂學習為主。為保障學生身心健全發展與充足睡眠，各級學校<span class='typo-target' id='typo2' data-correct='不得'>不德</span>於週五或連續假期指派課後作業，以鼓勵學生自主規劃週末休閒生活。",
-    cardSorting: [
-      { text: "適度休息能大幅提升週一的學習專注度。", type: "support" },
-      { text: "自主規劃週末有助於培養主動學習習慣。", type: "support" },
-      { text: "多出時間能進行戶外運動，增進親子感情。", type: "support" },
-      { text: "可能導致學生成績下滑，降低學科競爭力。", type: "oppose" },
-      { text: "家長週末被迫要花更多心思安排照護或補習。", type: "oppose" },
-      { text: "自主管理能力差的學生，週末可能沉迷電動。", type: "oppose" }
-    ]
+    drafting: {
+      options: [
+        {
+          id: "strict",
+          title: "【全面禁用型】(強硬管制)",
+          desc: "強制規定週末及連續假期學校絕對不能指派任何作業，違者扣減該校之政府補助款並予以通報。",
+          impact: { student: 30, parent: -25, teacher: -25 },
+          route: "強硬管制"
+        },
+        {
+          id: "balanced",
+          title: "【彈性引導型】(彈性折衷)",
+          desc: "鼓勵週末以「非傳統抄寫」之自主學習任務替代傳統作業（如運動、家事、觀察），由學校提供自主學習資源彈性引導。",
+          impact: { student: 15, parent: 15, teacher: 10 },
+          route: "彈性折衷"
+        },
+        {
+          id: "flexible",
+          title: "【低度規範型】(寬鬆規範)",
+          desc: "原則上週末不指派作業，但若遇到段考前一週、複習週或有特殊教學複習需求，教師仍得視需要指派作業。",
+          impact: { student: -10, parent: 25, teacher: 20 },
+          route: "寬鬆規範"
+        }
+      ]
+    },
+    hearing: [
+      {
+        stakeholder: "student",
+        name: "學生代表 - 阿強",
+        avatar: "fa-child",
+        quote: "如果給學校『特殊教學需求』等太多例外彈性，那最後可能變成天天都是『特殊週』，老師一樣發考卷，我們根本放不到假！",
+        options: [
+          {
+            text: "完全同意！修改草案，嚴格限制『例外情況』每學期不得指派超過兩次，違反者予以行政懲處。",
+            impact: { student: 20, parent: -10, teacher: -15 }
+          },
+          {
+            text: "增設『學生會申訴管道』，若班級作業量明顯超標，可向校務會議與教育局提出申訴與調查。",
+            impact: { student: 15, parent: 5, teacher: 5 }
+          },
+          {
+            text: "我們必須尊重教師的第一線專業授課權力，相信學校與導師會適度拿捏，不宜過度限制。",
+            impact: { student: -20, parent: 15, teacher: 20 }
+          }
+        ]
+      },
+      {
+        stakeholder: "parent",
+        name: "家長代表 - 陳媽媽",
+        avatar: "fa-user-friends",
+        quote: "週末如果不指派功課，孩子回家都在玩手機、打電動，學習進度落後怎麼辦？家長不是專業老師，不知道怎麼督促輔導啊！",
+        options: [
+          {
+            text: "家長應該學會陪伴孩子進行戶外活動或閱讀，而不是把管教與輔導責任全部塞給學校作業！",
+            impact: { student: 15, parent: -25, teacher: -5 }
+          },
+          {
+            text: "由教育局編列經費增設『週末線上自主學習資源平台』，提供多元教材，讓家長有資源引導孩子。",
+            impact: { student: 5, parent: 20, teacher: 10 }
+          },
+          {
+            text: "條文放寬限制，允許班級經『家長大會過半數同意』後，得指派適量之週末作業。",
+            impact: { student: -15, parent: 15, teacher: 10 }
+          }
+        ]
+      },
+      {
+        stakeholder: "teacher",
+        name: "教師代表 - 施老師",
+        avatar: "fa-chalkboard-teacher",
+        quote: "週末是段考複習的黃金時期，如果一律不准派作業，學生的進度會嚴重落後，教學目標無法如期達成，教師壓力極大！",
+        options: [
+          {
+            text: "學生的身心健康是不可妥協的。進度落後應由教師調整授課法，週末仍應無條件禁止作業。",
+            impact: { student: 20, parent: -15, teacher: -20 }
+          },
+          {
+            text: "鼓勵教師進行『翻轉學習』，週末僅需指派 10 分鐘以內的教學觀看影片，不指派抄寫型作業。",
+            impact: { student: 10, parent: 10, teacher: 15 }
+          },
+          {
+            text: "修正條文，明定在段考、模擬考前一週，教師得不受限制指派複習性作業。",
+            impact: { student: -10, parent: 15, teacher: 15 }
+          }
+        ]
+      }
+    ],
+    unconstitutional: {
+      title: "「中小學禁止週末作業條例草案」",
+      content: "中華民國國民中小學學生之課業，應以課堂學習為主。為保障學生身心健全發展與充足睡眠，各級學校不得於週五或連續假期指派課後作業。<span class='typo-target' id='typo-unconstitutional'>凡不遵守本條例指派週末作業之教師，應由警察機關處以三日以下之拘役，或由學校直接處以新臺幣三萬元之行政罰鍰。</span>",
+      explain: "本段條文嚴重侵犯了憲法第 8 條之『人身自由與法官保留原則』（拘役為刑事處罰限制人身自由，必須由法院依法審理，警察無權處分）；且學校並非行政處罰機關，無權直接對個人處以罰鍰處分。這已嚴重違背比例原則與法律保留原則。",
+      options: [
+        {
+          text: "「違反本條例之學校，由主管教育行政機關限期改善；屆期未改善者，列入學校評鑑參考。」",
+          isCorrect: true,
+          feedback: "正確！此修正案符合行政指導精神，手段合憲且正當。"
+        },
+        {
+          text: "「違反本條例之教師，應由該校家長會聯名予以直接開除，以示懲戒。」",
+          isCorrect: false,
+          feedback: "錯誤。這違反了勞動權保障與教師法規定的懲處程序，手段仍屬過當。"
+        },
+        {
+          text: "「不服從規定之教師，學校得報請教育部撤銷其教師證書，且終身不得再任教職。」",
+          isCorrect: false,
+          feedback: "錯誤。處罰極度過度，嚴重違反了憲法比例原則中的衡平性與必要性。"
+        }
+      ]
+    },
+    veto: {
+      options: [
+        {
+          text: "【折衷答辯】「我們已於三讀將硬性刑罰修正為校務評鑑指標，並增設自主資源庫之配套，請行政院依法執行。」",
+          impact: { student: 5, parent: 5, teacher: 10 },
+          clicks: 15, // 較簡單
+          route: "折衷妥協說服"
+        },
+        {
+          text: "【強硬對抗】「立法院代表民意，本法案旨在捍衛學生健康權！行政院應克服用人與預算困難立即公布，不可多言！」",
+          impact: { student: 15, parent: -15, teacher: -15 },
+          clicks: 40, // 極難，需要40次點擊
+          route: "強硬政策對抗"
+        },
+        {
+          text: "【棄案退讓】「考量行政院所提預算及人力困難，本院決定不予維持原案，撤回本法案重新審議。」",
+          impact: { student: -30, parent: 10, teacher: 10 },
+          clicks: 0, // 直接失敗
+          route: "撤回放棄法案"
+        }
+      ]
+    }
   },
   lunch: {
     title: "「營養午餐全面加糖與點心法案」",
     shortTitle: "午餐加糖與點心法案",
-    content: "各級中小學校營養午餐之設計，<span class='typo-target' id='typo1' data-correct='應'>嬰</span>注重膳食均衡。為提升學生學習動能與上學幸福感，學校餐廳<span class='typo-target' id='typo2' data-correct='得'>德</span>於每日下午加設甜點與低糖茶飲之免費供應時段。",
-    cardSorting: [
-      { text: "美味的甜點能有效舒緩學生的課業壓力。", type: "support" },
-      { text: "提供多元副食品，能提高學生在校用餐意願。", type: "support" },
-      { text: "甜食能迅速補充熱量，恢復下午上課精力。", type: "support" },
-      { text: "攝取過多糖分會增加學生過胖與齲齒機率。", type: "oppose" },
-      { text: "加糖偏好可能加劇偏食習慣，影響健康發育。", type: "oppose" },
-      { text: "學校廚房與營養師調配菜單的財務負擔大增。", type: "oppose" }
-    ]
+    drafting: {
+      options: [
+        {
+          id: "strict",
+          title: "【全面加糖型】(強硬管制)",
+          desc: "強制營養午餐每天都必須提供含糖飲料或甜點，且主食口味調配應全面提高甜度比例以迎合學生偏好。",
+          impact: { student: 30, parent: -25, teacher: -25 },
+          route: "強硬管制"
+        },
+        {
+          id: "balanced",
+          title: "【每週特餐型】(彈性折衷)",
+          desc: "規定每週五為「快樂點心日」提供精緻甜點，平時則提供水果，並對點心含糖量實施減糖配方管制。",
+          impact: { student: 15, parent: 15, teacher: 15 },
+          route: "彈性折衷"
+        },
+        {
+          id: "flexible",
+          title: "【健康無糖型】(健康規範)",
+          desc: "全面禁止營養午餐提供任何精緻糖點心與飲料，改為提供新鮮水果與在地無糖茶飲，以推廣健康飲食。",
+          impact: { student: -15, parent: 25, teacher: 20 },
+          route: "健康規範"
+        }
+      ]
+    },
+    hearing: [
+      {
+        stakeholder: "student",
+        name: "學生代表 - 小美",
+        avatar: "fa-child",
+        quote: "如果改成無糖健康水果，那根本就不叫點心！上課已經夠辛苦了，我們連中午吃點甜的、喝珍奶的小確幸權利都要被剝奪嗎？",
+        options: [
+          {
+            text: "支持學生的自主權！維持每天供應甜點，但改用赤藻糖醇等天然代糖降低身體負擔。",
+            impact: { student: 20, parent: -5, teacher: -10 }
+          },
+          {
+            text: "由各校學生會定期舉辦『點心民主投票』，讓學生參與共同決定每月水果與點心的比例。",
+            impact: { student: 15, parent: 10, teacher: 10 }
+          },
+          {
+            text: "健康是首要之務。精緻糖百害無一利，學生應多吃水果，我們將維持無糖政策。",
+            impact: { student: -25, parent: 20, teacher: 20 }
+          }
+        ]
+      },
+      {
+        stakeholder: "parent",
+        name: "家長代表 - 林爸爸",
+        avatar: "fa-user-friends",
+        quote: "現在國中生肥胖跟蛀牙比例這麼高，如果在學校天天吃含糖點心，回家又不運動，做家長的非常擔心孩子健康！",
+        options: [
+          {
+            text: "學校的體育課與社團活動會加強消耗熱量，家長不用過度限制孩子的飲食樂趣！",
+            impact: { student: 15, parent: -20, teacher: -5 }
+          },
+          {
+            text: "嚴格規範所有供應點心之含糖量，必須符合國家級健康食品低糖標準，並定期公布檢驗報告。",
+            impact: { student: 5, parent: 20, teacher: 15 }
+          },
+          {
+            text: "改為家長自由選購制，若家長反對孩子吃甜食，可申請不發放，退還該部分營養午餐費。",
+            impact: { student: -15, parent: 15, teacher: 10 }
+          }
+        ]
+      },
+      {
+        stakeholder: "teacher",
+        name: "教師代表 - 黃老師",
+        avatar: "fa-chalkboard-teacher",
+        quote: "下午多塞一個點心時間會打亂打掃與授課作息，廚房阿姨的人力根本不夠做，且每天廚餘與垃圾分類量會暴增！",
+        options: [
+          {
+            text: "學生福利至上。請教師調整授課進度，廚房阿姨的人力不足可向地方政府申請擴編預算。",
+            impact: { student: 20, parent: -10, teacher: -20 }
+          },
+          {
+            text: "點心直接隨午餐一起發放，免除下午額外吃點心的時間，減少廚餘與打亂作息的機會。",
+            impact: { student: 10, parent: 10, teacher: 20 }
+          },
+          {
+            text: "縮小規模，將每日點心時間改為每月一次的「慶生茶會」，將負擔降到最低。",
+            impact: { student: -20, parent: 15, teacher: 15 }
+          }
+        ]
+      }
+    ],
+    unconstitutional: {
+      title: "「營養午餐全面加糖與點心法案草案」",
+      content: "中華民國各級中小學校營養午餐之設計，應注重膳食均衡。為提升學生學習動能與上學幸福感，學校餐廳得於每日下午加設點心之免費供應時段。<span class='typo-target' id='typo-unconstitutional'>凡對甜點分配、口味提出爭議或挑食之學生，應由學校直接送交少年法院，處以十日以下之感化教育。</span>",
+      explain: "本條文將「個人挑食或對口味有爭議」等純屬個人飲食習慣問題，直接施以限制人身自由的「少年法庭感化教育」，手段與目的完全失去均衡（違反手段適合性與衡平性），嚴重違反憲法第 8 條之人身自由保障與第 23 條之比例原則。",
+      options: [
+        {
+          text: "「學校應加強飲食與環境教育，引導挑食學生建立健康飲食習慣，並尊重學生膳食選擇權。」",
+          isCorrect: true,
+          feedback: "正確！這符合教育基本精神，手段溫和且保障了基本尊嚴。"
+        },
+        {
+          text: "「挑食之學生，學校得逕行禁止其參與校外教學、社團活動及體育課，以示懲罰。」",
+          isCorrect: false,
+          feedback: "錯誤。這過度限制了學生的學習權與受教權，手段依然違反比例原則。"
+        },
+        {
+          text: "「不服從分配之學生，導師應通知家長帶回自行管教三日，期間視為無故曠課。」",
+          isCorrect: false,
+          feedback: "錯誤。這剝奪了學生的受教權，作為挑食的處分手段過於嚴苛且過當。"
+        }
+      ]
+    },
+    veto: {
+      options: [
+        {
+          text: "【折衷答辯】「我們已於三讀修正口味為低糖配方，且隨午餐隨餐發放，解決了廚房人力與作息困難，請依法公布。」",
+          impact: { student: 5, parent: 5, teacher: 10 },
+          clicks: 15,
+          route: "折衷妥協說服"
+        },
+        {
+          text: "【強硬對抗】「學生權益不可打折！行政院不應以行政程序或財政為藉口拖延，立法院堅持原案，請立即公布！」",
+          impact: { student: 15, parent: -15, teacher: -15 },
+          clicks: 40,
+          route: "強硬政策對抗"
+        },
+        {
+          text: "【棄案退讓】「考量地方政府經費編列困難與學校廚餘處理問題，本院決定撤回本法案。」",
+          impact: { student: -30, parent: 10, teacher: 10 },
+          clicks: 0,
+          route: "撤回放棄法案"
+        }
+      ]
+    }
   },
   green: {
     title: "「校園綠能與垃圾減量推廣法」",
     shortTitle: "校園綠能與垃圾減量法",
-    content: "各級學校應落實綠色校園政策。校區新設建築應<span class='typo-target' id='typo1' data-correct='規劃'>瑰劃</span>屋頂發電系統；且校園合作社與餐廳<span class='typo-target' id='typo2' data-correct='禁止'>禁只</span>提供一次性塑膠製品，以深化學子之環保實踐意識。",
-    cardSorting: [
-      { text: "能顯著降低校園碳排放，給予學生最佳環境教育。", type: "support" },
-      { text: "太陽能發電能自給自足，多餘電力還能回售補貼校務。", type: "support" },
-      { text: "減少塑膠製品能有效從源頭減少校園垃圾量。", type: "support" },
-      { text: "太陽能板初期建置經費昂貴，後續維護技術難度高。", type: "oppose" },
-      { text: "禁用一次性塑膠會造成師生外帶清洗的極大不便。", type: "oppose" },
-      { text: "全面無紙化電子教學可能增加學生用眼過度的傷害。", type: "oppose" }
-    ]
+    drafting: {
+      options: [
+        {
+          id: "strict",
+          title: "【強制禁用型】(強硬管制)",
+          desc: "強制校園內合作社與學生餐廳完全禁用任何一次性塑膠餐具，且新建大樓屋頂必須 100% 覆蓋太陽能發電設備。",
+          impact: { student: -20, parent: -10, teacher: 10 },
+          route: "強硬管制"
+        },
+        {
+          id: "balanced",
+          title: "【漸進引導型】(彈性折衷)",
+          desc: "內用禁用一次性塑膠製品，外帶則鼓勵自備；太陽能建置依學校經費逐步裝設，並增設無紙化教學輔導期。",
+          impact: { student: 15, parent: 15, teacher: 15 },
+          route: "彈性折衷"
+        },
+        {
+          id: "flexible",
+          title: "【宣導鼓勵型】(寬鬆規範)",
+          desc: "不採強制禁用或罰則，改以「自備餐具加分制度」與「節能減碳競賽」等方式，引導學生自主環保。",
+          impact: { student: 20, parent: 20, teacher: -10 },
+          route: "寬鬆規範"
+        }
+      ]
+    },
+    hearing: [
+      {
+        stakeholder: "student",
+        name: "學生代表 - 小豪",
+        avatar: "fa-child",
+        quote: "如果完全不提供一次性餐盒，我們中午忘了帶環保便當盒的話，不就沒辦法打包吃飯了？這樣真的很不方便！",
+        options: [
+          {
+            text: "不便是環保的代價！大家應該學會為地球負責，請養成隨身攜帶餐具的習慣。",
+            impact: { student: -25, parent: -5, teacher: 15 }
+          },
+          {
+            text: "增設『校園環保便當盒押金租借點』，學生忘記帶時可付押金租借，歸還時退款，兼顧便利與環保。",
+            impact: { student: 15, parent: 10, teacher: 10 }
+          },
+          {
+            text: "放寬規定，僅限制在內用區禁用，外帶部分則允許合作社提供可分解紙盒。",
+            impact: { student: 10, parent: 5, teacher: -5 }
+          }
+        ]
+      },
+      {
+        stakeholder: "parent",
+        name: "家長代表 - 張媽媽",
+        avatar: "fa-user-friends",
+        quote: "強迫學校屋頂裝滿太陽能板，電磁波會不會危害孩子健康？而且高昂的建置費用會不會轉移到我們的註冊費或冷氣費中？",
+        options: [
+          {
+            text: "科學研究顯示太陽能板電磁波極低，建置成本有國家專案補助，請家長不要因盲目恐慌阻礙綠能發展！",
+            impact: { student: 5, parent: -20, teacher: 5 }
+          },
+          {
+            text: "法案明定綠能收益將全數專款專用於『學生學雜費與電費補貼』，並規範發電變壓設備需設置於教學區 50 公尺外。",
+            impact: { student: 5, parent: 25, teacher: 10 }
+          },
+          {
+            text: "如果班級家長會過半數反對，該班教室大樓的屋頂便免予設置發電設備，保留家長選擇權。",
+            impact: { student: -10, parent: 15, teacher: -5 }
+          }
+        ]
+      },
+      {
+        stakeholder: "teacher",
+        name: "教師代表 - 羅老師",
+        avatar: "fa-chalkboard-teacher",
+        quote: "強制無紙化教學推行過快，教案全改電子版，老師不僅培訓負擔重，學生整天盯著平板看，眼睛近視視力惡化，誰來負責？",
+        options: [
+          {
+            text: "數位化是國際趨勢，教師應積極參加資訊素養研習，克服困難調整教學法。",
+            impact: { student: 10, parent: -15, teacher: -25 }
+          },
+          {
+            text: "採取混成式教學，僅將課堂作業繳交、聯絡簿改為數位，紙本教科書仍予保留，減少師生用眼時間。",
+            impact: { student: 15, parent: 15, teacher: 20 }
+          },
+          {
+            text: "不強制規定，由各學科領域教學研究會自行決定無紙化教材的比例與進度。",
+            impact: { student: -5, parent: 10, teacher: 10 }
+          }
+        ]
+      }
+    ],
+    unconstitutional: {
+      title: "「校園綠能與垃圾減量推廣法草案」",
+      content: "中華民國各級學校應落實綠色校園政策。校區新設建築應規劃屋頂發電系統；且校園合作社與餐廳禁止提供一次性塑膠製品。<span class='typo-target' id='typo-unconstitutional'>為徹底查緝违規行為，學校環保稽查人員得不經通知，隨時對在校師生之書包、衣物、個人私人物品進行無預警搜查。</span>",
+      explain: "這段條文嚴重侵犯了憲法第 22 條保障之「人民隱私權」。在無犯罪嫌疑且缺乏法院法官令狀等程序保障下，學校行政人員隨時隨地搜查師生書包及私人物品，手段對基本權利的限制已嚴重過當，完全違背比例原則中的必要性與法治國原則。",
+      options: [
+        {
+          text: "「學校應以教育宣導為主，引導師生實踐無塑生活；除有危害校園安全之緊急情事外，不得搜查學生私人物品。」",
+          isCorrect: true,
+          feedback: "正確！這合理限縮了搜查權限，有效保障了校園內的隱私權與合理管教界線。"
+        },
+        {
+          text: "「對私帶塑膠吸管之學生，學校得公告其班級姓名於校門口布告欄，以收警惕之效。」",
+          isCorrect: false,
+          feedback: "錯誤。公開揭露姓名依然涉嫌侵害學生姓名權與個人隱私，且處罰過度，不符比例原則。"
+        },
+        {
+          text: "「搜查時應有班級導師在場陪同，且搜查所得之違規塑膠餐具應一律予以沒收銷毀。」",
+          isCorrect: false,
+          feedback: "錯誤。這並未解決「無端搜查書包隱私權受損」的違憲核心問題。"
+        }
+      ]
+    },
+    veto: {
+      options: [
+        {
+          text: "【折衷答辯】「我們已於三讀增設餐具押金租借與漸進教學配套，且建置費全額獲教育部專案補助，已化解窒礙難行，請依法公布。」",
+          impact: { student: 5, parent: 5, teacher: 10 },
+          clicks: 15,
+          route: "折衷妥協說服"
+        },
+        {
+          text: "【強硬對抗】「地球環境沒有退路！減碳是攸關下一代的最高道德價值，行政院不應只算商業帳，必須強行公布！」",
+          impact: { student: -10, parent: -15, teacher: -15 },
+          clicks: 45,
+          route: "強硬政策對抗"
+        },
+        {
+          text: "【棄案退讓】「考量禁用塑膠執行困難度與高昂的太陽能建置維護費，本院決定撤回本法案。」",
+          impact: { student: -20, parent: 10, teacher: 10 },
+          clicks: 0,
+          route: "撤回放棄法案"
+        }
+      ]
+    }
   }
 };
 
 const QUIZ_QUESTIONS = [
   {
-    question: "我國立法院目前共有幾席立法委員？任期是幾年？",
+    question: "目的正當性與手段適合性：有人質疑「完全禁用週末作業」侵害了憲法保障學校的「教學自主權」。身為立法者，以下何種論述最能證明該限制手段符合「適合性（有助於目的達成）」？",
     options: [
-      "113 席，任期 4 年",
-      "225 席，任期 3 年",
-      "100 席，任期 4 年",
-      "113 席，任期 3 年"
+      "兒少身心健康與生存權是憲法最高價值，且醫學證明過度疲勞有害發育，週末適度休息確實能提升週一學習效率，符合手段適合性。",
+      "老師指派週末作業原本就是違法行為，不宜提倡。",
+      "週末是家庭團聚時間，憲法強制保障家庭活動絕對優先於學校教學。",
+      "因為學生普遍不喜歡寫作業，順應民意即為適合手段。"
     ],
     answer: 0,
-    explanation: "我國立法委員共有 113 席，任期 4 年，可以連選連任。"
+    explanation: "適合性原則要求手段必須能「有助於」立法目的的達成。藉由保障休息來促進發育與學習效率，在科學與法理上均屬合理手段。"
   },
   {
-    question: "在立法「三讀」程序中，哪一個階段會進行最關鍵的「逐條討論、修正與表決」？",
+    question: "必要性（最小侵害原則）：必要性要求限制人民權利時，必須在眾多同等能達成目的的手段中，選擇「對權利人侵害最小」的手段。下列何種條文設計最符合最小侵害原則？",
     options: [
-      "第一讀會 (一讀)",
-      "委員會審查",
-      "第二讀會 (二讀)",
-      "第三讀會 (三讀)"
-    ],
-    answer: 2,
-    explanation: "二讀會是立法程序中最核心的階段，會對法案進行廣泛討論、逐條討論，並針對爭議條文進行修正與表決。"
-  },
-  {
-    question: "若行政院認為立法院通過的法案「窒礙難行」，經總統核可後可以提出什麼機制要求立法院重新審議？",
-    options: [
-      "釋憲案 (憲法法庭審理)",
-      "覆議案 (重新審議與表決)",
-      "不信任案 (倒閣)",
-      "彈劾案 (移送監察院)"
+      "全面廢除課後作業與段考，禁止學校以任何形式評量學生。",
+      "對週末作業進行總量管制（如每週末合計不超過2小時）並保留彈性任務，而非一刀切完全禁止，保留教師適度之教學空間。",
+      "規定週末作業由教育部統一派發，確保題目簡單且數量一致。",
+      "由警察機關每日派員至各班抽查作業登記簿，嚇阻指派行為。"
     ],
     answer: 1,
-    explanation: "行政院經總統核可，可在法案送達 10 日內移請立法院「覆議」。若立法院過半數委員維持原案，行政院長即須接受。"
+    explanation: "「總量管制」比「一刀切完全禁止」對教師教學自由與家長參與權的損害更小，且同樣能達成讓學生休息的目的，最符合必要性（最小侵害）。"
+  },
+  {
+    question: "衡平性（狹義比例原則）：衡平性要求「限制權利所產生的損害，不得大於所欲保護的公共利益」。以禁用一次性塑膠推廣環保為例，下列何者符合衡平性思辨？",
+    options: [
+      "保護地球環境與世代正義之公共利益，遠大於師生自備餐盒所帶來的些許生活不便，利益權衡下手段具有衡平性。",
+      "師生清洗餐盒耗費水資源與時間，其造成的麻煩大於環保利益，因此不具衡平性。",
+      "塑膠袋完全沒有壞處，不應對其進行任何限制。",
+      "只要是為了環保，不論對民生造成多大的損害或不便，政府都可以強行限制。"
+    ],
+    answer: 0,
+    explanation: "衡平性原則要求利益與法益的均衡。永續環境的大眾公共法益，在權衡上顯著大於「攜帶與清洗環保餐具的些微不便」，因此限制符合衡平性。"
   }
 ];
 
-// --- Web Audio API 音效產生器 ---
+// --- 音效產生器 ---
 let audioCtx = null;
 
 function initAudio() {
@@ -137,56 +517,44 @@ function playSound(type) {
     
     switch (type) {
       case 'click': {
-        // 短促的點擊聲
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.connect(gain);
         gain.connect(audioCtx.destination);
-        
         osc.type = 'sine';
         osc.frequency.setValueAtTime(600, now);
         osc.frequency.exponentialRampToValueAtTime(100, now + 0.1);
-        
         gain.gain.setValueAtTime(0.1, now);
         gain.gain.linearRampToValueAtTime(0.01, now + 0.1);
-        
         osc.start(now);
         osc.stop(now + 0.1);
         break;
       }
       case 'bubble': {
-        // 氣球泡泡點擊啵一聲
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.connect(gain);
         gain.connect(audioCtx.destination);
-        
         osc.type = 'triangle';
         osc.frequency.setValueAtTime(300, now);
         osc.frequency.exponentialRampToValueAtTime(800, now + 0.08);
-        
         gain.gain.setValueAtTime(0.15, now);
         gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
-        
         osc.start(now);
         osc.stop(now + 0.08);
         break;
       }
       case 'gavel': {
-        // 木槌敲擊沉悶砰聲 + 金屬餘音
         const osc1 = audioCtx.createOscillator();
         const gain1 = audioCtx.createGain();
         osc1.connect(gain1);
         gain1.connect(audioCtx.destination);
-        
         osc1.type = 'triangle';
         osc1.frequency.setValueAtTime(150, now);
         osc1.frequency.exponentialRampToValueAtTime(40, now + 0.25);
-        
         gain1.gain.setValueAtTime(0.6, now);
         gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
         
-        // 金屬敲擊高頻聲
         const osc2 = audioCtx.createOscillator();
         const gain2 = audioCtx.createGain();
         osc2.connect(gain2);
@@ -204,90 +572,69 @@ function playSound(type) {
         break;
       }
       case 'success': {
-        // 琶音上升 (C大調)
-        const notes = [261.63, 329.63, 392.00, 523.25]; // C4, E4, G4, C5
+        const notes = [261.63, 329.63, 392.00, 523.25];
         notes.forEach((freq, idx) => {
           const osc = audioCtx.createOscillator();
           const gain = audioCtx.createGain();
           osc.connect(gain);
           gain.connect(audioCtx.destination);
-          
           osc.type = 'sine';
           osc.frequency.setValueAtTime(freq, now + idx * 0.08);
-          
           gain.gain.setValueAtTime(0.1, now + idx * 0.08);
           gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.08 + 0.2);
-          
           osc.start(now + idx * 0.08);
           osc.stop(now + idx * 0.08 + 0.2);
         });
         break;
       }
       case 'fail': {
-        // 低沉下降音
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.connect(gain);
         gain.connect(audioCtx.destination);
-        
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(300, now);
         osc.frequency.linearRampToValueAtTime(120, now + 0.4);
-        
         gain.gain.setValueAtTime(0.15, now);
         gain.gain.linearRampToValueAtTime(0.01, now + 0.4);
-        
         osc.start(now);
         osc.stop(now + 0.4);
         break;
       }
       case 'tick': {
-        // 答題或倒數的滴答聲
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.connect(gain);
         gain.connect(audioCtx.destination);
-        
         osc.type = 'sine';
         osc.frequency.setValueAtTime(1000, now);
-        
         gain.gain.setValueAtTime(0.05, now);
         gain.gain.linearRampToValueAtTime(0.001, now + 0.05);
-        
         osc.start(now);
         osc.stop(now + 0.05);
         break;
       }
       case 'cheer': {
-        // 勝利慶祝歡呼模擬音效
         const duration = 1.5;
         const bufferSize = audioCtx.sampleRate * duration;
         const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
         const data = buffer.getChannelData(0);
-        
-        // 產生白噪音
         for (let i = 0; i < bufferSize; i++) {
           data[i] = Math.random() * 2 - 1;
         }
-        
         const noise = audioCtx.createBufferSource();
         noise.buffer = buffer;
-        
-        // 使用帶通濾波器模擬群眾聲音
         const filter = audioCtx.createBiquadFilter();
         filter.type = 'bandpass';
         filter.Q.setValueAtTime(2.0, now);
         filter.frequency.setValueAtTime(1000, now);
         filter.frequency.exponentialRampToValueAtTime(1500, now + duration);
-        
         const gain = audioCtx.createGain();
         gain.gain.setValueAtTime(0.25, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
-        
         noise.connect(filter);
         filter.connect(gain);
         gain.connect(audioCtx.destination);
-        
         noise.start(now);
         noise.stop(now + duration);
         break;
@@ -322,22 +669,61 @@ const syncStatusBox = document.getElementById('sync-status-box');
 const syncIcon = document.getElementById('sync-icon');
 const syncText = document.getElementById('sync-text');
 
+// 滿意度 HUD 元件
+const satisfactionBars = {
+  student: document.getElementById('st-fill-student'),
+  parent: document.getElementById('st-fill-parent'),
+  teacher: document.getElementById('st-fill-teacher')
+};
+const satisfactionVals = {
+  student: document.getElementById('st-val-student'),
+  parent: document.getElementById('st-val-parent'),
+  teacher: document.getElementById('st-val-teacher')
+};
+
+// --- 更新滿意度 HUD 視覺 ---
+function updateSatisfactionHUD() {
+  Object.keys(gameState.satisfaction).forEach(key => {
+    // 確保數值在 0 ~ 100 之間
+    gameState.satisfaction[key] = Math.max(0, Math.min(100, gameState.satisfaction[key]));
+    const val = gameState.satisfaction[key];
+    
+    // 更新長條圖與文字
+    satisfactionBars[key].style.width = `${val}%`;
+    satisfactionVals[key].textContent = `${val}%`;
+    
+    // 根據滿意度高低微調顏色
+    if (val >= 70) {
+      satisfactionBars[key].style.backgroundColor = "var(--color-success)";
+    } else if (val < 40) {
+      satisfactionBars[key].style.backgroundColor = "var(--color-danger)";
+    } else {
+      // 還原原本設計設定的色系
+      satisfactionBars[key].style.backgroundColor = "";
+    }
+  });
+}
+
+// 增減滿意度輔助函式
+function adjustSatisfaction(impacts) {
+  if (!impacts) return;
+  Object.keys(impacts).forEach(key => {
+    if (gameState.satisfaction[key] !== undefined) {
+      gameState.satisfaction[key] += impacts[key];
+    }
+  });
+  updateSatisfactionHUD();
+}
+
 // --- 輔助函式：切換關卡畫面 ---
 function switchScreen(screenName) {
   playSound('click');
-  // 隱藏所有畫面
   Object.values(screens).forEach(screen => {
     screen.classList.remove('active');
   });
-  
-  // 顯示目標畫面
   screens[screenName].classList.add('active');
   
-  // 更新狀態值
-  if (screenName === 'intro') {
-    gameState.currentStage = 0;
-    hud.classList.remove('show');
-  } else if (screenName === 'select') {
+  if (screenName === 'intro' || screenName === 'select') {
     gameState.currentStage = 0;
     hud.classList.remove('show');
   } else {
@@ -350,9 +736,9 @@ function switchScreen(screenName) {
     if (screenName === 'cert') gameState.currentStage = 6;
     
     updateHUDProgress();
+    updateSatisfactionHUD();
   }
   
-  // 初始化特定關卡
   if (screenName === 'stage1') initStage1();
   if (screenName === 'stage2') initStage2();
   if (screenName === 'stage3') initStage3();
@@ -362,13 +748,10 @@ function switchScreen(screenName) {
 }
 
 function updateHUDProgress() {
-  const currentStep = gameState.currentStage - 1; // 關卡1對應節點0
-  
-  // 更新進度條百分比
+  const currentStep = gameState.currentStage - 1;
   const progressPercent = Math.max(0, Math.min(100, currentStep * 25));
   progressBar.style.width = `${progressPercent}%`;
   
-  // 更新節點樣式
   stepNodes.forEach((node, idx) => {
     node.classList.remove('active', 'completed');
     if (idx < currentStep) {
@@ -438,23 +821,19 @@ billCards.forEach(card => {
 });
 
 btnConfirmSelection.addEventListener('click', () => {
-  // 將選取的資料同步至 HUD
   const billInfo = BILLS[gameState.selectedBill];
   hudBillTitle.textContent = billInfo.shortTitle;
   hudCharName.textContent = gameState.playerName;
   
-  // 設定頭像圖示
   let iconClass = "fa-wand-magic-sparkles";
   if (gameState.selectedChar === "ray") iconClass = "fa-graduation-cap";
   if (gameState.selectedChar === "wah") iconClass = "fa-bullhorn";
   
-  // 我們直接使用 FontAwesome 圖示取代圖片
-  hudCharAvatar.className = "hidden"; // 隱藏 img 元素
+  hudCharAvatar.className = "hidden";
   const avatarSpan = document.createElement('i');
   avatarSpan.className = `fas ${iconClass}`;
   avatarSpan.style.color = "var(--color-primary)";
   
-  // 清理舊的圖示
   const existingIcon = hudCharName.parentElement.querySelector('i');
   if (existingIcon) {
     existingIcon.remove();
@@ -464,12 +843,17 @@ btnConfirmSelection.addEventListener('click', () => {
   switchScreen('stage1');
 });
 
-// --- 2. 第一關：連署與一讀會邏輯 ---
+// --- 2. 第一關：起草與一讀會邏輯 ---
+const draftingGameContainer = document.getElementById('drafting-game-container');
+const draftingOptionsContainer = document.getElementById('drafting-options-container');
+
 const sigCountSpan = document.getElementById('sig-count');
 const sigTimerSpan = document.getElementById('sig-timer');
 const sigPlayArea = document.getElementById('sig-play-area');
 const sigStartOverlay = document.getElementById('sig-start-overlay');
 const btnStartSig = document.getElementById('btn-start-sig');
+const sigGameContainer = document.getElementById('sig-game-container');
+
 const firstReadingCeremony = document.getElementById('first-reading-ceremony');
 const ceremonyBillTitle = document.getElementById('ceremony-bill-title');
 const btnStrikeGavelS1 = document.getElementById('btn-strike-gavel-s1');
@@ -478,27 +862,73 @@ const gavelAnimS1 = document.getElementById('gavel-anim-s1');
 
 function initStage1() {
   gameState.signaturesCollected = 0;
-  gameState.sigTimeLeft = 15;
+  gameState.sigTimeLeft = 10;
   gameState.sigGameActive = false;
+  gameState.satisfaction = { student: 50, parent: 50, teacher: 50 }; // 重置滿意度
   
   sigCountSpan.textContent = "0";
-  sigTimerSpan.textContent = "15";
+  sigTimerSpan.textContent = "10";
   
-  // 清空除了 Start Overlay 以外的泡泡
-  const bubbles = sigPlayArea.querySelectorAll('.sig-bubble');
-  bubbles.forEach(b => b.remove());
-  
-  sigStartOverlay.classList.remove('hidden');
+  // 顯示起草任務，隱藏連署與典禮
+  draftingGameContainer.classList.remove('hidden');
+  sigGameContainer.classList.add('hidden');
   firstReadingCeremony.classList.add('hidden');
   btnToStage2.classList.add('hidden');
+  
+  // 清理連署泡泡
+  const bubbles = sigPlayArea.querySelectorAll('.sig-bubble');
+  bubbles.forEach(b => b.remove());
+  sigStartOverlay.classList.remove('hidden');
+  
+  // 生成起草政策選項卡
+  const billInfo = BILLS[gameState.selectedBill];
+  draftingOptionsContainer.innerHTML = "";
+  
+  billInfo.drafting.options.forEach(opt => {
+    const card = document.createElement('div');
+    card.className = 'draft-opt-card';
+    card.dataset.id = opt.id;
+    
+    // 生成影響標籤字串
+    const getImpactText = (val) => val > 0 ? `+${val}` : `${val}`;
+    
+    card.innerHTML = `
+      <div class="draft-opt-title">${opt.title}</div>
+      <div class="draft-opt-desc">${opt.desc}</div>
+      <div class="draft-opt-impact">
+        <span class="student"><i class="fas fa-child"></i> 學生: ${getImpactText(opt.impact.student)}%</span>
+        <span class="parent"><i class="fas fa-user-friends"></i> 家長: ${getImpactText(opt.impact.parent)}%</span>
+        <span class="teacher"><i class="fas fa-chalkboard-teacher"></i> 教師: ${getImpactText(opt.impact.teacher)}%</span>
+      </div>
+    `;
+    
+    card.addEventListener('click', () => {
+      playSound('click');
+      document.querySelectorAll('.draft-opt-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      
+      // 保存玩家起草抉擇
+      gameState.draftChoice = opt.route;
+      
+      // 延遲更新滿意度 HUD 並解鎖下一步
+      setTimeout(() => {
+        adjustSatisfaction(opt.impact);
+        draftingGameContainer.classList.add('hidden');
+        sigGameContainer.classList.remove('hidden');
+        sigGameContainer.scrollIntoView({ behavior: 'smooth' });
+      }, 1000);
+    });
+    
+    draftingOptionsContainer.appendChild(card);
+  });
 }
 
+// 連署泡泡小遊戲
 btnStartSig.addEventListener('click', () => {
   playSound('click');
   sigStartOverlay.classList.add('hidden');
   gameState.sigGameActive = true;
   
-  // 啟動倒數計時器
   gameState.sigTimer = setInterval(() => {
     gameState.sigTimeLeft--;
     sigTimerSpan.textContent = gameState.sigTimeLeft;
@@ -510,7 +940,6 @@ btnStartSig.addEventListener('click', () => {
     }
   }, 1000);
   
-  // 持續產生泡泡
   spawnBubbles();
 });
 
@@ -522,15 +951,11 @@ const legislatorNames = [
 
 function spawnBubbles() {
   if (!gameState.sigGameActive) return;
-  
-  // 每秒隨機產生 2-3 個泡泡
   const count = Math.floor(Math.random() * 2) + 2;
   for (let i = 0; i < count; i++) {
     createBubble();
   }
-  
-  // 1.5 秒後繼續產生
-  setTimeout(spawnBubbles, 1200);
+  setTimeout(spawnBubbles, 1000); // 浮現頻率
 }
 
 function createBubble() {
@@ -538,22 +963,17 @@ function createBubble() {
   
   const bubble = document.createElement('div');
   bubble.className = 'sig-bubble';
-  
   const name = legislatorNames[Math.floor(Math.random() * legislatorNames.length)];
   bubble.innerHTML = `<i class="fas fa-pen-nib"></i> ${name}`;
   
-  // 隨機水平位置
   const posX = Math.random() * (sigPlayArea.clientWidth - 100);
   bubble.style.left = `${posX}px`;
   
-  // 隨機動畫速度
-  const speed = 4 + Math.random() * 3; // 4~7秒
+  const speed = 4 + Math.random() * 2;
   bubble.style.animationDuration = `${speed}s`;
   
-  // 點擊事件
   bubble.addEventListener('click', () => {
     if (bubble.classList.contains('signed')) return;
-    
     bubble.classList.add('signed');
     bubble.innerHTML = `<i class="fas fa-check-circle"></i> 已連署`;
     gameState.signaturesCollected++;
@@ -567,42 +987,31 @@ function createBubble() {
   });
   
   sigPlayArea.appendChild(bubble);
-  
-  // 動畫結束後自動移除
-  setTimeout(() => {
-    bubble.remove();
-  }, speed * 1000);
+  setTimeout(() => bubble.remove(), speed * 1000);
 }
 
 function endSigGame(isWon) {
   gameState.sigGameActive = false;
-  
-  // 移除剩餘未點擊的泡泡
-  const bubbles = sigPlayArea.querySelectorAll('.sig-bubble:not(.signed)');
-  bubbles.forEach(b => b.remove());
+  sigPlayArea.querySelectorAll('.sig-bubble:not(.signed)').forEach(b => b.remove());
   
   if (isWon) {
     playSound('success');
-    // 進入一讀典禮
     ceremonyBillTitle.textContent = BILLS[gameState.selectedBill].title;
     firstReadingCeremony.classList.remove('hidden');
-    
-    // 顯示一讀敲槌按鈕
     btnStrikeGavelS1.classList.remove('hidden');
+    firstReadingCeremony.scrollIntoView({ behavior: 'smooth' });
   } else {
     playSound('fail');
-    alert("連署時間到！我們需要至少 15 位立委簽名才能順利提案。請再挑戰一次！");
+    alert("連署時間到！我們需要至少 15 位立委簽名才能提案。請再挑戰一次！");
     initStage1();
   }
 }
 
-// 敲一讀槌
 gavelAnimS1.addEventListener('click', strikeGavelS1);
 btnStrikeGavelS1.addEventListener('click', strikeGavelS1);
 
 function strikeGavelS1() {
   if (gavelAnimS1.classList.contains('striking')) return;
-  
   gavelAnimS1.classList.add('striking');
   playSound('gavel');
   
@@ -617,15 +1026,14 @@ btnToStage2.addEventListener('click', () => {
   switchScreen('stage2');
 });
 
-// --- 3. 第二關：委員會審查與協商邏輯 ---
-const sortingDeck = document.getElementById('sorting-deck');
-const supportSlots = document.getElementById('support-slots');
-const opposeSlots = document.getElementById('oppose-slots');
-const sortingFeedback = document.getElementById('sorting-feedback');
+// --- 3. 第二關：公聽會與協商邏輯 ---
+const hearingGameContainer = document.getElementById('hearing-game-container');
+const hearingWorkspace = document.getElementById('hearing-workspace');
+const hearingOptionsContainer = document.getElementById('hearing-options-container');
 const negGameContainer = document.getElementById('negotiation-game-container');
 const btnToStage3 = document.getElementById('btn-to-stage3');
 
-// 協商控制
+// 協商拉桿對應
 const sliders = {
   a: document.getElementById('slider-party-a'),
   b: document.getElementById('slider-party-b'),
@@ -642,165 +1050,102 @@ const pointers = {
   c: document.getElementById('ptr-party-c')
 };
 const negFeedback = document.getElementById('negotiation-feedback');
+const targetGlowZone = document.getElementById('target-glow-zone');
 
 function initStage2() {
-  gameState.sortingCorrectCount = 0;
+  gameState.hearingCurrentStakeholder = 0;
   gameState.negotiationSolved = false;
+  gameState.hearingChoices = {};
   
-  sortingFeedback.textContent = "";
-  sortingFeedback.style.color = "var(--text-light)";
-  
-  // 清空 slots
-  supportSlots.innerHTML = "";
-  opposeSlots.innerHTML = "";
-  sortingDeck.innerHTML = "";
-  
+  hearingGameContainer.classList.remove('hidden');
   negGameContainer.classList.add('hidden');
   btnToStage3.classList.add('hidden');
   
-  // 建立分類卡片庫
-  const billInfo = BILLS[gameState.selectedBill];
-  const cardsData = [...billInfo.cardSorting];
+  // 載入第一個利害關係人提問
+  loadHearingQuestion();
   
-  // 隨機洗牌
-  cardsData.sort(() => Math.random() - 0.5);
-  
-  // 渲染卡片 (堆疊在 Deck 區)
-  cardsData.forEach((data, index) => {
-    const card = document.createElement('div');
-    card.className = 'sorting-card';
-    card.textContent = data.text;
-    card.dataset.type = data.type;
-    card.draggable = true;
-    
-    // 設定堆疊效果 (只讓最上面的一張可拖曳，其他隱藏或疊在下面)
-    card.style.transform = `translateY(${index * 2}px) rotate(${(index % 2 === 0 ? 1 : -1) * 1.5}deg)`;
-    if (index !== cardsData.length - 1) {
-      card.style.pointerEvents = 'none';
-      card.style.opacity = '0.7';
-    }
-    
-    // 拖曳事件 (HTML5 Drag & Drop)
-    card.addEventListener('dragstart', (e) => {
-      e.dataTransfer.setData('text/plain', data.type);
-      card.classList.add('dragging');
-    });
-    
-    card.addEventListener('dragend', () => {
-      card.classList.remove('dragging');
-    });
-    
-    // 行動裝置相容：點擊分類 (直接點擊卡片，再點擊左右框)
-    card.addEventListener('click', () => {
-      if (card.style.pointerEvents === 'none') return;
-      
-      // 亮起提示
-      document.querySelectorAll('.sorting-bucket').forEach(b => {
-        b.style.borderColor = "var(--color-primary)";
-      });
-      gameState.activeClickedCard = card;
-    });
-
-    sortingDeck.appendChild(card);
-  });
-  
-  // 設定 Buckets Drag & Drop 監聽
-  setupBucketEvents();
-  
-  // 重設協商拉桿
+  // 初始化協商拉桿
   sliders.a.value = 20;
   sliders.b.value = 80;
   sliders.c.value = 50;
   updateNegotiationSliders();
 }
 
-function setupBucketEvents() {
-  const buckets = document.querySelectorAll('.sorting-bucket');
-  buckets.forEach(bucket => {
-    bucket.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      bucket.classList.add('dragover');
-    });
+function loadHearingQuestion() {
+  const billInfo = BILLS[gameState.selectedBill];
+  
+  if (gameState.hearingCurrentStakeholder < billInfo.hearing.length) {
+    const qData = billInfo.hearing[gameState.hearingCurrentStakeholder];
     
-    bucket.addEventListener('dragleave', () => {
-      bucket.classList.remove('dragover');
-    });
+    // 渲染對話氣泡
+    hearingWorkspace.innerHTML = `
+      <div class="stakeholder-bubble-box">
+        <div class="sh-avatar ${qData.stakeholder}">
+          <i class="fas ${qData.avatar}"></i>
+        </div>
+        <div class="sh-bubble">
+          <div class="sh-name">${qData.name}</div>
+          <div class="sh-quote">「${qData.quote}」</div>
+        </div>
+      </div>
+    `;
     
-    bucket.addEventListener('drop', (e) => {
-      e.preventDefault();
-      bucket.classList.remove('dragover');
-      const cardType = e.dataTransfer.getData('text/plain');
-      const draggingCard = document.querySelector('.sorting-card.dragging');
+    // 渲染答辯選項
+    hearingOptionsContainer.innerHTML = "";
+    qData.options.forEach((opt, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'hearing-opt-btn';
+      btn.textContent = opt.text;
       
-      handleCardPlacement(draggingCard, cardType, bucket);
-    });
-    
-    // 行動版點擊落點
-    bucket.addEventListener('click', () => {
-      if (gameState.activeClickedCard) {
-        const card = gameState.activeClickedCard;
-        const cardType = card.dataset.type;
-        handleCardPlacement(card, cardType, bucket);
-        gameState.activeClickedCard = null;
+      btn.addEventListener('click', () => {
+        playSound('click');
+        // 保存決策
+        gameState.hearingChoices[qData.stakeholder] = opt.text;
         
-        // 還原提示
-        document.querySelectorAll('.sorting-bucket').forEach(b => {
-          b.style.borderColor = "rgba(255, 255, 255, 0.1)";
-        });
-      }
+        // 增減滿意度
+        adjustSatisfaction(opt.impact);
+        
+        // 載入下一個利害關係人或進入協商
+        gameState.hearingCurrentStakeholder++;
+        hearingWorkspace.classList.add('hidden'); // 轉場閃爍
+        setTimeout(() => {
+          hearingWorkspace.classList.remove('hidden');
+          loadHearingQuestion();
+        }, 400);
+      });
+      
+      hearingOptionsContainer.appendChild(btn);
     });
-  });
-}
-
-function handleCardPlacement(card, cardType, bucket) {
-  if (!card) return;
-  
-  const targetBucketType = bucket.dataset.target; // support or oppose
-  
-  if (cardType === targetBucketType) {
-    // 分類正確
-    playSound('bubble');
-    card.classList.add('placed');
-    card.draggable = false;
-    card.style.transform = 'none';
-    card.style.pointerEvents = 'none';
-    card.style.opacity = '1';
-    
-    // 移入對應 bucket
-    const slot = bucket.querySelector('.bucket-slots');
-    slot.appendChild(card);
-    
-    gameState.sortingCorrectCount++;
-    sortingFeedback.textContent = "答對了！觀點歸類正確！";
-    sortingFeedback.style.color = "var(--color-success)";
-    
-    // 解鎖下一張卡片
-    const remainingCards = sortingDeck.querySelectorAll('.sorting-card');
-    if (remainingCards.length > 0) {
-      const topCard = remainingCards[remainingCards.length - 1];
-      topCard.style.pointerEvents = 'auto';
-      topCard.style.opacity = '1';
-      topCard.style.transform = 'none';
-    }
-    
-    if (gameState.sortingCorrectCount === gameState.sortingTotal) {
-      playSound('success');
-      sortingFeedback.textContent = "委員會正反意見整理完畢！現在進入朝野協商階段。";
-      // 顯示協商遊戲
-      setTimeout(() => {
-        negGameContainer.classList.remove('hidden');
-        negGameContainer.scrollIntoView({ behavior: 'smooth' });
-      }, 800);
-    }
   } else {
-    // 分類錯誤
-    playSound('fail');
-    sortingFeedback.textContent = "不對唷，這項觀點的屬性分錯了，請重新思考！";
-    sortingFeedback.style.color = "var(--color-danger)";
+    // 公聽會結束，開啟朝野協商
+    hearingGameContainer.classList.add('hidden');
+    negGameContainer.classList.remove('hidden');
+    
+    // 素養動態難度機制：
+    // 計算三方支持度的「標準差/分歧度」。若某一方極度不滿，協商共識發光區會縮小！
+    const vals = Object.values(gameState.satisfaction);
+    const minVal = Math.min(...vals);
+    
+    // 如果有任一方支持度低於 35%，共識發光區縮小至 5% (難度增加！)，否則為 10%
+    if (minVal < 35) {
+      targetGlowZone.style.left = "48%";
+      targetGlowZone.style.width = "4%";
+      document.querySelector('.target-label').textContent = "意見嚴重對立！極小共識區 (48%~52%)";
+      negFeedback.textContent = "🚨 注意：因公聽會上有利益代表非常不滿，導致朝野政黨對立，協商共識範圍大幅縮減！";
+      negFeedback.style.color = "var(--color-danger)";
+    } else {
+      targetGlowZone.style.left = "45%";
+      targetGlowZone.style.width = "10%";
+      document.querySelector('.target-label').textContent = "朝野共識區 (45%~55%)";
+      negFeedback.textContent = "公聽會順利結束，利益相對平衡，朝野協商難度適中。請對齊指針！";
+      negFeedback.style.color = "var(--color-warning)";
+    }
+    
+    negGameContainer.scrollIntoView({ behavior: 'smooth' });
   }
 }
 
-// 黨團協商拉桿事件
+// 協商拉桿處理
 Object.keys(sliders).forEach(key => {
   sliders[key].addEventListener('input', () => {
     updateNegotiationSliders();
@@ -822,9 +1167,17 @@ function updateNegotiationSliders() {
   
   playSound('tick');
   
-  // 判斷是否全部都在共識區 (45% ~ 55%)
-  const minTarget = 45;
-  const maxTarget = 55;
+  // 檢查是否都在共識區
+  const vals = Object.values(gameState.satisfaction);
+  const minVal = Math.min(...vals);
+  
+  // 根據是否有嚴重衝突，決定共識區的界線
+  let minTarget = 45;
+  let maxTarget = 55;
+  if (minVal < 35) {
+    minTarget = 48;
+    maxTarget = 52;
+  }
   
   if (valA >= minTarget && valA <= maxTarget &&
       valB >= minTarget && valB <= maxTarget &&
@@ -833,14 +1186,19 @@ function updateNegotiationSliders() {
     if (!gameState.negotiationSolved) {
       gameState.negotiationSolved = true;
       playSound('success');
-      negFeedback.textContent = "🎉 協商成功！朝野各黨達成折衷共識，本案送出審查報告，進入二讀會！";
+      negFeedback.textContent = "🎉 協商成功！各黨完成讓步，本案送出審查報告，進入二讀會！";
       negFeedback.style.color = "var(--color-success)";
       btnToStage3.classList.remove('hidden');
     }
   } else {
     gameState.negotiationSolved = false;
-    negFeedback.textContent = "朝野意見仍有分歧，繼續拉近彼此的差距...（將三方指針都調整至發光的共識區）";
-    negFeedback.style.color = "var(--color-warning)";
+    if (minVal < 35) {
+      negFeedback.textContent = "🚨 政黨意見陷入冰點，請小心微調讓指針重合在紅色極窄共識區內！";
+      negFeedback.style.color = "var(--color-danger)";
+    } else {
+      negFeedback.textContent = "朝野協商中，努力調和立場...（請將三方指針都調整至發光的共識區）";
+      negFeedback.style.color = "var(--color-warning)";
+    }
     btnToStage3.classList.add('hidden');
   }
 }
@@ -849,7 +1207,7 @@ btnToStage3.addEventListener('click', () => {
   switchScreen('stage3');
 });
 
-// --- 4. 第三關：二讀會公民問答與大表決邏輯 ---
+// --- 4. 第三關：二讀會大辯論 (比例原則思辨) ---
 const quizQNum = document.getElementById('quiz-q-num');
 const quizQuestion = document.getElementById('quiz-question');
 const quizOptionsContainer = document.getElementById('quiz-options-container');
@@ -865,7 +1223,6 @@ const votingTriggerOverlay = document.getElementById('voting-trigger-overlay');
 const btnStartElectronicVote = document.getElementById('btn-start-electronic-vote');
 const btnToStage4 = document.getElementById('btn-to-stage4');
 
-// 總席次 113
 const TOTAL_SEATS = 113;
 let seatElements = [];
 
@@ -884,7 +1241,6 @@ function initStage3() {
   voteCountNo.textContent = "0";
   voteCountUndecided.textContent = TOTAL_SEATS.toString();
   
-  // 建立 113 席立委席次圓點
   votingSeatsGrid.innerHTML = "";
   seatElements = [];
   for (let i = 0; i < TOTAL_SEATS; i++) {
@@ -894,7 +1250,6 @@ function initStage3() {
     seatElements.push(seat);
   }
   
-  // 載入問題
   loadQuizQuestion();
 }
 
@@ -910,16 +1265,14 @@ function loadQuizQuestion() {
     qData.options.forEach((opt, idx) => {
       const btn = document.createElement('button');
       btn.className = 'quiz-opt-btn';
-      btn.innerHTML = opt;
+      btn.textContent = opt;
       btn.addEventListener('click', () => handleQuizAnswer(idx, btn));
       quizOptionsContainer.appendChild(btn);
     });
   } else {
-    // 答題結束，觸發投票準備
-    quizQNum.textContent = "答題完成";
-    quizQuestion.textContent = "游離票委員遊說完畢！準備啟動二讀會院會電子表決。";
+    quizQNum.textContent = "院會大辯論結束";
+    quizQuestion.textContent = "比例原則辯論完畢！全案進行二讀逐條討論與表決！";
     quizOptionsContainer.innerHTML = "";
-    
     votingTriggerOverlay.classList.remove('hidden');
   }
 }
@@ -928,11 +1281,9 @@ function handleQuizAnswer(selectedIdx, clickedBtn) {
   const qData = QUIZ_QUESTIONS[gameState.quizCurrentQuestion];
   const allBtns = quizOptionsContainer.querySelectorAll('.quiz-opt-btn');
   
-  // 停用所有按鈕
   allBtns.forEach(btn => btn.style.pointerEvents = 'none');
   
   if (selectedIdx === qData.answer) {
-    // 答對了
     playSound('success');
     gameState.quizScore++;
     clickedBtn.classList.add('correct');
@@ -941,23 +1292,22 @@ function handleQuizAnswer(selectedIdx, clickedBtn) {
     quizFeedbackText.innerHTML = `<strong>答對了！</strong> ${qData.explanation}`;
     quizFeedbackText.style.color = "var(--color-success)";
     
-    // 說服立委：讓 22 位立委變成贊成 (綠色)
-    convinceLegislators(true, 22);
+    // 答對加 25 位支持立委，且稍微增加各方滿意度
+    convinceLegislators(true, 25);
+    adjustSatisfaction({ student: 5, parent: 5, teacher: 5 });
   } else {
-    // 答錯了
     playSound('fail');
     clickedBtn.classList.add('wrong');
-    allBtns[qData.answer].classList.add('correct'); // 顯示正確答案
+    allBtns[qData.answer].classList.add('correct');
     
     quizFeedbackBox.classList.remove('hidden');
-    quizFeedbackText.innerHTML = `<strong>答錯了。</strong>正確答案是第一個選項。<br>${qData.explanation}`;
+    quizFeedbackText.innerHTML = `<strong>答錯了。</strong>正確回答為第一個選項。<br>${qData.explanation}`;
     quizFeedbackText.style.color = "var(--color-danger)";
     
-    // 說服失敗：讓 10 位立委變成反對 (紅色)
-    convinceLegislators(false, 10);
+    // 答錯加 12 位反對立委
+    convinceLegislators(false, 12);
   }
   
-  // 3秒後進入下一題
   setTimeout(() => {
     gameState.quizCurrentQuestion++;
     loadQuizQuestion();
@@ -965,8 +1315,6 @@ function handleQuizAnswer(selectedIdx, clickedBtn) {
 }
 
 function convinceLegislators(isYes, num) {
-  let count = 0;
-  // 隨機挑選未決定的席次
   const undecidedIndices = [];
   seatElements.forEach((seat, idx) => {
     if (!seat.classList.contains('yes') && !seat.classList.contains('no')) {
@@ -974,9 +1322,7 @@ function convinceLegislators(isYes, num) {
     }
   });
   
-  // 洗牌隨機順序
   undecidedIndices.sort(() => Math.random() - 0.5);
-  
   const toChange = Math.min(num, undecidedIndices.length);
   for (let i = 0; i < toChange; i++) {
     const seatIdx = undecidedIndices[i];
@@ -989,13 +1335,11 @@ function convinceLegislators(isYes, num) {
     }
   }
   
-  // 更新 HUD 計數
   voteCountYes.textContent = gameState.yesVotes.toString();
   voteCountNo.textContent = gameState.noVotes.toString();
   voteCountUndecided.textContent = (TOTAL_SEATS - gameState.yesVotes - gameState.noVotes).toString();
 }
 
-// 點擊啟動表決
 btnStartElectronicVote.addEventListener('click', () => {
   playSound('click');
   votingTriggerOverlay.classList.add('hidden');
@@ -1004,8 +1348,6 @@ btnStartElectronicVote.addEventListener('click', () => {
 
 function runVotingSimulation() {
   gameState.votingActive = true;
-  
-  // 找出所有尚未投票的立委
   const undecidedIndices = [];
   seatElements.forEach((seat, idx) => {
     if (!seat.classList.contains('yes') && !seat.classList.contains('no')) {
@@ -1015,17 +1357,19 @@ function runVotingSimulation() {
   
   let i = 0;
   
-  // 答題得分越高，剩餘立委投贊成的機率越高
-  // 3分: 80% 投贊成
-  // 2分: 60% 投贊成
-  // 1分: 40% 投贊成
-  // 0分: 30% 投贊成
-  let passProbability = 0.3;
-  if (gameState.quizScore === 3) passProbability = 0.85;
-  else if (gameState.quizScore === 2) passProbability = 0.65;
-  else if (gameState.quizScore === 1) passProbability = 0.45;
+  // 素養答題影響機率與利害關係人滿意度均值加權
+  const satisfactionAverage = Object.values(gameState.satisfaction).reduce((a,b)=>a+b, 0) / 3;
+  let passProbability = 0.2; // 基礎投贊成率
+  
+  // 答對題數加權
+  if (gameState.quizScore === 3) passProbability += 0.5;
+  else if (gameState.quizScore === 2) passProbability += 0.35;
+  else if (gameState.quizScore === 1) passProbability += 0.15;
+  
+  // 民意支持度加權
+  if (satisfactionAverage >= 60) passProbability += 0.15;
+  if (satisfactionAverage < 40) passProbability -= 0.15;
 
-  // 定時器動態開票
   const voteInterval = setInterval(() => {
     if (i >= undecidedIndices.length) {
       clearInterval(voteInterval);
@@ -1050,21 +1394,20 @@ function runVotingSimulation() {
     
     playSound('tick');
     i++;
-  }, 40); // 快速滾動開票
+  }, 40);
 }
 
 function finishVote() {
   gameState.votingActive = false;
-  
   if (gameState.yesVotes >= 57) {
     playSound('cheer');
-    alert(`表決結果：贊成 ${gameState.yesVotes} 票，反對 ${gameState.noVotes} 票。過半數委員贊成，本案二讀通過！`);
+    alert(`二讀表決通過！\n贊成：${gameState.yesVotes}票，反對：${gameState.noVotes}票。\n法案成功維持過半數優勢，通過二讀會！`);
     btnToStage4.classList.remove('hidden');
     btnToStage4.scrollIntoView({ behavior: 'smooth' });
   } else {
     playSound('fail');
-    alert(`表決結果：贊成 ${gameState.yesVotes} 票，反對 ${gameState.noVotes} 票。未達過半數通過門檻（57票），法案被否決！\n\n別氣餒，請重新回答問題爭取更多支持，再挑戰表決！`);
-    initStage3(); // 重新挑戰
+    alert(`表決被否決！\n贊成：${gameState.yesVotes}票，反對：${gameState.noVotes}票。\n因利益衝突未調和或法理答辯失敗，支持票未達57票門檻。請重新答辯爭取立委支持！`);
+    initStage3();
   }
 }
 
@@ -1072,11 +1415,15 @@ btnToStage4.addEventListener('click', () => {
   switchScreen('stage4');
 });
 
-// --- 5. 第四關：三讀會字句校對與敲槌邏輯 ---
+// --- 5. 第四關：三讀會 (合憲性審查) ---
 const proofreadBillTitle = document.getElementById('proofread-bill-title');
 const proofreadBillContent = document.getElementById('proofread-bill-content');
 const proofreadCorrectedCount = document.getElementById('proofread-corrected-count');
 const proofreadFeedback = document.getElementById('proofread-feedback');
+
+const constitutionModal = document.getElementById('constitution-modal');
+const constitutionTypoExplain = document.getElementById('constitution-typo-explain');
+const constitutionModalOptions = document.getElementById('constitution-modal-options');
 
 const thirdReadingCeremony = document.getElementById('third-reading-ceremony');
 const ceremonyBillTitleS4 = document.getElementById('ceremony-bill-title-s4');
@@ -1085,46 +1432,75 @@ const gavelAnimS4 = document.getElementById('gavel-anim-s4');
 const btnToStage5 = document.getElementById('btn-to-stage5');
 
 function initStage4() {
-  gameState.proofreadCorrected = 0;
-  proofreadCorrectedCount.textContent = "0";
+  gameState.constitutionCorrected = false;
+  proofreadCorrectedCount.textContent = "未修正";
+  proofreadCorrectedCount.style.color = "var(--color-danger)";
   proofreadFeedback.textContent = "";
   
+  constitutionModal.classList.add('hidden');
   thirdReadingCeremony.classList.add('hidden');
   btnToStage5.classList.add('hidden');
   
-  // 載入本案的條文文字
   const billInfo = BILLS[gameState.selectedBill];
-  proofreadBillTitle.textContent = billInfo.title + " (草案)";
-  proofreadBillContent.innerHTML = billInfo.content;
+  proofreadBillTitle.textContent = billInfo.title + " (草案最終審)";
+  proofreadBillContent.innerHTML = billInfo.unconstitutional.content;
   
-  // 為錯字綁定點擊事件
-  const typoTargets = proofreadBillContent.querySelectorAll('.typo-target');
-  typoTargets.forEach(typo => {
-    typo.addEventListener('click', () => {
-      if (typo.classList.contains('fixed')) return;
-      
-      const correctWord = typo.dataset.correct;
-      typo.textContent = correctWord;
-      typo.classList.add('fixed');
-      
-      gameState.proofreadCorrected++;
-      proofreadCorrectedCount.textContent = gameState.proofreadCorrected;
-      playSound('bubble');
-      
-      if (gameState.proofreadCorrected === gameState.proofreadTotal) {
+  // 綁定違憲下底線點擊事件
+  const target = document.getElementById('typo-unconstitutional');
+  if (target) {
+    target.addEventListener('click', openConstitutionModal);
+  }
+}
+
+function openConstitutionModal() {
+  if (gameState.constitutionCorrected) return;
+  playSound('click');
+  
+  const billInfo = BILLS[gameState.selectedBill];
+  constitutionTypoExplain.textContent = billInfo.unconstitutional.explain;
+  
+  // 產生修正條文按鈕
+  constitutionModalOptions.innerHTML = "";
+  billInfo.unconstitutional.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'modal-opt-btn';
+    btn.textContent = opt.text;
+    
+    btn.addEventListener('click', () => {
+      if (opt.isCorrect) {
         playSound('success');
-        proofreadFeedback.textContent = "🎉 字句校對完成！沒有牴觸憲法與法律。本案無異議進行三讀表決通過！";
+        btn.classList.add('correct');
         
-        // 進入三讀敲槌典禮
+        // 修正條文
+        const target = document.getElementById('typo-unconstitutional');
+        target.textContent = opt.text;
+        target.className = "typo-target fixed";
+        
+        gameState.constitutionCorrected = true;
+        proofreadCorrectedCount.textContent = "已合憲修正";
+        proofreadCorrectedCount.style.color = "var(--color-success)";
+        proofreadFeedback.textContent = opt.feedback;
+        
+        // 增加各方滿意度 (保護隱私與人權)
+        adjustSatisfaction({ student: 10, parent: 10, teacher: 10 });
+        
         setTimeout(() => {
+          constitutionModal.classList.add('hidden');
           ceremonyBillTitleS4.textContent = billInfo.shortTitle;
           thirdReadingCeremony.classList.remove('hidden');
           btnStrikeGavelS4.classList.remove('hidden');
           thirdReadingCeremony.scrollIntoView({ behavior: 'smooth' });
-        }, 1000);
+        }, 1500);
+      } else {
+        playSound('fail');
+        alert(`${opt.feedback} 請重新審查與衡平考量！`);
       }
     });
+    
+    constitutionModalOptions.appendChild(btn);
   });
+  
+  constitutionModal.classList.remove('hidden');
 }
 
 // 敲三讀槌
@@ -1133,7 +1509,6 @@ btnStrikeGavelS4.addEventListener('click', strikeGavelS4);
 
 function strikeGavelS4() {
   if (gavelAnimS4.classList.contains('striking')) return;
-  
   gavelAnimS4.classList.add('striking');
   playSound('gavel');
   
@@ -1148,19 +1523,21 @@ btnToStage5.addEventListener('click', () => {
   switchScreen('stage5');
 });
 
-// --- 6. 第五關：總統公布與行政院覆議挑戰邏輯 ---
+// --- 6. 第五關：總統公布與行政院覆議挑戰 ---
 const vetoBillTitle = document.getElementById('veto-bill-title');
 const vetoAlertContainer = document.getElementById('veto-alert-container');
-const btnStartVetoGame = document.getElementById('btn-start-veto-game');
-const vetoGameContainer = document.getElementById('veto-game-container');
+const vetoOptionsContainer = document.getElementById('veto-options-container');
 
+const vetoGameContainer = document.getElementById('veto-game-container');
 const vetoProgressFill = document.getElementById('veto-progress-fill');
 const vetoVotesSpan = document.getElementById('veto-votes');
 const vetoTimerSpan = document.getElementById('veto-timer');
 const btnClickVote = document.getElementById('btn-click-vote');
+const vetoGameInstruction = document.getElementById('veto-game-instruction');
 
 const vetoSuccessBox = document.getElementById('veto-success-box');
 const vetoFailBox = document.getElementById('veto-fail-box');
+const vetoFailMessage = document.getElementById('veto-fail-message');
 
 const btnToCertificate = document.getElementById('btn-to-certificate');
 const btnRestartVeto = document.getElementById('btn-restart-veto');
@@ -1169,6 +1546,7 @@ function initStage5() {
   gameState.vetoClicks = 0;
   gameState.vetoTimeLeft = 8.0;
   gameState.vetoGameActive = false;
+  gameState.vetoChoice = "";
   
   vetoBillTitle.textContent = BILLS[gameState.selectedBill].title;
   
@@ -1180,15 +1558,55 @@ function initStage5() {
   vetoProgressFill.style.width = "0%";
   vetoVotesSpan.textContent = "0";
   vetoTimerSpan.textContent = "8.0";
+  
+  // 生成覆議答辯決策選項
+  const billInfo = BILLS[gameState.selectedBill];
+  vetoOptionsContainer.innerHTML = "";
+  
+  billInfo.veto.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'veto-opt-btn';
+    btn.textContent = opt.text;
+    
+    btn.addEventListener('click', () => {
+      playSound('click');
+      gameState.vetoChoice = opt.route;
+      
+      // 更新滿意度影響
+      adjustSatisfaction(opt.impact);
+      
+      // 如果選擇的是「撤回/放棄」，直接失敗結束
+      if (opt.clicks === 0) {
+        vetoAlertContainer.classList.add('hidden');
+        playSound('fail');
+        vetoFailBox.classList.remove('hidden');
+        vetoFailMessage.textContent = "您選擇了『撤回法案』放棄政策防衛。本法規草案就此宣告失效，挑戰失敗！";
+        return;
+      }
+      
+      // 設定覆議點擊門檻
+      gameState.vetoClicksRequired = opt.clicks;
+      
+      // 進入點擊小遊戲
+      vetoAlertContainer.classList.add('hidden');
+      startVetoClickGame();
+    });
+    
+    vetoOptionsContainer.appendChild(btn);
+  });
 }
 
-btnStartVetoGame.addEventListener('click', () => {
-  playSound('click');
-  vetoAlertContainer.classList.add('hidden');
+function startVetoClickGame() {
   vetoGameContainer.classList.remove('hidden');
   gameState.vetoGameActive = true;
   
-  // 倒數計時器 (支援小數點 1/10 秒更新)
+  // 設定指令說明
+  vetoGameInstruction.innerHTML = `
+    <i class="fas fa-mouse-pointer animate-ping"></i> 
+    您的防衛策略為：<strong>${gameState.vetoChoice}</strong>。<br>
+    需在 8 秒內狂點按鈕累計滿 <strong>${gameState.vetoClicksRequired} 次</strong>（過半數席次）以維持原案！
+  `;
+  
   gameState.vetoTimer = setInterval(() => {
     gameState.vetoTimeLeft -= 0.1;
     if (gameState.vetoTimeLeft <= 0) {
@@ -1197,25 +1615,22 @@ btnStartVetoGame.addEventListener('click', () => {
       endVetoGame();
     }
     vetoTimerSpan.textContent = gameState.vetoTimeLeft.toFixed(1);
-    
-    // 如果快倒數完且沒完成，發出緊張滴答聲
     if (gameState.vetoTimeLeft < 3.0 && gameState.vetoTimeLeft > 0) {
       playSound('tick');
     }
   }, 100);
-});
+}
 
-// 狂點表決
 btnClickVote.addEventListener('click', () => {
   if (!gameState.vetoGameActive) return;
   
   gameState.vetoClicks++;
   
-  // 1 點 = 2 票，最多 113 票
-  const totalVotes = Math.min(113, gameState.vetoClicks * 2);
+  // 換算票數比例： 達到所需點擊數 = 58 票。
+  // 票數 = Math.floor((點擊數 / 所需點擊數) * 58) 
+  const totalVotes = Math.min(113, Math.floor((gameState.vetoClicks / gameState.vetoClicksRequired) * 58));
   vetoVotesSpan.textContent = totalVotes;
   
-  // 填滿進度條
   const percent = (totalVotes / 113) * 100;
   vetoProgressFill.style.width = `${percent}%`;
   
@@ -1226,23 +1641,21 @@ function endVetoGame() {
   gameState.vetoGameActive = false;
   vetoGameContainer.classList.add('hidden');
   
-  const finalVotes = Math.min(113, gameState.vetoClicks * 2);
+  const finalVotes = Math.min(113, Math.floor((gameState.vetoClicks / gameState.vetoClicksRequired) * 58));
   
   if (finalVotes >= 57) {
-    // 覆議成功，駁回行政院覆議
     playSound('cheer');
     triggerConfetti();
     vetoSuccessBox.classList.remove('hidden');
     vetoSuccessBox.scrollIntoView({ behavior: 'smooth' });
   } else {
-    // 覆議失敗，退回
     playSound('fail');
     vetoFailBox.classList.remove('hidden');
+    vetoFailMessage.textContent = `覆議挑戰失敗！\n贊成維持原案票數僅 ${finalVotes} 票，未達過半數 57 票門檻，法案就此失效。請重擬政策辯護防線！`;
     vetoFailBox.scrollIntoView({ behavior: 'smooth' });
   }
 }
 
-// 重新挑戰覆議
 btnRestartVeto.addEventListener('click', () => {
   initStage5();
 });
@@ -1251,64 +1664,18 @@ btnToCertificate.addEventListener('click', () => {
   switchScreen('cert');
 });
 
-// --- 7. 證書畫面邏輯 ---
+// --- 7. 證書畫面與成果統計邏輯 ---
 const certPlayerName = document.getElementById('cert-player-name');
 const certBillTitle = document.getElementById('cert-bill-title');
 const certDateYear = document.getElementById('cert-date-year');
 const certDateMonth = document.getElementById('cert-date-month');
 const certDateDay = document.getElementById('cert-date-day');
 
+const certBalanceScore = document.getElementById('cert-balance-score');
+const certProportionalityScore = document.getElementById('cert-proportionality-score');
+
 const btnPrintCertificate = document.getElementById('btn-print-certificate');
 const btnRestartAll = document.getElementById('btn-restart-all');
-
-function sendDataToBackend() {
-  if (!syncStatusBox || !syncIcon || !syncText) return;
-
-  if (GOOGLE_SHEET_APP_URL === "") {
-    // 未設定後端，單機模式
-    syncStatusBox.className = "sync-status-box failed";
-    syncIcon.className = "fas fa-exclamation-circle sync-icon";
-    syncText.textContent = "⚠️ 教師未設定 Google 試算表串接網址，作答成果未同步（單機模式）。";
-    return;
-  }
-
-  // 設定為同步中狀態
-  syncStatusBox.className = "sync-status-box syncing";
-  syncIcon.className = "fas fa-sync sync-icon";
-  syncText.textContent = "正在同步成果至雲端試算表...";
-
-  const payload = {
-    class: gameState.playerClass,
-    seat: gameState.playerSeat,
-    name: gameState.playerName,
-    bill: BILLS[gameState.selectedBill].title,
-    score: gameState.quizScore,
-    passed: (gameState.vetoClicks * 2 >= 57) ? "是" : "否",
-    timestamp: new Date().toLocaleString("zh-TW", { timeZone: "Asia/Taipei" })
-  };
-
-  // 使用 mode: 'no-cors' 來避免跨網域 CORS 問題
-  fetch(GOOGLE_SHEET_APP_URL, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(payload)
-  })
-  .then(() => {
-    // 成功同步 (no-cors 即使拿到 opaque response 也會 resolve)
-    syncStatusBox.className = "sync-status-box success";
-    syncIcon.className = "fas fa-check-circle sync-icon";
-    syncText.textContent = "🎉 學習成果已成功同步至教師的 Google 試算表！";
-  })
-  .catch((error) => {
-    console.error("Backend sync failed:", error);
-    syncStatusBox.className = "sync-status-box failed";
-    syncIcon.className = "fas fa-times-circle sync-icon";
-    syncText.textContent = "❌ 同步失敗，請檢查網路連線或通知教師！";
-  });
-}
 
 function initCertificate() {
   certPlayerName.textContent = gameState.playerName;
@@ -1319,15 +1686,80 @@ function initCertificate() {
   const year = today.getFullYear();
   const month = today.getMonth() + 1;
   const day = today.getDate();
-  
   certDateYear.textContent = (year - 1911).toString();
   certDateMonth.textContent = month.toString();
   certDateDay.textContent = day.toString();
   
-  // 觸發後端同步
-  sendDataToBackend();
+  // 評估學生素養指標：利益平衡度 (即學生、家長、教師滿意度是否差距很大)
+  const vals = Object.values(gameState.satisfaction);
+  const maxVal = Math.max(...vals);
+  const minVal = Math.min(...vals);
+  const diff = maxVal - minVal;
+  
+  let balanceRating = "良好 (平衡)";
+  if (diff > 45) {
+    balanceRating = "失衡 (偏頗)";
+  } else if (diff <= 20) {
+    balanceRating = "卓越 (高度和諧)";
+  } else {
+    balanceRating = "中等 (尚可妥協)";
+  }
+  
+  certBalanceScore.textContent = `${balanceRating} (支持差距: ${diff}%)`;
+  certProportionalityScore.textContent = `${gameState.quizScore} / 3 題`;
+  
+  // 送出後端 Google Sheets 收集 (包含素養決策欄位)
+  sendDataToBackend(balanceRating);
   
   triggerConfetti();
+}
+
+function sendDataToBackend(balanceRating) {
+  if (!syncStatusBox || !syncIcon || !syncText) return;
+
+  if (GOOGLE_SHEET_APP_URL === "") {
+    syncStatusBox.className = "sync-status-box failed";
+    syncIcon.className = "fas fa-exclamation-circle sync-icon";
+    syncText.textContent = "⚠️ 教師未設定 Google 試算表串接網址，作答成果未同步（單機模式）。";
+    return;
+  }
+
+  syncStatusBox.className = "sync-status-box syncing";
+  syncIcon.className = "fas fa-sync sync-icon";
+  syncText.textContent = "正在同步成果至雲端試算表...";
+
+  const payload = {
+    class: gameState.playerClass,
+    seat: gameState.playerSeat,
+    name: gameState.playerName,
+    bill: BILLS[gameState.selectedBill].title,
+    draft: gameState.draftChoice,               // 起草路線
+    balance: `${balanceRating} (差值:${Math.max(...Object.values(gameState.satisfaction))-Math.min(...Object.values(gameState.satisfaction))}%)`, // 滿意度差
+    score: gameState.quizScore,                 // 比例原則得分
+    vetoStrategy: gameState.vetoChoice,         // 覆議答辯路線
+    passed: "是",
+    timestamp: new Date().toLocaleString("zh-TW", { timeZone: "Asia/Taipei" })
+  };
+
+  fetch(GOOGLE_SHEET_APP_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  })
+  .then(() => {
+    syncStatusBox.className = "sync-status-box success";
+    syncIcon.className = "fas fa-check-circle sync-icon";
+    syncText.textContent = "🎉 學習成果已成功同步至教師的 Google 試算表！";
+  })
+  .catch((error) => {
+    console.error("Backend sync failed:", error);
+    syncStatusBox.className = "sync-status-box failed";
+    syncIcon.className = "fas fa-times-circle sync-icon";
+    syncText.textContent = "❌ 同步失敗，請檢查網路連線或通知教師！";
+  });
 }
 
 btnPrintCertificate.addEventListener('click', () => {
@@ -1363,19 +1795,15 @@ class ConfettiParticle {
     this.rotation = Math.random() * 360;
     this.rotationSpeed = Math.random() * 10 - 5;
   }
-  
   update() {
     this.x += this.speedX;
     this.y += this.speedY;
     this.rotation += this.rotationSpeed;
-    
-    // 如果掉出畫面，重新從上方產生
     if (this.y > canvas.height) {
       this.y = -20;
       this.x = Math.random() * canvas.width;
     }
   }
-  
   draw() {
     ctx.save();
     ctx.translate(this.x, this.y);
@@ -1392,10 +1820,7 @@ function triggerConfetti() {
   for (let i = 0; i < 120; i++) {
     confettiParticles.push(new ConfettiParticle());
   }
-  
   animateConfetti();
-  
-  // 5秒後自動停止動畫以節省 CPU
   setTimeout(() => {
     confettiActive = false;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1404,18 +1829,14 @@ function triggerConfetti() {
 
 function animateConfetti() {
   if (!confettiActive) return;
-  
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
   confettiParticles.forEach(p => {
     p.update();
     p.draw();
   });
-  
   requestAnimationFrame(animateConfetti);
 }
 
 // --- 初始化啟動 ---
-// 預設回到 intro
 switchScreen('intro');
-console.log("法案奇幻冒險：三讀闖關大作戰！載入完成！");
+console.log("立法大師：素養思辨挑戰賽載入完成！");

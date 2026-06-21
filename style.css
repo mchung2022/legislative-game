@@ -1403,6 +1403,337 @@ h1, h2, h3, h4, h5 {
   100% { transform: rotate(360deg); }
 }
 
+/* Stakeholder HUD Styles */
+.stakeholders-hud {
+  display: flex;
+  gap: 15px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--card-border);
+  padding: 6px 15px;
+  border-radius: 50px;
+  align-items: center;
+}
+
+.st-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+}
+
+.st-label {
+  font-weight: 700;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.st-bar {
+  width: 45px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.st-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.student .st-fill { background: hsl(200, 90%, 55%); }
+.parent .st-fill { background: hsl(30, 95%, 55%); }
+.teacher .st-fill { background: hsl(145, 80%, 45%); }
+
+.st-val {
+  font-family: var(--font-outfit);
+  font-weight: 600;
+  color: var(--text-light);
+  min-width: 28px;
+}
+
+/* Policy Drafting Option Cards */
+.drafting-options-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.draft-opt-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--card-border);
+  border-radius: var(--border-radius-md);
+  padding: 18px 22px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+
+.draft-opt-card:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateX(4px);
+}
+
+.draft-opt-card.selected {
+  border-color: var(--color-primary);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 15px var(--color-primary-glow);
+}
+
+.draft-opt-card.selected::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(to bottom, var(--color-primary), var(--color-secondary));
+}
+
+.draft-opt-title {
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: var(--color-warning);
+}
+
+.draft-opt-desc {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--text-light);
+}
+
+.draft-opt-impact {
+  font-size: 0.72rem;
+  font-style: italic;
+  color: var(--text-muted);
+  display: flex;
+  gap: 15px;
+}
+
+.draft-opt-impact span i {
+  margin-right: 4px;
+}
+
+/* Public Hearing UI Styles */
+.hearing-workspace {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 20px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--card-border);
+}
+
+.stakeholder-bubble-box {
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+  animation: scale-up 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.15);
+}
+
+.sh-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid var(--color-primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+}
+
+.sh-avatar.student { border-color: hsl(200, 90%, 55%); color: hsl(200, 90%, 55%); }
+.sh-avatar.parent { border-color: hsl(30, 95%, 55%); color: hsl(30, 95%, 55%); }
+.sh-avatar.teacher { border-color: hsl(145, 80%, 45%); color: hsl(145, 80%, 45%); }
+
+.sh-bubble {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--card-border);
+  padding: 15px 20px;
+  border-radius: 0 var(--border-radius-md) var(--border-radius-md) var(--border-radius-md);
+}
+
+.sh-name {
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--color-warning);
+  margin-bottom: 6px;
+}
+
+.sh-quote {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--text-light);
+}
+
+.hearing-options-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hearing-opt-btn {
+  width: 100%;
+  padding: 12px 18px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--card-border);
+  border-radius: var(--border-radius-sm);
+  color: var(--text-light);
+  font-size: 0.88rem;
+  text-align: left;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.hearing-opt-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--color-primary);
+  transform: translateX(4px);
+}
+
+/* Constitutionality Review Modal */
+.constitution-modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(13, 18, 30, 0.85);
+  z-index: 50;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(4px);
+  animation: fade-in 0.3s ease-out;
+}
+
+.modal-content {
+  background: var(--bg-dark);
+  border: 2px solid var(--color-danger);
+  border-radius: var(--border-radius-md);
+  padding: 24px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  animation: scale-up 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+}
+
+.modal-content h5 {
+  color: var(--color-danger);
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.modal-content p {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+  margin-bottom: 18px;
+  text-align: justify;
+}
+
+.modal-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modal-opt-btn {
+  width: 100%;
+  padding: 12px 18px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--card-border);
+  border-radius: var(--border-radius-sm);
+  color: var(--text-light);
+  font-size: 0.85rem;
+  text-align: left;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.modal-opt-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--color-primary);
+}
+
+.modal-opt-btn.correct {
+  border-color: var(--color-success) !important;
+  color: var(--color-success) !important;
+  background: rgba(34, 197, 94, 0.1) !important;
+}
+
+/* Certificate Evaluation Grid */
+.cert-evaluation-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin: 25px 0;
+}
+
+.eval-card {
+  background: rgba(139, 69, 19, 0.04);
+  border: 1px solid rgba(139, 69, 19, 0.15);
+  padding: 15px 10px;
+  border-radius: var(--border-radius-sm);
+  text-align: center;
+}
+
+.eval-title {
+  font-size: 0.75rem;
+  color: #5c4033;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.eval-stat {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #8b4513;
+  font-family: var(--font-outfit);
+}
+
+/* Veto Option Buttons in Stage 5 */
+.veto-options-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.veto-opt-btn {
+  width: 100%;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--card-border);
+  border-radius: var(--border-radius-sm);
+  color: var(--text-light);
+  font-size: 0.88rem;
+  text-align: left;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.veto-opt-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--color-warning);
+  transform: translateX(4px);
+}
+
 /* Certificate Screen */
 .certificate-container {
   width: 100%;

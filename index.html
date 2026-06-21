@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>法案奇幻冒險：三讀闖關大作戰！</title>
+  <title>立法大師：素養思辨挑戰賽！</title>
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -33,6 +33,26 @@
           <i class="fas fa-scroll"></i>
           <span id="hud-bill-title">未選擇法案</span>
         </div>
+        
+        <!-- Stakeholder Satisfaction HUD -->
+        <div class="stakeholders-hud" id="stakeholders-hud">
+          <div class="st-item student" title="學生的滿意度">
+            <span class="st-label"><i class="fas fa-child"></i> 學生</span>
+            <div class="st-bar"><div class="st-fill" id="st-fill-student" style="width: 50%;"></div></div>
+            <span class="st-val" id="st-val-student">50%</span>
+          </div>
+          <div class="st-item parent" title="家長的滿意度">
+            <span class="st-label"><i class="fas fa-user-friends"></i> 家長</span>
+            <div class="st-bar"><div class="st-fill" id="st-fill-parent" style="width: 50%;"></div></div>
+            <span class="st-val" id="st-val-parent">50%</span>
+          </div>
+          <div class="st-item teacher" title="教師的滿意度">
+            <span class="st-label"><i class="fas fa-chalkboard-teacher"></i> 教師</span>
+            <div class="st-bar"><div class="st-fill" id="st-fill-teacher" style="width: 50%;"></div></div>
+            <span class="st-val" id="st-val-teacher">50%</span>
+          </div>
+        </div>
+
         <div class="character-badge">
           <img id="hud-char-avatar" src="" alt="角色頭像" class="hidden">
           <span id="hud-char-name">訪客</span>
@@ -46,23 +66,23 @@
         </div>
         <div class="step-node active" data-step="0">
           <div class="node-circle"><i class="fas fa-file-signature"></i></div>
-          <span class="node-label">提案/一讀</span>
+          <span class="node-label">起草/提案</span>
         </div>
         <div class="step-node" data-step="1">
           <div class="node-circle"><i class="fas fa-users-cog"></i></div>
-          <span class="node-label">委員會審查</span>
+          <span class="node-label">委員會公聽會</span>
         </div>
         <div class="step-node" data-step="2">
           <div class="node-circle"><i class="fas fa-vote-yea"></i></div>
-          <span class="node-label">二讀表決</span>
+          <span class="node-label">二讀比例原則</span>
         </div>
         <div class="step-node" data-step="3">
           <div class="node-circle"><i class="fas fa-gavel"></i></div>
-          <span class="node-label">三讀敲槌</span>
+          <span class="node-label">三讀合憲審查</span>
         </div>
         <div class="step-node" data-step="4">
           <div class="node-circle"><i class="fas fa-signature"></i></div>
-          <span class="node-label">總統公布</span>
+          <span class="node-label">公布/覆議</span>
         </div>
       </div>
     </header>
@@ -77,11 +97,11 @@
             <i class="fas fa-gavel logo-gavel"></i>
             <i class="fas fa-university logo-court"></i>
           </div>
-          <h1>法案奇幻冒險</h1>
-          <h2>三讀闖關大作戰！</h2>
+          <h1>立法大師</h1>
+          <h2>素養思辨挑戰賽！</h2>
         </div>
         <p class="intro-desc">
-          你知道一條法律是怎麼誕生的嗎？從提案、審查、激烈辯論、表決到公布，每一個步驟都充滿挑戰！現在就化身立法小尖兵，帶領你的法案闖過「三讀」重重難關，成功讓它成為正式法律吧！
+          公共政策沒有絕對的對與錯，只有利益的權衡與價值的抉擇！本遊戲將帶你扮演立法委員，從**起草法案方針、主持公聽會調和衝突、二讀比例原則思辨，到三讀合憲性審查**，體驗一條兼顧法理與民意的法律是如何誕生的！
         </p>
         <div class="form-group-row">
           <div class="form-group-item">
@@ -98,13 +118,13 @@
           <input type="text" id="player-name-input" placeholder="例如：閃亮亮立委" maxlength="10">
         </div>
         <button id="btn-start-game" class="btn btn-primary btn-pulse">
-          開始冒險 <i class="fas fa-arrow-right"></i>
+          開始思辨冒險 <i class="fas fa-arrow-right"></i>
         </button>
       </div>
 
       <!-- 1. Selection Screen -->
       <div class="screen" id="screen-select">
-        <h3 class="screen-title">第一步：選擇你的法案與角色</h3>
+        <h3 class="screen-title">選擇你要推動的法規主題與立法角色</h3>
         
         <!-- Character Selection -->
         <div class="selection-section">
@@ -122,7 +142,7 @@
                 <i class="fas fa-graduation-cap avatar-icon icon-ray"></i>
               </div>
               <h5>阿光 (正義小法官)</h5>
-              <p>精通憲法與法規的智慧少年，最講求程序正義與文字嚴謹度。</p>
+              <p>精通憲法與法規的智慧少年，最講求程序正義與法理嚴謹度。</p>
             </div>
             <div class="select-card character-card" data-char="wah">
               <div class="card-image-placeholder">
@@ -141,17 +161,17 @@
             <div class="select-card bill-card active" data-bill="homework">
               <div class="bill-icon-box"><i class="fas fa-book-open"></i></div>
               <h5>「中小學禁止週末作業條例」</h5>
-              <p>主打週末讓學生充分休息，提升週一上課專注度與自主學習力。</p>
+              <p>思辨核心：學生自主休息權 v.s. 學校教學自主權與家長教育參與權。</p>
             </div>
             <div class="select-card bill-card" data-bill="lunch">
               <div class="bill-icon-box"><i class="fas fa-cookie-bite"></i></div>
               <h5>「營養午餐全面加糖與點心法案」</h5>
-              <p>推動營養午餐增設美味甜點與飲料區，增加學生上學的小確幸。</p>
+              <p>思辨核心：學生飲食幸福權與選擇權 v.s. 健康發育權與學校財政負擔。</p>
             </div>
             <div class="select-card bill-card" data-bill="green">
               <div class="bill-icon-box"><i class="fas fa-leaf"></i></div>
               <h5>「校園綠能與垃圾減量推廣法」</h5>
-              <p>強制校園設置太陽能板及推行無紙化，並限制一次性塑膠餐具。</p>
+              <p>思辨核心：環境保護與世代公共利益 v.s. 師生生活便利權與高額建置成本。</p>
             </div>
           </div>
         </div>
@@ -161,20 +181,30 @@
         </button>
       </div>
 
-      <!-- 2. Stage 1: Proposal & First Reading -->
+      <!-- 2. Stage 1: Drafting, Proposal & First Reading -->
       <div class="screen" id="screen-stage1">
-        <h3 class="screen-title">第一關：法案起跑！連署與一讀會</h3>
+        <h3 class="screen-title">第一關：法案政策起草與一讀會</h3>
         
         <div class="stage-intro-card">
           <p>
-            <strong>【提案與一讀知識】</strong><br>
-            在台灣，立法委員提案需要有 **15 位以上的立委共同連署** 才能成立。
-            提案成立後，會送入立法院院會進行**「一讀會」**，朗讀標題後送交委員會審查。
+            <strong>【起草方針與連署】</strong><br>
+            立法的第一步是「起草法案方針」。不同的條文設計，會對**學生、家長、教師**造成不同程度的影響。起草完畢後，需獲得 **15位以上立委共同連署** 才能正式向院會提案！
           </p>
         </div>
 
-        <!-- Mini Game: Signature Collection -->
-        <div class="minigame-box" id="sig-game-container">
+        <!-- Step A: Drafting Choices -->
+        <div class="minigame-box" id="drafting-game-container">
+          <h4>任務 1：決定您的法案起草方針</h4>
+          <p class="game-instruction">請點選一個符合您政策理念的起草方針（這將決定初始的三方滿意度）：</p>
+          
+          <div class="drafting-options-grid" id="drafting-options-container">
+            <!-- Dynamic choices based on selected bill -->
+          </div>
+        </div>
+
+        <!-- Step B: Signature Collection (Active after choice) -->
+        <div class="minigame-box hidden" id="sig-game-container">
+          <h4>任務 2：徵求立法委員連署提案</h4>
           <div class="game-hud-bar">
             <div class="hud-item"><i class="fas fa-users"></i> 已連署人數: <span id="sig-count" class="counter-highlight">0</span> / 15</div>
             <div class="hud-item"><i class="fas fa-clock"></i> 剩餘時間: <span id="sig-timer">15</span> 秒</div>
@@ -184,9 +214,7 @@
             <p><i class="fas fa-info-circle animate-bounce"></i> 快速點擊畫面上飄浮的「立委支持信件」，收集 15 個連署簽名吧！</p>
           </div>
           
-          <!-- Signature Bubble Area -->
           <div class="sig-play-area" id="sig-play-area">
-            <!-- Dynamic bubbles will be added here -->
             <div class="start-overlay" id="sig-start-overlay">
               <button id="btn-start-sig" class="btn btn-secondary">點此開始收集簽名</button>
             </div>
@@ -203,18 +231,14 @@
           <div class="gavel-interactive-area">
             <div class="gavel-wrapper" id="gavel-anim-s1">
               <svg class="gavel-svg" viewBox="0 0 100 100">
-                <!-- Hammer head -->
                 <rect x="25" y="30" width="30" height="16" rx="4" fill="#8B4513" stroke="#D4AF37" stroke-width="2"/>
                 <rect x="22" y="27" width="6" height="22" rx="2" fill="#D4AF37"/>
                 <rect x="52" y="27" width="6" height="22" rx="2" fill="#D4AF37"/>
-                <!-- Handle -->
                 <rect x="40" y="46" width="8" height="40" rx="3" fill="#A0522D"/>
                 <circle cx="44" cy="84" r="5" fill="#8B4513"/>
-                <!-- Base block -->
                 <ellipse cx="60" cy="85" rx="25" ry="10" fill="#CD853F" stroke="#8B4513" stroke-width="2"/>
                 <ellipse cx="60" cy="81" rx="25" ry="10" fill="#DEB887"/>
               </svg>
-              <!-- Strike splash visual effect -->
               <div class="gavel-spark" id="gavel-spark-s1"></div>
             </div>
             <p class="gavel-instruction">點擊議事槌敲擊桌面，完成一讀送交審查！</p>
@@ -231,53 +255,39 @@
         </div>
       </div>
 
-      <!-- 3. Stage 2: Committee Review -->
+      <!-- 3. Stage 2: Committee & Stakeholder Public Hearing -->
       <div class="screen" id="screen-stage2">
-        <h3 class="screen-title">第二關：深入探討！委員會審查與協商</h3>
+        <h3 class="screen-title">第二關：利益衝突調和！委員會與公聽會審查</h3>
         
         <div class="stage-intro-card">
           <p>
-            <strong>【委員會審查與黨團協商知識】</strong><br>
-            法案送交委員會後，會由相關委員會的委員進行逐條審查、召開公聽會聽取意見。
-            若朝野政黨意見分歧，會進行**「黨團協商」**以化解僵局。
+            <strong>【委員會與公聽會審查】</strong><br>
+            法案進入委員會後，必須召開「公聽會」，邀請**學生代表、家長代表、教師代表**列席表達意見。
+            身為法案起草人，您必須面對他們的犀利質疑，做出最能調和利益的**修正案抉擇**！若某方支持度過低，可能會導致朝野黨團協商陷入僵局！
           </p>
         </div>
 
-        <!-- Game PART A: Card Sorting -->
-        <div class="minigame-box" id="sorting-game-container">
-          <h4>任務 1：整理委員會公聽會的正反意見</h4>
-          <p class="game-instruction">將下方的意見卡拖曳（或點擊）分類至 **「支持此法案的觀點」** 或 **「反對此法案的觀點」** 框框中。</p>
+        <!-- Stakeholder Hearing Panel -->
+        <div class="minigame-box" id="hearing-game-container">
+          <h4>任務 1：召開公聽會！答覆各界代表質疑</h4>
           
-          <div class="sorting-playfield">
-            <!-- Left Bucket -->
-            <div class="sorting-bucket" id="bucket-support" data-target="support">
-              <div class="bucket-header support"><i class="fas fa-thumbs-up"></i> 贊成意見</div>
-              <div class="bucket-slots" id="support-slots"></div>
-            </div>
-
-            <!-- Middle Cards Deck -->
-            <div class="sorting-deck" id="sorting-deck">
-              <!-- Dynamic Cards will be rendered here -->
-            </div>
-
-            <!-- Right Bucket -->
-            <div class="sorting-bucket" id="bucket-oppose" data-target="oppose">
-              <div class="bucket-header oppose"><i class="fas fa-thumbs-down"></i> 反對意見</div>
-              <div class="bucket-slots" id="oppose-slots"></div>
-            </div>
+          <div class="hearing-workspace" id="hearing-workspace">
+            <!-- Active stakeholder dialogue will render here dynamically -->
           </div>
           
-          <div class="sorting-feedback" id="sorting-feedback"></div>
+          <div class="hearing-options-panel" id="hearing-options-container">
+            <!-- Options to reply will render here dynamically -->
+          </div>
         </div>
 
-        <!-- Game PART B: Party Caucus Slider (Hidden until Card Sorting complete) -->
+        <!-- Party Caucus Negotiation (Unlocked after hearing) -->
         <div class="minigame-box hidden" id="negotiation-game-container">
           <h4>任務 2：朝野黨團協商！尋求政黨共識</h4>
           <p class="game-instruction">法案在委員會中被政黨爭執不下！拉動拉桿調整三方政黨的「讓步值」，讓三個指針都重疊在發光的「共識區」，即可通過協商！</p>
           
           <div class="negotiation-workspace">
             <div class="party-control">
-              <label for="slider-party-a"><i class="fas fa-square-full party-icon-blue"></i> 藍天黨 (注重管理與可行性)</label>
+              <label for="slider-party-a"><i class="fas fa-square-full party-icon-blue"></i> 藍天黨 (注重行政執行可行性)</label>
               <div class="slider-wrapper">
                 <input type="range" id="slider-party-a" min="0" max="100" value="20">
                 <span class="value-display" id="val-party-a">20%</span>
@@ -285,7 +295,7 @@
             </div>
 
             <div class="party-control">
-              <label for="slider-party-b"><i class="fas fa-square-full party-icon-green"></i> 綠地黨 (注重學生權利與進步)</label>
+              <label for="slider-party-b"><i class="fas fa-square-full party-icon-green"></i> 綠地黨 (注重學生表意與自主權)</label>
               <div class="slider-wrapper">
                 <input type="range" id="slider-party-b" min="0" max="100" value="80">
                 <span class="value-display" id="val-party-b">80%</span>
@@ -293,7 +303,7 @@
             </div>
 
             <div class="party-control">
-              <label for="slider-party-c"><i class="fas fa-square-full party-icon-yellow"></i> 陽光黨 (注重社會配套與平衡)</label>
+              <label for="slider-party-c"><i class="fas fa-square-full party-icon-yellow"></i> 陽光黨 (注重配套輔導與社會平衡)</label>
               <div class="slider-wrapper">
                 <input type="range" id="slider-party-c" min="0" max="100" value="50">
                 <span class="value-display" id="val-party-c">50%</span>
@@ -301,7 +311,7 @@
             </div>
 
             <div class="negotiation-target-zone">
-              <div class="target-glow-zone"></div>
+              <div class="target-glow-zone" id="target-glow-zone"></div>
               <div class="pointer pointer-a" id="ptr-party-a"></div>
               <div class="pointer pointer-b" id="ptr-party-b"></div>
               <div class="pointer pointer-c" id="ptr-party-c"></div>
@@ -318,28 +328,28 @@
         </div>
       </div>
 
-      <!-- 4. Stage 3: Second Reading (Voting Board) -->
+      <!-- 4. Stage 3: Second Reading (Proportionality Principle Debate) -->
       <div class="screen" id="screen-stage3">
-        <h3 class="screen-title">第三關：決戰二讀會！公民知識大問答與表決</h3>
+        <h3 class="screen-title">第三關：二讀會大辯論！憲法比例原則之思辨</h3>
         
         <div class="stage-intro-card">
           <p>
-            <strong>【二讀會與表決知識】</strong><br>
-            **二讀會是法案審議最關鍵的階段！** 會在此進行廣泛討論、逐條討論，並針對爭議條文進行逐條表決。
-            立法院共有 **113 席立法委員**，法案表決必須獲得**出席委員過半數**的贊成票才能通過！
+            <strong>【二讀會與比例原則】</strong><br>
+            二讀會是法案審查最關鍵、辯論最激烈的階段！立委們會就法案的合理性進行攻防。
+            根據**中華民國憲法第 23 條（比例原則）**，國家限制人民權利時，必須符合「目的正當性」、「手段適合性」、「限制必要性（最小侵害）」與「衡平性」。請為您的法規做出最符合憲法精神的法理辯護！
           </p>
         </div>
 
         <div class="stage3-split-layout">
-          <!-- Left: Quiz Section (To convince legislators) -->
+          <!-- Left: Proportionality Quiz -->
           <div class="quiz-panel">
             <div class="panel-header">
-              <i class="fas fa-comments"></i> 說服游離票立委（答題挑戰）
+              <i class="fas fa-balance-scale"></i> 院會大辯論：比例原則答辯
             </div>
             <div class="quiz-box">
               <div class="question-header">
                 <span class="question-number" id="quiz-q-num">第 1 / 3 題</span>
-                <span class="legislator-avatar-hud"><i class="fas fa-user-tie"></i> 游離立委聽證中</span>
+                <span class="legislator-avatar-hud"><i class="fas fa-user-tie"></i> 院會現場辯論中</span>
               </div>
               <p class="question-text" id="quiz-question">讀取中...</p>
               <div class="quiz-options" id="quiz-options-container">
@@ -354,7 +364,7 @@
           <!-- Right: Visual Voting Board -->
           <div class="voting-panel">
             <div class="panel-header">
-              <i class="fas fa-desktop"></i> 立法院議場表決板 (113 席)
+              <i class="fas fa-desktop"></i> 立法院院會表決器 (113 席)
             </div>
             <div class="voting-hud-stats">
               <div class="vote-stat support"><span class="label">贊成</span><span class="count" id="vote-count-yes">0</span></div>
@@ -376,7 +386,7 @@
         <div class="voting-action-overlay hidden" id="voting-trigger-overlay">
           <div class="overlay-content">
             <h4><i class="fas fa-exclamation-triangle"></i> 二讀廣泛討論結束，準備表決！</h4>
-            <p>你已成功爭取到多位立委的支持。現在，請點擊按鈕，啟動院會電子表決器！</p>
+            <p>你已成功使用憲法比例原則完成法理答辯。現在，請點擊按鈕，啟動院會電子表決器！</p>
             <button id="btn-start-electronic-vote" class="btn btn-success btn-large btn-pulse">
               <i class="fas fa-play"></i> 按下表決鈕！
             </button>
@@ -390,32 +400,44 @@
         </div>
       </div>
 
-      <!-- 5. Stage 4: Third Reading (Gavel & Spelling Check) -->
+      <!-- 5. Stage 4: Third Reading (Constitutionality Review) -->
       <div class="screen" id="screen-stage4">
-        <h3 class="screen-title">第四關：最後把關！三讀會字句校對與敲槌</h3>
+        <h3 class="screen-title">第四關：三讀會把關！法律合憲性審查</h3>
         
         <div class="stage-intro-card">
           <p>
-            <strong>【三讀會知識】</strong><br>
-            三讀會是立法程序的最後一關。除非法案內容發現互相牴觸，或與憲法、其他法律相牴觸，否則**只能進行「文字修正」**，不能變更原意。
-            三讀會表決通過後，立法院長會敲下議事槌，宣布法案三讀通過！
+            <strong>【三讀與合憲性審查】</strong><br>
+            三讀會是立法程序的最後一關。除非發現法案條文與**「憲法」或「其他上位法律」**相牴觸，否則只能做文字修正。
+            天啊！在最後關頭，法制作業人員發現草案中居然包含了一條**「違背憲法基本權利（人身自由）」或「權限逾越」的嚴重違憲條款**！請找出該段條文並予以修正，以避免未來被宣告違憲無效！
           </p>
         </div>
 
-        <!-- Spelling Mini-game -->
-        <div class="minigame-box" id="proofread-game-container">
-          <h4>任務：法案文字最終校對</h4>
-          <p class="game-instruction">為了確保法律嚴謹，請找出下方草案條文中 **2 個寫錯的錯字或不當用詞**，點擊它們來完成文字修正！</p>
+        <!-- Constitutionality Quiz -->
+        <div class="minigame-box" id="constitution-game-container">
+          <h4>任務：找出違憲條款並進行修正</h4>
+          <p class="game-instruction">請閱讀下方草案，**點擊該段具有違憲疑慮的紅色下底線文字**，並選擇正確的修正條文：</p>
           
           <div class="proofread-paper">
             <h4 class="paper-bill-title" id="proofread-bill-title">草案標題</h4>
             <div class="paper-content" id="proofread-bill-content">
-              <!-- Dynamic content based on bill with inline wrong words -->
+              <!-- Dynamic content based on bill with inline unconstitutional clause -->
             </div>
           </div>
+          
           <div class="proofread-hud">
-            <div>已修正錯字：<span id="proofread-corrected-count" class="counter-highlight">0</span> / 2</div>
+            <div>審查狀態：<span id="proofread-corrected-count" class="counter-highlight">未修正</span></div>
             <div class="proofread-feedback" id="proofread-feedback"></div>
+          </div>
+
+          <!-- Dialog popup for replacement -->
+          <div class="constitution-modal hidden" id="constitution-modal">
+            <div class="modal-content">
+              <h5>⚖️ 違憲條款修正案抉擇</h5>
+              <p id="constitution-typo-explain">本段條文限制了自由，且處罰手段違背了法官保留原則與職權限制...</p>
+              <div class="modal-options" id="constitution-modal-options">
+                <!-- Replacement choices will be generated here -->
+              </div>
+            </div>
           </div>
         </div>
 
@@ -423,25 +445,21 @@
         <div class="ceremony-box hidden" id="third-reading-ceremony">
           <h4><i class="fas fa-university"></i> 立法院院會：三讀敲槌儀式</h4>
           <p class="announcement">
-            「本案經三讀會條文整理完竣。現在進行最後表決……表決結果贊成多數！本案通過！<br>
-            <span class="gavel-shout">《<span id="ceremony-bill-title-s4">法案名稱</span>》三讀通過！》</span>」
+            「本案經三讀會條文合憲修正整理完竣。現在進行最後表決……表決結果贊成多數！本案通過！<br>
+            <span class="gavel-shout">《<span id="ceremony-bill-title-s4">法案名稱</span>》三讀通過！》</span> turn 」
           </p>
           
           <div class="gavel-interactive-area">
             <div class="gavel-wrapper" id="gavel-anim-s4">
               <svg class="gavel-svg" viewBox="0 0 100 100">
-                <!-- Hammer head -->
                 <rect x="25" y="30" width="30" height="16" rx="4" fill="#8B4513" stroke="#D4AF37" stroke-width="2"/>
                 <rect x="22" y="27" width="6" height="22" rx="2" fill="#D4AF37"/>
                 <rect x="52" y="27" width="6" height="22" rx="2" fill="#D4AF37"/>
-                <!-- Handle -->
                 <rect x="40" y="46" width="8" height="40" rx="3" fill="#A0522D"/>
                 <circle cx="44" cy="84" r="5" fill="#8B4513"/>
-                <!-- Base block -->
                 <ellipse cx="60" cy="85" rx="25" ry="10" fill="#CD853F" stroke="#8B4513" stroke-width="2"/>
                 <ellipse cx="60" cy="81" rx="25" ry="10" fill="#DEB887"/>
               </svg>
-              <!-- Strike splash visual effect -->
               <div class="gavel-spark" id="gavel-spark-s4"></div>
             </div>
             <p class="gavel-instruction">點擊議事槌敲擊桌面，完成三讀通過！</p>
@@ -458,36 +476,36 @@
         </div>
       </div>
 
-      <!-- 6. Stage 5: Veto Challenge (覆議機制) -->
+      <!-- 6. Stage 5: Veto Challenge & Policy Defense -->
       <div class="screen" id="screen-stage5">
-        <h3 class="screen-title">第五關：終極試煉！總統公布與行政院覆議挑戰</h3>
+        <h3 class="screen-title">第五關：行政院覆議案！政策辯護決策</h3>
         
         <div class="stage-intro-card">
           <p>
-            <strong>【總統公布與覆議知識】</strong><br>
-            立法院通過的法律，會送交總統及行政院。**總統應於收到後 10 日內公布之**。<br>
-            但如果行政院認為法案「窒礙難行」，經總統核可後，可在 10 日內移請立法院**「覆議」**（重新審議）。
-            此時立法院必須在限期內表決，如果**全體委員過半數（57 席以上）維持原案**，行政院長就必須接受該法律！
+            <strong>【行政院覆議與決策】</strong><br>
+            行政院收到法案後，認為執行上極度窒礙難行，移請立法院覆議。
+            面對行政院的退回，身為提案委員，你必須做出**關鍵性的答辯回應**。若您選擇強硬拒絕或完全妥協，會對民意支持度與表決結果產生不同的後果！
           </p>
         </div>
 
-        <!-- Narrative Card -->
+        <!-- Veto Defense Choice -->
         <div class="veto-alert-box" id="veto-alert-container">
           <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
           <h4>🚨 行政院提出「覆議」！</h4>
           <p class="alert-message">
-            行政院召開臨時會議，認為你的法案 <span class="highlight-text-underline" id="veto-bill-title">法案名稱</span> 在執行上面臨巨大困難，經總統核可，決定退回立法院要求重新審議（覆議）！
+            行政院指出，該法案在實務執行上涉及極高的人力編制與財政預算，經總統核可後，決定移請立法院「覆議」！
           </p>
-          <p>立法院必須立刻召開全院委員會，重新對原法案進行投票。我們必須在時限內凝聚立委意志，維持原案！</p>
-          <button id="btn-start-veto-game" class="btn btn-warning btn-pulse">
-            接受覆議投票挑戰！
-          </button>
+          <p class="game-instruction">身為提案主導者，請選擇您的應對與辯護策略：</p>
+          
+          <div class="veto-options-panel" id="veto-options-container">
+            <!-- Dynamic choices will be rendered here based on bill -->
+          </div>
         </div>
 
-        <!-- Rapid Clicks Mini-game -->
+        <!-- Rapid Clicks Mini-game (Difficulty based on decision) -->
         <div class="minigame-box hidden" id="veto-game-container">
-          <h4>任務：凝聚意志，維持原案表決！</h4>
-          <p class="game-instruction"><i class="fas fa-mouse-pointer animate-ping"></i> **快速狂點按鈕** 爭取贊成票！在 8 秒內獲得 **57 張以上贊成票** 來維持原法案！</p>
+          <h4>任務：全院表決！維持原案投票戰</h4>
+          <p class="game-instruction" id="veto-game-instruction">快速狂點按鈕以獲得足夠贊成票！</p>
           
           <div class="veto-game-hud">
             <div class="progress-bar-container">
@@ -510,24 +528,23 @@
           </div>
         </div>
 
-        <!-- Outro Story (Hidden until challenge done) -->
+        <!-- Outro Story (Success) -->
         <div class="ceremony-box hidden" id="veto-success-box">
           <div class="celebration-icon"><i class="fas fa-award"></i></div>
           <h4>🎉 挑戰成功！覆議維持原案！</h4>
           <p>
-            立法院全體委員過半數維持原案，覆議案不成立！行政院長必須接受並執行該法律。<br>
-            總統隨即在 10 日內，正式公布該法案！
+            立法院全體委員過半數維持原案，覆議案不成立！行政院長必須接受該法律。總統正式公布，自公布日起算第三日發生效力！
           </p>
           <button id="btn-to-certificate" class="btn btn-success">
             查看法案發布證書 <i class="fas fa-scroll"></i>
           </button>
         </div>
 
-        <!-- Outro Story Veto Fails (In case they fail) -->
+        <!-- Outro Story (Fail) -->
         <div class="ceremony-box hidden" id="veto-fail-box">
           <div class="fail-icon"><i class="fas fa-times-circle"></i></div>
-          <h4>❌ 覆議挑戰失敗！</h4>
-          <p>
+          <h4>❌ 覆議表決未通過！</h4>
+          <p id="veto-fail-message">
             很遺憾，沒能在時限內凝聚足夠的立委席次（未達過半數 57 票）。原法案失效！
           </p>
           <button id="btn-restart-veto" class="btn btn-secondary">
@@ -543,23 +560,39 @@
             <div class="cert-header">
               <i class="fas fa-university cert-logo"></i>
               <h3>中華民國立法院</h3>
-              <h4>法律通過與公布證書</h4>
+              <h4>素養立法大師認證證書</h4>
             </div>
             
             <div class="cert-body">
-              <p class="cert-text-intro">茲證明由立法委員</p>
+              <p class="cert-text-intro">茲證明立法委員</p>
               <h2 class="cert-player-name" id="cert-player-name">訪客委員</h2>
-              <p class="cert-text-intro">所提出與極力推動之法律案：</p>
+              <p class="cert-text-intro">在推動以下法規案中，展現卓越之利益調和與法理思辨素養：</p>
               <h1 class="cert-bill-title" id="cert-bill-title">《草案標題》</h1>
+              
+              <div class="cert-evaluation-grid">
+                <div class="eval-card">
+                  <div class="eval-title"><i class="fas fa-balance-scale"></i> 利益平衡度</div>
+                  <div class="eval-stat" id="cert-balance-score">良好</div>
+                </div>
+                <div class="eval-card">
+                  <div class="eval-title"><i class="fas fa-scroll"></i> 比例原則思辨</div>
+                  <div class="eval-stat" id="cert-proportionality-score">3 / 3 題</div>
+                </div>
+                <div class="eval-card">
+                  <div class="eval-title"><i class="fas fa-gavel"></i> 合憲性修正</div>
+                  <div class="eval-stat">完成</div>
+                </div>
+              </div>
+
               <p class="cert-desc">
-                歷經立法院提案連署、一讀審查、委員會專業討論、朝野黨團協商，並於院會二讀逐條辯論暨表決通過、三讀會字句修正，克復行政院覆議挑戰。全案符合憲法立法程序，由總統正式公布，自公布日起算第三日發生效力！
+                本法案歷經起草、公聽會利益調和、朝野黨團協商，並於二讀會中針對比例原則完成答辯表決通過、三讀會進行違憲條款修正。全案符合憲法民主立法程序，特頒此證以茲鼓勵其公民素養思辨之表現！
               </p>
             </div>
 
             <div class="cert-footer">
               <div class="cert-sign">
                 <span class="label">立法院長</span>
-                <span class="sign-name">游 戲 院 長 <span class="seal">印</span></span>
+                <span class="sign-name">遊 戲 院 長 <span class="seal">印</span></span>
               </div>
               <div class="cert-date">
                 中華民國 <span id="cert-date-year">115</span> 年 <span id="cert-date-month">6</span> 月 <span id="cert-date-day">21</span> 日
@@ -576,13 +609,13 @@
 
         <div class="certificate-actions">
           <button id="btn-print-certificate" class="btn btn-secondary">
-            <i class="fas fa-camera"></i> 螢幕截圖存檔
+            <i class="fas fa-camera"></i> 另存 PDF 或列印
           </button>
           <button id="btn-restart-all" class="btn btn-primary">
             再玩一次，挑戰其他法案 <i class="fas fa-redo"></i>
           </button>
         </div>
-        <p class="cert-print-tip"><i class="fas fa-info-circle"></i> 提示：您可以按鍵盤上的 `Ctrl + P` (或 Mac 上的 `Cmd + P`) 將證書另存為 PDF 唷！</p>
+        <p class="cert-print-tip"><i class="fas fa-info-circle"></i> 提示：您可以將證書另存為 PDF 檔案提交給公民科老師唷！</p>
       </div>
 
     </section>

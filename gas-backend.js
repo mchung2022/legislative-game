@@ -33,13 +33,16 @@ function doPost(e) {
         "座號",
         "學生姓名",
         "推動法案名稱",
-        "公民問答得分 (滿分3)",
-        "覆議挑戰(通過狀態)",
+        "起草方針路線",
+        "衝突平衡分數",
+        "比例原則得分 (滿分3)",
+        "覆議答辯策略",
+        "法案通過狀態",
         "通關提交時間"
       ]);
       
       // 美化標題列：加粗並調整背景色
-      var headerRange = sheet.getRange(1, 1, 1, 7);
+      var headerRange = sheet.getRange(1, 1, 1, 10);
       headerRange.setFontWeight("bold");
       headerRange.setBackground("#f3f4f6");
       headerRange.setHorizontalAlignment("center");
@@ -51,7 +54,10 @@ function doPost(e) {
       data.seat,
       data.name,
       data.bill,
+      data.draft,
+      data.balance,
       data.score,
+      data.vetoStrategy,
       data.passed,
       data.timestamp
     ]);
