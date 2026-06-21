@@ -58,25 +58,15 @@ function doPost(e) {
     
     // 回傳成功訊息給前端
     return ContentService.createTextOutput(JSON.stringify({ "status": "success", "message": "資料寫入成功！" }))
-      .setMimeType(ContentService.MimeType.JSON)
-      .setHeader('Access-Control-Allow-Origin', '*'); // 允許跨網域存取
+      .setMimeType(ContentService.MimeType.JSON);
       
   } catch (error) {
     // 發生錯誤時回傳錯誤訊息
     return ContentService.createTextOutput(JSON.stringify({ "status": "error", "message": error.toString() }))
-      .setMimeType(ContentService.MimeType.JSON)
-      .setHeader('Access-Control-Allow-Origin', '*');
+      .setMimeType(ContentService.MimeType.JSON);
       
   } finally {
     // 釋放鎖定，讓下一個排隊的請求可以寫入
     lock.releaseLock();
   }
-}
-
-// 處理預檢請求 (Preflight CORS Request, 瀏覽器安全機制)
-function doOptions(e) {
-  return ContentService.createTextOutput("")
-    .setHeader('Access-Control-Allow-Origin', '*')
-    .setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
-    .setHeader('Access-Control-Allow-Headers', 'Content-Type');
 }
