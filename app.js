@@ -6,7 +6,7 @@
 // --- 後端配置 ---
 // 教師部署 Google Apps Script 後，請將產生的網頁應用程式 URL 貼在下方雙引號內：
 // 例如："https://script.google.com/macros/s/AKfycb.../exec"
-const GOOGLE_SHEET_APP_URL = ""; 
+const GOOGLE_SHEET_APP_URL = "https://script.google.com/macros/s/AKfycbzQ8H2_-tT-TUOSC0rOBE-xPGXlWVPm--MkO4XAWMFz_JQb6_3OaCnlHWuLPYks1ZYc/exec";
 
 // --- 遊戲狀態管理 ---
 const gameState = {
