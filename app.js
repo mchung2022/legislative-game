@@ -31,7 +31,7 @@ const gameState = {
   
   signaturesCollected: 0,
   sigTimer: null,
-  sigTimeLeft: 20,
+  sigTimeLeft: 35,
   sigGameActive: false,
   
   hearingCurrentStakeholder: 0, // 0: student, 1: parent, 2: teacher
@@ -917,14 +917,101 @@ const btnStrikeGavelS1 = document.getElementById('btn-strike-gavel-s1');
 const btnToStage2 = document.getElementById('btn-to-stage2');
 const gavelAnimS1 = document.getElementById('gavel-anim-s1');
 
+const legislatorsData = [
+  { name: "林立委", party: "民意黨", concern: "student", icon: "fa-user-tie" },
+  { name: "張立委", party: "正義盟", concern: "parent", icon: "fa-user-astronaut" },
+  { name: "王立委", party: "中立派", concern: "teacher", icon: "fa-user-shield" },
+  { name: "李立委", party: "民意黨", concern: "student", icon: "fa-user-graduate" },
+  { name: "陳立委", party: "正義盟", concern: "parent", icon: "fa-user-nurse" },
+  { name: "黃立委", party: "中立派", concern: "teacher", icon: "fa-user-md" },
+  { name: "蔡立委", party: "民意黨", concern: "student", icon: "fa-user-ninja" },
+  { name: "吳立委", party: "正義盟", concern: "parent", icon: "fa-user-secret" },
+  { name: "徐立委", party: "中立派", concern: "teacher", icon: "fa-user-clock" },
+  { name: "趙立委", party: "民意黨", concern: "student", icon: "fa-user-edit" },
+  { name: "美美委員", party: "正義盟", concern: "parent", icon: "fa-user-female" },
+  { name: "阿明委員", party: "中立派", concern: "teacher", icon: "fa-user" },
+  { name: "強強委員", party: "民意黨", concern: "student", icon: "fa-user-plus" },
+  { name: "小華委員", party: "正義盟", concern: "parent", icon: "fa-users" },
+  { name: "國安委員", party: "中立派", concern: "teacher", icon: "fa-user-check" }
+];
+
+function getConcernChinese(concern) {
+  if (concern === 'student') return '學生權益';
+  if (concern === 'parent') return '家長立場';
+  if (concern === 'teacher') return '教師負擔';
+  return '校園發展';
+}
+
+function getLegislatorDialogue(billId, concern) {
+  const database = {
+    homework: {
+      student: {
+        question: "這個減少週末作業的提案，能真正減輕我們的負擔嗎？會不會反而讓平日的作業變多？",
+        correctText: "我們會明定課後總量管制，鼓勵多元自主學習替代抄寫，不讓平日負擔增加。",
+        incorrectText: "平日作業隨便老師派，只要週末能放假就行了，大家各退一步嘛。"
+      },
+      parent: {
+        question: "週末不寫功課，孩子回家都在玩手機、學習進度落後怎麼辦？家長不會輔導啊！",
+        correctText: "我們會推廣親子共學與多元線上自主資源，讓孩子在週末進行健康的主題探索。",
+        incorrectText: "現在強調自主學習，家長應該自己想辦法管教，不能把責任都推給學校。"
+      },
+      teacher: {
+        question: "週末是段考複習的黃金期，全面禁止週末作業會不會侵害教學自主權與課程進度？",
+        correctText: "我們保障段考前一週的指派彈性，並提供翻轉教學數位資源，簡化授課壓力。",
+        incorrectText: "教學進度不應凌駕於學生健康上，請老師自行想辦法趕課，週末一律禁派。"
+      }
+    },
+    lunch: {
+      student: {
+        question: "這個法案提倡加糖與點心，我們超支持！但會不會為了健康，最後又偷偷改成無糖水果？",
+        correctText: "我們會明定『快樂點心日』，並研發低糖配方的精緻甜點，兼顧美味與健康！",
+        incorrectText: "如果家長反對，我們也只能妥協，把所有甜點全換成無糖蔬菜和水果。"
+      },
+      parent: {
+        question: "孩子在學校天天吃含糖點心，我非常擔心他們的牙齒健康和肥胖問題！",
+        correctText: "法案要求嚴格使用合格減糖配方，且搭配飲食教育宣導，引導正確飲食習慣。",
+        incorrectText: "學生讀書很辛苦，吃點甜的可以有效紓壓，家長不要限制太多飲食樂趣。"
+      },
+      teacher: {
+        question: "下午多發點心會打亂打掃與上課作息，垃圾量會暴增，廚房阿姨也忙不過來！",
+        correctText: "我們規定點心隨午餐一同發放以簡化流程，並積極爭取預算補貼廚房人力負擔。",
+        incorrectText: "為了學生幸福感，請教師們多辛苦一下，協助指導垃圾分類與作息調整。"
+      }
+    },
+    green: {
+      student: {
+        question: "全面禁用一次性餐具，我們外帶很不方便，而且自備餐具在學校也沒地方洗！",
+        correctText: "我們會推動校園環保餐具租借系統，並在各棟大樓增設現代化流理洗滌區。",
+        incorrectText: "不方便是環保必經的代價，請大家咬緊牙關克服，自己把餐具帶回家洗。"
+      },
+      parent: {
+        question: "自備餐具在學校如果洗不乾淨，容易滋生細菌，增加家長洗滌與衛生疑慮。",
+        correctText: "學校會配合設置高溫殺菌烘碗設備，並定期抽檢校內餐飲衛生以確保安全。",
+        incorrectText: "家長可以每天幫孩子準備兩套乾淨餐具，這本來就是家庭環境教育的一環。"
+      },
+      teacher: {
+        question: "推動無紙化教學與太陽能設備巡檢維修，會大幅增加導師的行政負擔！",
+        correctText: "無紙化將提供專業數位助教，太陽能維護則由外包專業廠商全權負責，不佔用教師時間。",
+        incorrectText: "這是綠能轉型的必要犧牲，教師作為教育推手，應該主動承擔巡檢重任。"
+      }
+    }
+  };
+  
+  return database[billId]?.[concern] || {
+    question: "你對這個法案有什麼具體想法？",
+    correctText: "我們有完善的配套措施，一定會兼顧各方權益。",
+    incorrectText: "法案已經寫好了，請各位直接簽字支持就對了。"
+  };
+}
+
 function initStage1() {
   gameState.signaturesCollected = 0;
-  gameState.sigTimeLeft = 20;
+  gameState.sigTimeLeft = 35;
   gameState.sigGameActive = false;
   gameState.satisfaction = { student: 50, parent: 50, teacher: 50 }; // 重置滿意度
   
   sigCountSpan.textContent = "0";
-  sigTimerSpan.textContent = "20";
+  sigTimerSpan.textContent = "35";
   
   // 顯示起草任務，隱藏連署與典禮
   draftingGameContainer.classList.remove('hidden');
@@ -932,9 +1019,8 @@ function initStage1() {
   firstReadingCeremony.classList.add('hidden');
   btnToStage2.classList.add('hidden');
   
-  // 清理連署泡泡
-  const bubbles = sigPlayArea.querySelectorAll('.sig-bubble');
-  bubbles.forEach(b => b.remove());
+  // 清理連署大廳座位與對話框，保留開始覆蓋層
+  sigPlayArea.querySelectorAll('.lobby-seat-card, .lobby-dialogue-overlay').forEach(el => el.remove());
   sigStartOverlay.classList.remove('hidden');
   
   // 生成起草政策選項卡
@@ -980,7 +1066,7 @@ function initStage1() {
   });
 }
 
-// 連署泡泡小遊戲
+// 連署遊說大廳小遊戲
 btnStartSig.addEventListener('click', () => {
   playSound('click');
   sigStartOverlay.classList.add('hidden');
@@ -997,59 +1083,149 @@ btnStartSig.addEventListener('click', () => {
     }
   }, 1000);
   
-  spawnBubbles();
+  initLobby();
 });
 
-const legislatorNames = [
-  "林立委", "張立委", "王立委", "李立委", "陳立委", 
-  "黃立委", "蔡立委", "吳立委", "徐立委", "趙立委",
-  "美美委員", "阿明委員", "強強委員", "小華委員", "國安委員"
-];
+function initLobby() {
+  // 清除任何殘留內容
+  sigPlayArea.querySelectorAll('.lobby-seat-card, .lobby-dialogue-overlay').forEach(el => el.remove());
+  
+  // 建立立委遊說狀態
+  gameState.legislatorsState = legislatorsData.map((leg, index) => ({
+    id: index,
+    ...leg,
+    status: 'uncontacted',
+    clickProgress: 0
+  }));
 
-function spawnBubbles() {
-  if (!gameState.sigGameActive) return;
-  const count = Math.floor(Math.random() * 2) + 2;
-  for (let i = 0; i < count; i++) {
-    createBubble();
-  }
-  setTimeout(spawnBubbles, 1000); // 浮現頻率
+  gameState.legislatorsState.forEach(leg => {
+    const card = document.createElement('div');
+    card.className = 'lobby-seat-card uncontacted';
+    card.dataset.id = leg.id;
+    card.innerHTML = `
+      <div class="seat-avatar"><i class="fas ${leg.icon}"></i></div>
+      <div class="seat-name">${leg.name}</div>
+      <div class="seat-party">${leg.party}</div>
+      <div class="seat-badge">未遊說</div>
+      <div class="lobby-click-progress hidden">
+        <div class="lobby-click-fill" style="width: 0%"></div>
+      </div>
+    `;
+    
+    card.addEventListener('click', () => {
+      handleLegislatorClick(leg.id, card);
+    });
+    
+    sigPlayArea.appendChild(card);
+  });
 }
 
-function createBubble() {
+function handleLegislatorClick(legId, card) {
   if (!gameState.sigGameActive) return;
   
-  const bubble = document.createElement('div');
-  bubble.className = 'sig-bubble';
-  const name = legislatorNames[Math.floor(Math.random() * legislatorNames.length)];
-  bubble.innerHTML = `<i class="fas fa-pen-nib"></i> ${name}`;
+  const leg = gameState.legislatorsState[legId];
+  if (!leg) return;
   
-  const posX = Math.random() * (sigPlayArea.clientWidth - 100);
-  bubble.style.left = `${posX}px`;
+  if (leg.status === 'signed') return;
   
-  const speed = 4 + Math.random() * 2;
-  bubble.style.animationDuration = `${speed}s`;
-  
-  bubble.addEventListener('click', () => {
-    if (bubble.classList.contains('signed')) return;
-    bubble.classList.add('signed');
-    bubble.innerHTML = `<i class="fas fa-check-circle"></i> 已連署`;
-    gameState.signaturesCollected++;
-    sigCountSpan.textContent = gameState.signaturesCollected;
-    playSound('bubble');
+  if (leg.status === 'skeptical') {
+    // 進行快速連點說服
+    leg.clickProgress++;
+    playSound('click');
     
-    if (gameState.signaturesCollected >= 15) {
-      clearInterval(gameState.sigTimer);
-      endSigGame(true);
+    const progressFill = card.querySelector('.lobby-click-fill');
+    const progressPercent = (leg.clickProgress / 5) * 100;
+    progressFill.style.width = `${progressPercent}%`;
+    
+    const badge = card.querySelector('.seat-badge');
+    badge.textContent = `說服中 (${leg.clickProgress}/5)`;
+    
+    if (leg.clickProgress >= 5) {
+      playSound('success');
+      leg.status = 'signed';
+      card.className = 'lobby-seat-card signed';
+      card.querySelector('.seat-badge').textContent = '已連署';
+      
+      const progressDiv = card.querySelector('.lobby-click-progress');
+      progressDiv.classList.add('hidden');
+      
+      gameState.signaturesCollected++;
+      sigCountSpan.textContent = gameState.signaturesCollected;
+      
+      if (gameState.signaturesCollected >= 15) {
+        clearInterval(gameState.sigTimer);
+        endSigGame(true);
+      }
     }
-  });
+    return;
+  }
   
-  sigPlayArea.appendChild(bubble);
-  setTimeout(() => bubble.remove(), speed * 1000);
+  if (leg.status === 'uncontacted') {
+    // 開啟遊說對話覆蓋層
+    const dialog = getLegislatorDialogue(gameState.selectedBill, leg.concern);
+    const correctIsFirst = Math.random() < 0.5;
+    const option1Text = correctIsFirst ? dialog.correctText : dialog.incorrectText;
+    const option2Text = correctIsFirst ? dialog.incorrectText : dialog.correctText;
+    
+    const overlay = document.createElement('div');
+    overlay.className = 'lobby-dialogue-overlay';
+    overlay.innerHTML = `
+      <div class="lobby-dialogue-box">
+        <div class="lobby-dialogue-header">
+          <i class="fas ${leg.icon}"></i> ${leg.name} (${leg.party}) — 關注：${getConcernChinese(leg.concern)}
+        </div>
+        <div class="lobby-dialogue-question">
+          「${dialog.question}」
+        </div>
+        <div class="lobby-dialogue-options">
+          <button class="lobby-dialogue-btn" data-correct="${correctIsFirst}">${option1Text}</button>
+          <button class="lobby-dialogue-btn" data-correct="${!correctIsFirst}">${option2Text}</button>
+        </div>
+      </div>
+    `;
+    
+    overlay.querySelectorAll('.lobby-dialogue-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isCorrect = btn.dataset.correct === "true";
+        overlay.remove(); // 關閉對話框
+        
+        if (isCorrect) {
+          playSound('success');
+          leg.status = 'signed';
+          card.className = 'lobby-seat-card signed';
+          card.querySelector('.seat-badge').textContent = '已連署';
+          
+          gameState.signaturesCollected++;
+          sigCountSpan.textContent = gameState.signaturesCollected;
+          
+          if (gameState.signaturesCollected >= 15) {
+            clearInterval(gameState.sigTimer);
+            endSigGame(true);
+          }
+        } else {
+          playSound('fail');
+          leg.status = 'skeptical';
+          leg.clickProgress = 0;
+          card.className = 'lobby-seat-card skeptical';
+          card.querySelector('.seat-badge').textContent = '疑慮 (請連點 5 次說服)';
+          
+          const progressDiv = card.querySelector('.lobby-click-progress');
+          progressDiv.classList.remove('hidden');
+          card.querySelector('.lobby-click-fill').style.width = '0%';
+        }
+      });
+    });
+    
+    sigPlayArea.appendChild(overlay);
+  }
 }
 
 function endSigGame(isWon) {
   gameState.sigGameActive = false;
-  sigPlayArea.querySelectorAll('.sig-bubble:not(.signed)').forEach(b => b.remove());
+  
+  // 移除未完成的遊說對話框
+  sigPlayArea.querySelectorAll('.lobby-dialogue-overlay').forEach(el => el.remove());
   
   if (isWon) {
     playSound('success');

@@ -597,50 +597,197 @@ h1, h2, h3, h4, h5 {
 }
 
 .sig-play-area {
-  height: 280px;
-  background: radial-gradient(circle, var(--bg-dark) 40%, var(--bg-darker) 100%);
+  min-height: 380px;
+  background: rgba(15, 23, 42, 0.4);
   border-radius: var(--border-radius-md);
   position: relative;
   overflow: hidden;
-  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  padding: 15px;
 }
 
-/* Signature Bubbles */
-.sig-bubble {
-  position: absolute;
-  padding: 8px 15px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 50px;
-  color: var(--text-light);
-  font-size: 0.8rem;
-  cursor: pointer;
-  user-select: none;
+@media (max-width: 768px) {
+  .sig-play-area {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .sig-play-area {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.lobby-seat-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--border-radius-sm);
+  padding: 12px 8px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 6px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(4px);
-  animation: float-up 6s linear infinite;
-  transition: transform 0.15s ease, background 0.15s ease;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 100px;
 }
 
-.sig-bubble:hover {
-  transform: scale(1.1);
-  background: rgba(255, 255, 255, 0.15);
+.lobby-seat-card:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
-.sig-bubble:active {
-  transform: scale(0.95);
+/* Card States */
+.lobby-seat-card.uncontacted {
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
-.sig-bubble.signed {
-  background: var(--color-success);
+.lobby-seat-card.lobbying {
+  border-color: var(--color-warning);
+  box-shadow: 0 0 10px rgba(246, 173, 85, 0.2);
+  background: rgba(246, 173, 85, 0.05);
+}
+
+.lobby-seat-card.skeptical {
+  border-color: var(--color-danger);
+  box-shadow: 0 0 10px rgba(229, 62, 62, 0.2);
+  background: rgba(229, 62, 62, 0.05);
+}
+
+.lobby-seat-card.signed {
   border-color: var(--color-success);
-  color: white;
+  box-shadow: 0 0 15px rgba(72, 187, 120, 0.3);
+  background: rgba(72, 187, 120, 0.08);
+  color: var(--color-success);
   pointer-events: none;
-  transform: scale(1.1);
-  box-shadow: 0 0 10px var(--color-success-glow);
+}
+
+.lobby-seat-card .seat-avatar {
+  font-size: 1.5rem;
+  margin-bottom: 6px;
+  color: var(--text-light);
+  transition: color 0.2s;
+}
+
+.lobby-seat-card.signed .seat-avatar {
+  color: var(--color-success);
+}
+
+.lobby-seat-card .seat-name {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: var(--text-light);
+}
+
+.lobby-seat-card .seat-party {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.lobby-seat-card .seat-badge {
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-top: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-light);
+}
+
+.lobby-seat-card.signed .seat-badge {
+  background: var(--color-success);
+  color: white;
+}
+
+.lobby-seat-card.skeptical .seat-badge {
+  background: var(--color-danger);
+  color: white;
+}
+
+/* Dialogue Overlay */
+.lobby-dialogue-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 15, 30, 0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+  animation: fade-in 0.25s ease-out;
+  z-index: 10;
+  text-align: center;
+}
+
+.lobby-dialogue-box {
+  max-width: 500px;
+  width: 100%;
+}
+
+.lobby-dialogue-header {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--color-primary);
+  margin-bottom: 8px;
+}
+
+.lobby-dialogue-question {
+  font-size: 0.95rem;
+  color: var(--text-light);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.lobby-dialogue-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.lobby-dialogue-btn {
+  width: 100%;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--border-radius-sm);
+  color: var(--text-light);
+  font-size: 0.85rem;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s;
+}
+
+.lobby-dialogue-btn:hover {
+  background: rgba(0, 242, 254, 0.1);
+  border-color: var(--color-primary);
+  transform: translateX(3px);
+}
+
+/* Click lobby progress bar */
+.lobby-click-progress {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  margin-top: 10px;
+  overflow: hidden;
+}
+
+.lobby-click-fill {
+  height: 100%;
+  background: var(--color-danger);
+  width: 0%;
+  transition: width(0.15s) ease-out;
 }
 
 .start-overlay {
