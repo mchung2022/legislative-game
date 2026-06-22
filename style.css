@@ -1055,6 +1055,43 @@ h1, h2, h3, h4, h5 {
   color: var(--color-danger) !important;
 }
 
+.quiz-fill-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+}
+
+.quiz-fill-input {
+  width: 100%;
+  padding: 12px 18px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--card-border);
+  border-radius: var(--border-radius-sm);
+  color: var(--text-light);
+  font-size: 1rem;
+  outline: none;
+  transition: var(--transition-smooth);
+}
+
+.quiz-fill-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 8px rgba(0, 242, 254, 0.2);
+}
+
+.quiz-fill-input.correct {
+  background: rgba(22, 163, 74, 0.15) !important;
+  border-color: var(--color-success) !important;
+  color: var(--color-success) !important;
+  font-weight: bold;
+}
+
+.quiz-fill-input.wrong {
+  background: rgba(220, 38, 38, 0.15) !important;
+  border-color: var(--color-danger) !important;
+  color: var(--color-danger) !important;
+}
+
 .quiz-feedback {
   margin-top: 15px;
   padding: 10px;

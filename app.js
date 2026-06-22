@@ -463,29 +463,94 @@ const BILLS = {
 
 const QUIZ_QUESTIONS = [
   {
-    question: "【法律保留原則】憲法保障人民之生命、身體、財產及其他自由權利。若要對這些權利施加限制，依據憲法精神，必須由立法院通過「法律」，或由法律明確授權行政機關訂定法規命令規定。這在法理上稱之為【＿＿＿＿原則】。",
+    type: "fill",
+    question: "【法律保留原則】新北市政府為整頓道路安全，以行政命令規定「外送員每日送餐不得超過10小時，違者處一萬元罰鍰」。外送員工會抗議此規定限制了其憲法第15條保障之工作權，應屬無效。這是因為限制人民基本權利之重大事項，必須以立法院通過的「法律」明文規定，或有法律明確授權，行政機關不能以行政命令任意限制，此法理在憲法上稱為【＿＿＿＿原則】。",
     answers: ["法律保留", "法律保留原則"],
     explanation: "「法律保留原則」是指限制人民基本權利的重大事項，必須由代表民意的立法機關以「法律」規定，行政機關不得自行發布命令任意限制。"
   },
   {
-    question: "【比例原則】國家為了維護治安或增進公共利益，不得不以法律限制人民權利時，其手段與目的之間必須符合「適合性」、「必要性（侵害最小）」與「衡平性」。這在憲法第 23 條被歸納為【＿＿＿＿原則】。",
-    answers: ["比例原則"],
-    explanation: "「比例原則」是限制人民權利時的最高法理準則，要求國家限制權利的手段必須合理、必要且不能過度侵害。"
+    type: "choice",
+    question: "【比例原則：適合性】某直轄市為降低青少年犯罪率，實施「晚上九點後未成年人禁止在外活動」之宵禁命令。然而，學者指出「大部分青少年犯罪多發生在下午或校園內，限制夜間出行並無法有效降低整體青少年犯罪率」。此一質疑主要指控該宵禁政策違反了比例原則中的哪一項子原則？",
+    options: [
+      "手段無法有效達成目的之「適合性原則」",
+      "未能選擇侵害最小手段之「必要性原則」",
+      "損害大於所欲保護公共利益之「衡平性原則」",
+      "法律規定內容不夠明確之「法律明確性原則」"
+    ],
+    answer: 0,
+    explanation: "「適合性原則」要求國家限制人民權利的手段，必須「有助於」達成所追求的合法目的。若手段與目的之間缺乏實質因果關係，無法有效達成目標，即違反適合性。"
   },
   {
-    question: "【立法院三讀程序】在我國立法程序中，一讀會僅朗讀案由後送交審查，而最關鍵的「進行逐條廣泛討論、條文修正與電子表決」的階段是在【＿＿讀會】進行。",
-    answers: ["二讀", "二讀會"],
-    explanation: "二讀會是法案審議的核心階段，會進行逐條討論、修正與表決。三讀會原則上僅能作文字修正。"
+    type: "choice",
+    question: "【比例原則：必要性/最小侵害】為防制詐騙簡訊氾濫，某委員提案「全面禁止各大電信業者發送任何匿名或跨國簡訊，違者重罰電信業者」。在公聽會中，專家反對並提出折衷方案：「電信業者應建立 AI 關鍵字攔截與境外發送警示機制」。專家的主張是基於下列哪一項憲法法理？",
+    options: [
+      "應在眾多能達成目的的手段中，選擇對人民權益限制最輕微的「必要性（最小侵害）原則」",
+      "只要手段能達成防詐，不論侵害多少人均屬正當的「適合性原則」",
+      "人民隱私權完全不可限制的「絕對人權保障原則」",
+      "行政機關應無條件配合立法院決議之「責任政治原則」"
+    ],
+    answer: 0,
+    explanation: "「必要性原則（最小侵害原則）」要求在所有能達成相同目的的手段中，必須選擇對人民權利侵害最小的那一個。AI 關鍵字攔截與警示比「全面禁用簡訊」造成的通訊自由損害更小，因此後者違反必要性。"
   },
   {
-    question: "【行政院覆議權】立法院三讀通過的法律案送交行政院，行政院若認為有「窒礙難行」之處，得經總統核可後，在法案送達 10 日內移請立法院重新討論。這項行政機關制衡立法的權力稱為【＿＿】。",
-    answers: ["覆議", "覆議案"],
-    explanation: "依憲法規定，行政院對於立法院決議之法律案如認為窒礙難行，得移請立法院「覆議」。若立法院維持原案，行政院長應即接受。"
+    type: "fill",
+    question: "【比例原則：衡平性】某山區道路因土石流高風險，公路局實施管制：「凡進入該路段之車輛需繳交一萬元生態復育捐」，以期減少車流。然而此舉導致依賴該唯一聯外道路維生之果農與居民面臨嚴重生計威脅。此項政策手段所造成的私人財產與經濟利益損害，顯然大於其所追求的些微生態保護公共利益，因而違反了比例原則中的【＿＿＿原則】（亦稱狹義比例原則，三個字）。",
+    answers: ["衡平性", "衡平性原則"],
+    explanation: "「衡平性原則」要求限制權利所造成的損害，與保護的公共利益之間必須維持均衡。在此情境下，限制私人經濟生存造成的損害大於該環保利益，因此違反衡平性。"
   },
   {
-    question: "【司法制衡與權力分立】當立法院通過的法律有違憲侵害基本權利之虞時，在權力分立架構下，最終由司法院的【＿＿＿＿】進行違憲審查，以宣告該法律違憲無效。",
-    answers: ["憲法法庭", "大法官"],
-    explanation: "司法院「憲法法庭」是我國行使違憲審查的司法機關，可藉由宣告違憲法律無效來制衡立法權，維護憲法秩序。"
+    type: "choice",
+    question: "【法律位階原則】某直轄市議會通過地方自治條例，規定「在校園內使用未經檢驗之電子產品者，處以三日拘役處分」。然而，商家指出「拘役為人身自由之剝奪，屬刑事處罰，依《中央法規標準法》必須以法律明文規定，地方自治條例（位階為命令）不得抵觸法律與憲法」。這主要是因為哪一項法律原則？",
+    options: [
+      "法律優位與法律保留原則，下位階之自治條例或行政命令不得抵觸上位階法律",
+      "地方自治條例效力完全等同憲法，無須遵守法律位階",
+      "只要學校或市議會通過，即可隨意制定刑罰，不受約束",
+      "人身自由屬於行政機關管轄，不需法官開立令狀"
+    ],
+    answer: 0,
+    explanation: "依據法律位階原則，憲法 > 法律 > 命令。限制人身自由之刑事處罰（如拘役）必須由立法院通過的「法律」明文規定，下位階的地方自治條例或命令若予以規定即屬違憲無效。"
+  },
+  {
+    type: "fill",
+    question: "【立法院二讀程序】立法程序中的「三讀程序」分工不同。一讀會僅朗讀案由後送交審查，三讀會原則上僅能作文字修正。而在我國立法程序中，最關鍵的「進行逐條廣泛討論、辯論、條文修正與二讀表決」的階段是在【＿＿＿會】（三個字）。",
+    answers: ["二讀會", "二讀會階段"],
+    explanation: "二讀會是法案審議最核心的階段，會進行廣泛討論、逐條審查、修正與表決。"
+  },
+  {
+    type: "choice",
+    question: "【行政院覆議權】立法院三讀通過「大幅提高地方基層預算案」，行政院認為在實務執行上極度窒礙難行，移請立法院覆議。經立法院重新表決後，全體委員過半數維持原案。關於此時行政院長之憲法義務，下列敘述何者正確？",
+    options: [
+      "行政院長應接受該決議，依法編列預算執行",
+      "行政院長可以拒絕公布，並無限期凍結該項預算",
+      "行政院長得逕行解散立法院，重新進行立法委員選舉",
+      "行政院長應直接向司法院提案彈劾立法院長"
+    ],
+    answer: 0,
+    explanation: "依中華民國憲法增修條文規定，立法院對於行政院移請覆議之法律案，若全體委員過半數維持原案，行政院長即應接受該決議，無權拒絕執行。"
+  },
+  {
+    type: "fill",
+    question: "【人身自由與法官保留原則】某條例草案規定：「凡攜帶塑膠吸管進入校園之師生，得由學校安全稽查人員直接限制其自由，當場處以拘役二日」。此條文嚴重侵害了憲法第8條的「人身自由」與「法官保留原則」，這是因為剝奪人民人身自由之強制處分或刑事處罰，必須由中立的【＿＿】（兩個字）依法定程序審理裁判，行政稽查人員無權當場處分。",
+    answers: ["法官", "法院"],
+    explanation: "「法官保留原則」是指凡涉及人身自由限制（如拘留、拘役）或搜索、扣押等重大強制處分，必須由中立的司法機關（法官/法院）依法審理裁判，行政機關無權自行決定，以防權力濫用。"
+  },
+  {
+    type: "choice",
+    question: "【立法院委員會審查】在立法程序中，一讀會通過後法案通常會送交「委員會審查」。關於委員會在法案審議中的功能，下列敘述何者正確？",
+    options: [
+      "讓不同專業的委員對法案進行實質討論，並得召開公聽會聽取專家、官員與利害關係人的意見",
+      "委員會是最終通過法案的機關，通過後直接送總統公布，不需再回大會二讀表決",
+      "委員會只負責將法案字體放大，不做任何實質內容的調整",
+      "委員會是由學生代表與家長代表組成，立法委員不得參加"
+    ],
+    answer: 0,
+    explanation: "委員會是立法院專業分工的核心，負責對提案進行細緻的常設審查、辦理公聽會蒐集各界民意與利害關係人意見，作為二讀會逐條討論與表決之基礎。"
+  },
+  {
+    type: "fill",
+    question: "【司法制衡：憲法法庭】如果立法院通過的法律存在違憲疑慮，人民、法官或特定機關在用盡訴訟救濟後，可向司法院聲請判決。我國負責對法律進行違憲審查，並宣告違憲法律失效的最終機關是司法院的【＿＿＿＿】（四個字）。",
+    answers: ["憲法法庭"],
+    explanation: "司法院「憲法法庭」是我國行使違憲審查的司法機關，藉由宣告違憲法律無效來行使司法權對立法權的制衡，以守護憲法秩序。"
   }
 ];
 
@@ -1253,86 +1318,127 @@ function loadQuizQuestion() {
     quizQNum.textContent = `第 ${gameState.quizCurrentQuestion + 1} / ${QUIZ_QUESTIONS.length} 題`;
     quizQuestion.textContent = qData.question;
     
-    // 渲染填充題輸入框與送出按鈕
-    quizOptionsContainer.innerHTML = `
-      <div class="fill-blank-box" style="margin-top: 15px; display: flex; flex-direction: column; gap: 15px; width: 100%;">
-        <input type="text" id="quiz-blank-input" 
-               style="width: 100%; padding: 14px 18px; border-radius: 8px; border: 1px solid var(--card-border); background: rgba(255, 255, 255, 0.05); color: white; font-size: 1.05rem; outline: none; transition: border-color 0.2s;" 
-               placeholder="請在此輸入答案..." autocomplete="off">
-        <button id="btn-submit-blank" class="btn btn-primary" style="width: 100%; padding: 12px; font-weight: bold; border-radius: 8px;">提交答案</button>
-      </div>
-    `;
-    
-    const inputField = document.getElementById('quiz-blank-input');
-    const submitBtn = document.getElementById('btn-submit-blank');
-
-    function submitAnswer() {
-      const userAns = inputField.value.trim();
-      if (userAns === "") {
-        alert("請先輸入答案再提交唷！");
-        return;
+    if (qData.type === "fill") {
+      // 渲染填充題輸入框與送出按鈕
+      quizOptionsContainer.innerHTML = `
+        <div class="quiz-fill-container">
+          <input type="text" id="quiz-blank-input" class="quiz-fill-input" placeholder="請在此輸入答案..." autocomplete="off">
+          <button id="btn-submit-blank" class="btn btn-primary" style="width: 100%; padding: 12px; font-weight: bold; border-radius: 8px;">提交答案</button>
+        </div>
+      `;
+      
+      const inputField = document.getElementById('quiz-blank-input');
+      const submitBtn = document.getElementById('btn-submit-blank');
+  
+      function submitAnswer() {
+        const userAns = inputField.value.trim();
+        if (userAns === "") {
+          alert("請先輸入答案再提交唷！");
+          return;
+        }
+        handleQuizAnswer(userAns, submitBtn, true);
       }
-      handleQuizAnswer(userAns, submitBtn);
+  
+      submitBtn.addEventListener('click', submitAnswer);
+      inputField.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          submitAnswer();
+        }
+      });
+      inputField.focus();
+    } else {
+      // 渲染選擇題選項按鈕
+      quizOptionsContainer.innerHTML = "";
+      qData.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-opt-btn';
+        btn.textContent = opt;
+        btn.addEventListener('click', () => handleQuizAnswer(idx, btn, false));
+        quizOptionsContainer.appendChild(btn);
+      });
     }
-
-    submitBtn.addEventListener('click', submitAnswer);
-    inputField.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        submitAnswer();
-      }
-    });
-    inputField.focus();
   } else {
     quizQNum.textContent = "現場答辯結束";
-    quizQuestion.textContent = "比例原則辯論完畢！全案進行二讀逐條討論與表決！";
+    quizQuestion.textContent = "辯論完畢！全案進行二讀逐條討論與表決！";
     quizOptionsContainer.innerHTML = "";
     votingTriggerOverlay.classList.remove('hidden');
   }
 }
 
-function handleQuizAnswer(userAnswerText, submitBtn) {
+function handleQuizAnswer(userAns, clickedElement, isFill) {
   const qData = QUIZ_QUESTIONS[gameState.quizCurrentQuestion];
-  const inputField = document.getElementById('quiz-blank-input');
   
-  inputField.disabled = true;
-  submitBtn.disabled = true;
-  submitBtn.style.pointerEvents = 'none';
-  
-  // 比對答案 (不區分大小寫、去空格)
-  const cleanAns = userAnswerText.trim().toLowerCase();
-  const isCorrect = qData.answers.some(ans => ans.trim().toLowerCase() === cleanAns);
-  
-  if (isCorrect) {
-    playSound('success');
-    gameState.quizScore++;
-    inputField.style.borderColor = "var(--color-success)";
-    inputField.style.background = "rgba(34, 197, 94, 0.1)";
+  if (isFill) {
+    const inputField = document.getElementById('quiz-blank-input');
+    const submitBtn = clickedElement;
     
-    quizFeedbackBox.classList.remove('hidden');
-    quizFeedbackText.innerHTML = `<strong>答對了！非常優秀！</strong><br>${qData.explanation}`;
-    quizFeedbackText.style.color = "var(--color-success)";
+    inputField.disabled = true;
+    submitBtn.disabled = true;
+    submitBtn.style.pointerEvents = 'none';
     
-    // 答對加 16 席 (5題答對=80席，剩餘由民意機率表決)
-    convinceLegislators(true, 16);
-    adjustSatisfaction({ student: 6, parent: 6, teacher: 6 });
+    const cleanAns = userAns.trim().toLowerCase();
+    const isCorrect = qData.answers.some(ans => ans.trim().toLowerCase() === cleanAns);
+    
+    if (isCorrect) {
+      playSound('success');
+      gameState.quizScore++;
+      inputField.classList.add('correct');
+      
+      quizFeedbackBox.classList.remove('hidden');
+      quizFeedbackText.innerHTML = `<strong>答對了！非常優秀！</strong><br>${qData.explanation}`;
+      quizFeedbackText.style.color = "var(--color-success)";
+      
+      // 答對加 8 席 (10題答對=80席，剩餘由民意機率表決)
+      convinceLegislators(true, 8);
+      adjustSatisfaction({ student: 3, parent: 3, teacher: 3 });
+    } else {
+      playSound('fail');
+      inputField.classList.add('wrong');
+      
+      quizFeedbackBox.classList.remove('hidden');
+      const displayCorrect = qData.answers.join(" 或 ");
+      quizFeedbackText.innerHTML = `<strong>答錯了。</strong>正確答案為：<strong>【${displayCorrect}】</strong>。<br>${qData.explanation}`;
+      quizFeedbackText.style.color = "var(--color-danger)";
+      
+      // 答錯加 5 席反對
+      convinceLegislators(false, 5);
+    }
   } else {
-    playSound('fail');
-    inputField.style.borderColor = "var(--color-danger)";
-    inputField.style.background = "rgba(239, 68, 68, 0.1)";
+    // 選擇題
+    const selectedIdx = userAns;
+    const clickedBtn = clickedElement;
+    const allBtns = quizOptionsContainer.querySelectorAll('.quiz-opt-btn');
     
-    quizFeedbackBox.classList.remove('hidden');
-    const displayCorrect = qData.answers.join(" 或 ");
-    quizFeedbackText.innerHTML = `<strong>答錯了。</strong>正確答案為：<strong>【${displayCorrect}】</strong>。<br>${qData.explanation}`;
-    quizFeedbackText.style.color = "var(--color-danger)";
+    allBtns.forEach(btn => btn.style.pointerEvents = 'none');
     
-    // 答錯加 10 席反對
-    convinceLegislators(false, 10);
+    if (selectedIdx === qData.answer) {
+      playSound('success');
+      gameState.quizScore++;
+      clickedBtn.classList.add('correct');
+      
+      quizFeedbackBox.classList.remove('hidden');
+      quizFeedbackText.innerHTML = `<strong>答對了！非常優秀！</strong><br>${qData.explanation}`;
+      quizFeedbackText.style.color = "var(--color-success)";
+      
+      convinceLegislators(true, 8);
+      adjustSatisfaction({ student: 3, parent: 3, teacher: 3 });
+    } else {
+      playSound('fail');
+      clickedBtn.classList.add('wrong');
+      allBtns[qData.answer].classList.add('correct');
+      
+      quizFeedbackBox.classList.remove('hidden');
+      quizFeedbackText.innerHTML = `<strong>答錯了。</strong>正確答案為：<strong>【${qData.options[qData.answer]}】</strong>。<br>${qData.explanation}`;
+      quizFeedbackText.style.color = "var(--color-danger)";
+      
+      convinceLegislators(false, 5);
+    }
   }
   
   setTimeout(() => {
     gameState.quizCurrentQuestion++;
     loadQuizQuestion();
-  }, 5000);
+  }, 4000);
 }
 
 function convinceLegislators(isYes, num) {
