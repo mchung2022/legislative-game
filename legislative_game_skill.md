@@ -48,13 +48,13 @@ const gameState = {
   const successRange = Math.max(4, 25 - Math.floor(diff / 3)); // 滿意度差距越大，發光成功區間越窄
   ```
 
-#### 🔵 第三關：二讀會公民素養答題與表決 (Second Reading Quiz & Vote)
-- **機制**：10 題涵蓋法律保留原則、法律位階、比例原則、權力分立的情境選擇題。
-- **動態反饋機制**：選項不可寫死正確答案順序。答錯時應動態呈現正確選項文字：
-  ```javascript
-  quizFeedbackText.innerHTML = `<strong>答錯了。</strong>正確答案為：<strong>【${qData.options[qData.answer]}】</strong>。<br>${qData.explanation}`;
-  ```
-- **席次比例縮放**：113 席立委中，每題答對加 `8` 席支持，答錯加 `5` 席反對，以確保 10 題答完不會溢出席次，並將剩餘未定席次交由電子表決模擬。
+#### 🔵 第三關：二讀會混合題型素養思辨 (Second Reading Quiz & Vote)
+- **機制**：10 題混合題型（5 題情境選擇題與 5 題文字輸入填充題），涵蓋法律保留原則、比例原則、法律位階、法官保留、立法三讀與覆議制衡。
+- **動態題型渲染**：在 `loadQuizQuestion()` 中根據問題類型 `qData.type === "fill"` 動態切換渲染文字輸入框（填充題）或選項按鈕（選擇題）。
+- **動態回饋機制**：
+  - 選擇題：答錯時呈現正確選項文字。
+  - 填充題：比對 `qData.answers` 陣列（支援多個同義答案，不區分大小寫、去空格）。答錯時呈現正確解答。
+- **席次比例縮放**：113 席立委中，每題答對加 `8` 席支持，答錯加 `5` 席反對，避免席次提前客滿。
 - **模擬通過率公式**：
   ```javascript
   const correctRatio = gameState.quizScore / QUIZ_QUESTIONS.length;
