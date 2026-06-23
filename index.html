@@ -3,20 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>立法大師：素養思辨挑戰賽！</title>
+  <meta name="description" content="台灣選舉制度互動式教育遊戲 - 認識台灣民主的基石：選民資格、公投門檻、單一選區兩票制與九合一地方選舉！">
+  <title>民主選戰大進擊：台灣選舉制度模擬挑戰賽！</title>
+  
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Outfit:wght@400;600;800&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
+  
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
   <!-- Vanilla CSS Stylesheet -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Background Decorative Elements -->
+  <!-- Background Decorative Glowing Blobs -->
   <div class="bg-glow bg-glow-1"></div>
   <div class="bg-glow bg-glow-2"></div>
+  <div class="bg-glow bg-glow-3"></div>
 
   <!-- Audio Toggle Button -->
   <button id="sound-toggle" class="sound-btn" aria-label="切換音效">
@@ -26,599 +31,809 @@
   <!-- Main Game Container -->
   <main class="game-container">
     
-    <!-- Top Progress Indicator (HUD) -->
+    <!-- Top HUD Progress Indicator -->
     <header class="game-hud" id="game-hud">
       <div class="hud-top">
-        <div class="bill-badge">
-          <i class="fas fa-scroll"></i>
-          <span id="hud-bill-title">未選擇法案</span>
+        <div class="game-logo-badge">
+          <i class="fas fa-vote-yea"></i>
+          <span>民主選戰大進擊</span>
         </div>
         
-        <!-- Stakeholder Satisfaction HUD -->
-        <div class="stakeholders-hud" id="stakeholders-hud">
-          <div class="st-item student" title="學生的滿意度">
-            <span class="st-label"><i class="fas fa-child"></i> 學生</span>
-            <div class="st-bar"><div class="st-fill" id="st-fill-student" style="width: 50%;"></div></div>
-            <span class="st-val" id="st-val-student">50%</span>
+        <!-- Score and Level Stats -->
+        <div class="stats-hud" id="stats-hud">
+          <div class="stat-item" title="公民知識積分">
+            <span class="stat-label"><i class="fas fa-award"></i> 民主積分</span>
+            <span class="stat-val" id="hud-score">0</span>
           </div>
-          <div class="st-item parent" title="家長的滿意度">
-            <span class="st-label"><i class="fas fa-user-friends"></i> 家長</span>
-            <div class="st-bar"><div class="st-fill" id="st-fill-parent" style="width: 50%;"></div></div>
-            <span class="st-val" id="st-val-parent">50%</span>
-          </div>
-          <div class="st-item teacher" title="教師的滿意度">
-            <span class="st-label"><i class="fas fa-chalkboard-teacher"></i> 教師</span>
-            <div class="st-bar"><div class="st-fill" id="st-fill-teacher" style="width: 50%;"></div></div>
-            <span class="st-val" id="st-val-teacher">50%</span>
+          <div class="stat-item" title="目前進度">
+            <span class="stat-label"><i class="fas fa-layer-group"></i> 關卡</span>
+            <span class="stat-val" id="hud-level">準備中</span>
           </div>
         </div>
 
         <div class="character-badge">
-          <img id="hud-char-avatar" src="" alt="角色頭像" class="hidden">
-          <span id="hud-char-name">訪客</span>
+          <div class="avatar-mini" id="hud-avatar-mini"><i class="fas fa-user"></i></div>
+          <span id="hud-char-name">選民訪客</span>
         </div>
       </div>
       
-      <!-- Legislative Steps Timeline -->
+      <!-- Timeline showing levels -->
       <div class="timeline">
         <div class="timeline-line">
           <div class="timeline-progress" id="timeline-progress-bar"></div>
         </div>
-        <div class="step-node active" data-step="0">
-          <div class="node-circle"><i class="fas fa-file-signature"></i></div>
-          <span class="node-label">起草/提案</span>
+        <div class="step-node active" data-step="0" id="node-0">
+          <div class="node-circle"><i class="fas fa-user-cog"></i></div>
+          <span class="node-label">選民登錄</span>
         </div>
-        <div class="step-node" data-step="1">
-          <div class="node-circle"><i class="fas fa-users-cog"></i></div>
-          <span class="node-label">委員會公聽會</span>
+        <div class="step-node" data-step="1" id="node-1">
+          <div class="node-circle"><i class="fas fa-id-card"></i></div>
+          <span class="node-label">選民資格與公投</span>
         </div>
-        <div class="step-node" data-step="2">
-          <div class="node-circle"><i class="fas fa-vote-yea"></i></div>
-          <span class="node-label">二讀比例原則</span>
+        <div class="step-node" data-step="2" id="node-2">
+          <div class="node-circle"><i class="fas fa-user-tie"></i></div>
+          <span class="node-label">總統相對多數</span>
         </div>
-        <div class="step-node" data-step="3">
-          <div class="node-circle"><i class="fas fa-gavel"></i></div>
-          <span class="node-label">三讀合憲審查</span>
+        <div class="step-node" data-step="3" id="node-3">
+          <div class="node-circle"><i class="fas fa-balance-scale"></i></div>
+          <span class="node-label">立委兩票制</span>
         </div>
-        <div class="step-node" data-step="4">
-          <div class="node-circle"><i class="fas fa-signature"></i></div>
-          <span class="node-label">公布/覆議</span>
+        <div class="step-node" data-step="4" id="node-4">
+          <div class="node-circle"><i class="fas fa-mail-bulk"></i></div>
+          <span class="node-label">地方九合一</span>
+        </div>
+        <div class="step-node" data-step="5" id="node-5">
+          <div class="node-circle"><i class="fas fa-certificate"></i></div>
+          <span class="node-label">公民證書</span>
         </div>
       </div>
     </header>
 
-    <!-- Game Screens -->
+    <!-- Main Screens Wrapper -->
     <section class="screen-wrapper">
       
-      <!-- 0. Intro Screen -->
+      <!-- 0. Character / Voter Creation Screen -->
       <div class="screen active" id="screen-intro">
         <div class="intro-logo">
           <div class="logo-icon-wrapper">
-            <i class="fas fa-gavel logo-gavel"></i>
-            <i class="fas fa-university logo-court"></i>
+            <i class="fas fa-box-archive logo-box"></i>
+            <i class="fas fa-vote-yea logo-ballot"></i>
           </div>
-          <h1>立法大師</h1>
-          <h2>素養思辨挑戰賽！</h2>
+          <h1>民主選戰大進擊</h1>
+          <h2>台灣選舉制度模擬挑戰賽！</h2>
         </div>
         <p class="intro-desc">
-          公共政策沒有絕對的對與錯，只有利益的權衡與價值的抉擇！本遊戲將帶你扮演立法委員，從**起草法案方針、主持公聽會調和衝突、二讀比例原則思辨，到三讀合憲性審查**，體驗一條兼顧法理與民意的法律是如何誕生的！
+          台灣是一個充滿活力的民主社會，但你知道我們的投票規則是怎麼運作的嗎？<br>
+          本遊戲將帶領你親身體驗：**選民資格判定、公投雙重門檻模擬、總統大選相對多數決、立委「單一選區兩票制」席次計算，以及錯綜複雜的「九合一地方選舉」選票分發**！<br>
+          準備好成為一名合格的民主推手了嗎？請建立你的角色！
         </p>
-        <div class="form-group-row">
-          <div class="form-group-item">
-            <label for="player-class-input">班級：</label>
-            <input type="text" id="player-class-input" placeholder="例如：801" maxlength="6">
-          </div>
-          <div class="form-group-item">
-            <label for="player-seat-input">座號：</label>
-            <input type="number" id="player-seat-input" placeholder="例如：15" min="1" max="99">
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="player-name-input">輸入你的立法委員大名：</label>
-          <input type="text" id="player-name-input" placeholder="例如：閃亮亮立委" maxlength="10">
-        </div>
-        <button id="btn-start-game" class="btn btn-primary btn-pulse">
-          開始思辨冒險 <i class="fas fa-arrow-right"></i>
-        </button>
-      </div>
-
-      <!-- 1. Selection Screen -->
-      <div class="screen" id="screen-select">
-        <h3 class="screen-title">選擇你要推動的法規主題與立法角色</h3>
         
-        <!-- Character Selection -->
-        <div class="selection-section">
-          <h4><i class="fas fa-user-tag"></i> 選擇你的立法夥伴</h4>
-          <div class="card-grid" id="character-grid">
-            <div class="select-card character-card active" data-char="dotty">
-              <div class="card-image-placeholder">
-                <i class="fas fa-wand-magic-sparkles avatar-icon icon-dotty"></i>
-              </div>
-              <h5>點點 (法案精靈)</h5>
-              <p>擁有魔法的法案小助手，能把複雜的法律條文變成有趣的魔法！</p>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="player-class-input">班級 (選填)</label>
+            <input type="text" id="player-class-input" placeholder="例如：802" maxlength="6">
+          </div>
+          <div class="form-group">
+            <label for="player-seat-input">座號 (選填)</label>
+            <input type="number" id="player-seat-input" placeholder="例如：08" min="1" max="99">
+          </div>
+          <div class="form-group full-width">
+            <label for="player-name-input">請輸入你的選民大名 <span class="required">*</span></label>
+            <input type="text" id="player-name-input" placeholder="例如：阿明" maxlength="10" required>
+          </div>
+        </div>
+
+        <div class="role-selection-section">
+          <h4><i class="fas fa-user-tag text-cyan"></i> 選擇你的參政身份</h4>
+          <div class="card-grid" id="role-grid">
+            <div class="select-card role-card active" data-role="first-voter">
+              <div class="card-icon"><i class="fas fa-graduation-cap icon-first"></i></div>
+              <h5>首投族 (20歲)</h5>
+              <p>今年剛滿 20 歲，第一次擁有選舉權！熱血沸騰，準備投下人生第一張公職選票。</p>
+              <div class="badge badge-cyan">基本難度</div>
             </div>
-            <div class="select-card character-card" data-char="ray">
-              <div class="card-image-placeholder">
-                <i class="fas fa-graduation-cap avatar-icon icon-ray"></i>
-              </div>
-              <h5>阿光 (正義小法官)</h5>
-              <p>精通憲法與法規的智慧少年，最講求程序正義與法理嚴謹度。</p>
+            
+            <div class="select-card role-card" data-role="youth-candidate">
+              <div class="card-icon"><i class="fas fa-bullhorn icon-youth"></i></div>
+              <h5>新星候選人 (23歲)</h5>
+              <p>剛達到參選立法委員的法定年齡，決定挺身而出，為青年的未來發聲！</p>
+              <div class="badge badge-purple">中等難度</div>
             </div>
-            <div class="select-card character-card" data-char="wah">
-              <div class="card-image-placeholder">
-                <i class="fas fa-bullhorn avatar-icon icon-wah"></i>
-              </div>
-              <h5>小華 (熱血小議員)</h5>
-              <p>充滿熱情、最聽取民眾心聲的行動派，擅長說服立委與拉票！</p>
+            
+            <div class="select-card role-card" data-role="senior-politician">
+              <div class="card-icon"><i class="fas fa-landmark icon-senior"></i></div>
+              <h5>資深政治家 (40歲)</h5>
+              <p>達到參選總統的法定年齡，準備提出全面的國家政見，角逐民主殿堂最高榮譽。</p>
+              <div class="badge badge-gold">專家難度</div>
             </div>
           </div>
         </div>
 
-        <!-- Bill Selection -->
-        <div class="selection-section">
-          <h4><i class="fas fa-file-invoice"></i> 選擇你想要推動的法案</h4>
-          <div class="card-grid" id="bill-grid">
-            <div class="select-card bill-card active" data-bill="homework">
-              <div class="bill-icon-box"><i class="fas fa-book-open"></i></div>
-              <h5>「中小學禁止週末作業條例」</h5>
-              <p>思辨核心：學生自主休息權 v.s. 學校教學自主權與家長教育參與權。</p>
-            </div>
-            <div class="select-card bill-card" data-bill="lunch">
-              <div class="bill-icon-box"><i class="fas fa-cookie-bite"></i></div>
-              <h5>「營養午餐全面加糖與點心法案」</h5>
-              <p>思辨核心：學生飲食幸福權與選擇權 v.s. 健康發育權與學校財政負擔。</p>
-            </div>
-            <div class="select-card bill-card" data-bill="green">
-              <div class="bill-icon-box"><i class="fas fa-leaf"></i></div>
-              <h5>「校園綠能與垃圾減量推廣法」</h5>
-              <p>思辨核心：環境保護與世代公共利益 v.s. 師生生活便利權與高額建置成本。</p>
-            </div>
-          </div>
+        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 25px;">
+          <button id="btn-start-game" class="btn btn-primary btn-pulse" style="margin: 0;">
+            開啟民主挑戰 <i class="fas fa-arrow-right"></i>
+          </button>
+          <a href="slides.html" class="btn btn-secondary" style="text-decoration: none;">
+            <i class="fas fa-chalkboard-teacher text-cyan"></i> 課堂簡報學習模式
+          </a>
         </div>
-
-        <button id="btn-confirm-selection" class="btn btn-primary">
-          確認，開始提案！ <i class="fas fa-check"></i>
-        </button>
       </div>
 
-      <!-- 2. Stage 1: Drafting, Proposal & First Reading -->
+      <!-- 1. Stage 1: Voter Eligibility & Referendum -->
       <div class="screen" id="screen-stage1">
-        <h3 class="screen-title">第一關：法案政策起草與一讀會</h3>
+        <h3 class="screen-title"><span class="step-num">關卡一</span> 選民參政權與公民投票門檻</h3>
         
-        <div class="stage-intro-card">
-          <p>
-            <strong>【起草方針與連署】</strong><br>
-            立法的第一步是「起草法案方針」。不同的條文設計，會對**學生、家長、教師**造成不同程度的影響。起草完畢後，需獲得 **15位以上立委共同連署** 才能正式向院會提案！
-          </p>
-        </div>
-
-        <!-- Step A: Drafting Choices -->
-        <div class="minigame-box" id="drafting-game-container">
-          <h4>任務 1：決定您的法案起草方針</h4>
-          <p class="game-instruction">請點選一個符合您政策理念的起草方針（這將決定初始的三方滿意度）：</p>
-          
-          <div class="drafting-options-grid" id="drafting-options-container">
-            <!-- Dynamic choices based on selected bill -->
+        <!-- Task 1: Card Sorting for Voting Eligibility -->
+        <div class="minigame-box" id="eligibility-game-container">
+          <div class="game-header">
+            <h4>任務 1：台灣公民參政權資格檢查</h4>
+            <span class="badge badge-purple">年齡大考驗</span>
           </div>
-        </div>
-
-        <!-- Step B: Signature Collection (Active after choice) -->
-        <div class="minigame-box hidden" id="sig-game-container">
-          <h4>任務 2：徵求立法委員連署提案</h4>
-          <div class="game-hud-bar">
-            <div class="hud-item"><i class="fas fa-users"></i> 已連署人數: <span id="sig-count" class="counter-highlight">0</span> / 15</div>
-            <div class="hud-item"><i class="fas fa-clock"></i> 剩餘時間: <span id="sig-timer">35</span> 秒</div>
-          </div>
-          
-          <div class="sig-instructions">
-            <p><i class="fas fa-info-circle animate-bounce"></i> 進入立院遊說大廳！請點擊 15 位立委座位，針對他們在意的問題（學生、家長、教師權益）進行遊說。答對者立即連署，答錯者會產生疑慮，需快速連點該立委 5 次以說服他們！</p>
-          </div>
-          
-          <div class="sig-play-area" id="sig-play-area">
-            <div class="start-overlay" id="sig-start-overlay">
-              <button id="btn-start-sig" class="btn btn-secondary">點此開始收集簽名</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- First Reading Ceremony (Hidden until game won) -->
-        <div class="ceremony-box hidden" id="first-reading-ceremony">
-          <h4><i class="fas fa-university"></i> 立法院院會：一讀程序</h4>
-          <p class="announcement">
-            「現在朗讀本案案由：<span class="highlight-text" id="ceremony-bill-title">法案名稱</span>。請問院會有無異議？無異議，本案一讀通過，送交委員會審查！」
+          <p class="game-instruction">
+            根據中華民國《憲法》及《公職人員選舉罷免法》，不同參政權利有不同的年齡門檻。請閱讀下方人物卡片，將其**拖曳或點選**分發至正確的權限框中！
           </p>
           
-          <div class="gavel-interactive-area">
-            <div class="gavel-wrapper" id="gavel-anim-s1">
-              <svg class="gavel-svg" viewBox="0 0 100 100">
-                <rect x="25" y="30" width="30" height="16" rx="4" fill="#8B4513" stroke="#D4AF37" stroke-width="2"/>
-                <rect x="22" y="27" width="6" height="22" rx="2" fill="#D4AF37"/>
-                <rect x="52" y="27" width="6" height="22" rx="2" fill="#D4AF37"/>
-                <rect x="40" y="46" width="8" height="40" rx="3" fill="#A0522D"/>
-                <circle cx="44" cy="84" r="5" fill="#8B4513"/>
-                <ellipse cx="60" cy="85" rx="25" ry="10" fill="#CD853F" stroke="#8B4513" stroke-width="2"/>
-                <ellipse cx="60" cy="81" rx="25" ry="10" fill="#DEB887"/>
-              </svg>
-              <div class="gavel-spark" id="gavel-spark-s1"></div>
+          <div class="eligibility-workspace">
+            <!-- Current card to sort -->
+            <div class="sorting-card-area">
+              <div class="sorting-card" id="active-sort-card">
+                <!-- Dynamic Content -->
+                <div class="card-inner">
+                  <div class="sort-avatar"><i class="fas fa-user-circle"></i></div>
+                  <div class="sort-info">
+                    <h5 id="sort-card-name">小華</h5>
+                    <p id="sort-card-age">年齡：19 歲</p>
+                    <span class="sort-desc" id="sort-card-desc">剛考上大學，非常關心環境議題，希望能對能源公投與市長選舉發表看法。</span>
+                  </div>
+                </div>
+              </div>
+              <div class="sorting-progress">剩餘卡片：<span id="sort-remain">5</span> / 5</div>
             </div>
-            <p class="gavel-instruction">點擊議事槌敲擊桌面，完成一讀送交審查！</p>
-            <button id="btn-strike-gavel-s1" class="btn btn-danger hidden">
-              <i class="fas fa-hammer"></i> 敲擊議事槌
+            
+            <!-- Target Dropping Zones -->
+            <div class="drop-zones-grid">
+              <button class="drop-zone" data-zone="referendum-only" id="zone-ref">
+                <i class="fas fa-file-contract text-cyan"></i>
+                <span>僅限公民投票 (18歲)</span>
+                <span class="zone-desc">可投票表決公共議題，但不能選人</span>
+              </button>
+              <button class="drop-zone" data-zone="voter" id="zone-vote">
+                <i class="fas fa-vote-yea text-green"></i>
+                <span>具一般選舉權 (20歲)</span>
+                <span class="zone-desc">可投票給總統、立委、市長等公職</span>
+              </button>
+              <button class="drop-zone" data-zone="candidate-legislator" id="zone-leg">
+                <i class="fas fa-bullhorn text-purple"></i>
+                <span>可參選立委與公職 (23歲)</span>
+                <span class="zone-desc">可登記參選地方議員、立法委員</span>
+              </button>
+              <button class="drop-zone" data-zone="candidate-president" id="zone-pres">
+                <i class="fas fa-landmark text-gold"></i>
+                <span>可參選總統 (40歲)</span>
+                <span class="zone-desc">符合參選中華民國總統的年齡</span>
+              </button>
+            </div>
+          </div>
+          <div class="feedback-message" id="eligibility-feedback"></div>
+        </div>
+
+        <!-- Task 2: Referendum Simulator (Visible after Task 1) -->
+        <div class="minigame-box hidden" id="referendum-game-container">
+          <div class="game-header">
+            <h4>任務 2：公投提案「雙重門檻」模擬器</h4>
+            <span class="badge badge-gold">憲法知識</span>
+          </div>
+          <p class="game-instruction">
+            台灣《公民投票法》規定，公投要通過必須同時跨越**雙重門檻**：<br>
+            <strong>① 同意票必須多於不同意票</strong><br>
+            <strong>② 同意票數必須達到投票權人總數的 1/4 (25%) 以上</strong><br>
+            請拖動下方滑桿，模擬一場**「是否同意高中生延後上學」**的公投，嘗試讓公投**成功通過**！
+          </p>
+
+          <div class="simulator-layout">
+            <!-- Controls -->
+            <div class="sim-controls">
+              <div class="control-group">
+                <label for="slider-turnout">
+                  <i class="fas fa-users text-cyan"></i> 投票率 (Turnout)：<span class="sim-val" id="val-turnout">50%</span>
+                </label>
+                <input type="range" id="slider-turnout" min="0" max="100" value="40">
+              </div>
+
+              <div class="control-group">
+                <label for="slider-agree">
+                  <i class="fas fa-check-circle text-green"></i> 同意票佔投票人數比例：<span class="sim-val" id="val-agree">50%</span>
+                </label>
+                <input type="range" id="slider-agree" min="0" max="100" value="60">
+              </div>
+
+              <!-- Extra statistics explanation -->
+              <div class="sim-math-card">
+                <p>假設全國總投票權人數為：**1,900 萬人**</p>
+                <p>➔ 通過所需的同意票低標 (25%)：**475 萬票**</p>
+                <p>➔ 預估目前同意票數：<span class="highlight-text" id="sim-calc-agree-votes">0 萬票</span></p>
+              </div>
+            </div>
+
+            <!-- Visualization -->
+            <div class="sim-visualization">
+              <div class="bar-chart-container">
+                <!-- Bar 1: Total Voter Population Representation -->
+                <div class="chart-column">
+                  <span class="column-label">全國公民 (100%)</span>
+                  <div class="bar-bg">
+                    <div class="bar-fill bg-blue-grad" style="height: 100%;">
+                      <span class="bar-percent">1,900 萬</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Bar 2: Agree vs Disagree -->
+                <div class="chart-column">
+                  <span class="column-label">公投結果</span>
+                  <div class="bar-bg">
+                    <div class="bar-fill bg-green-grad" id="bar-agree" style="height: 24%;">
+                      <span class="bar-percent" id="bar-agree-lbl">同意: 24%</span>
+                    </div>
+                    <div class="bar-fill bg-red-grad" id="bar-disagree" style="height: 16%;">
+                      <span class="bar-percent" id="bar-disagree-lbl">不同意: 16%</span>
+                    </div>
+                    <div class="bar-fill bg-gray" id="bar-no-vote" style="height: 60%;">
+                      <span class="bar-percent">未投票: 60%</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Bar 3: The 25% Threshold Marker -->
+                <div class="chart-column">
+                  <span class="column-label">同意門檻 (25%)</span>
+                  <div class="bar-bg">
+                    <div class="bar-fill bg-gold-grad" style="height: 25%;">
+                      <span class="bar-percent">475 萬票</span>
+                    </div>
+                    <div class="threshold-dash-line"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Passing feedback -->
+              <div class="sim-status-box" id="sim-status-box">
+                <div class="status-icon" id="sim-status-icon"><i class="fas fa-times-circle"></i></div>
+                <div class="status-details">
+                  <h5 id="sim-status-title">公投結果：未通過！</h5>
+                  <p id="sim-status-desc">同意票數未達總投票權人數的 25% (475萬票)。</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="sim-action-area">
+            <button id="btn-submit-referendum" class="btn btn-success hidden">
+              確認此公投結果，進入下一關 <i class="fas fa-chevron-right"></i>
             </button>
           </div>
         </div>
 
         <div class="button-footer">
           <button id="btn-to-stage2" class="btn btn-primary hidden">
-            前往委員會審查 <i class="fas fa-arrow-right"></i>
+            前往關卡二：總統大選 <i class="fas fa-arrow-right"></i>
           </button>
         </div>
       </div>
 
-      <!-- 3. Stage 2: Committee & Stakeholder Public Hearing -->
+      <!-- 2. Stage 2: Presidential Election (Relative Majority) -->
       <div class="screen" id="screen-stage2">
-        <h3 class="screen-title">第二關：利益衝突調和！委員會與公聽會審查</h3>
+        <h3 class="screen-title"><span class="step-num">關卡二</span> 總統大選與相對多數決</h3>
         
         <div class="stage-intro-card">
-          <p>
-            <strong>【委員會與公聽會審查】</strong><br>
-            法案進入委員會後，必須召開「公聽會」，邀請**學生代表、家長代表、教師代表**列席表達意見。
-            身為法案起草人，您必須面對他們的犀利質疑，做出最能調和利益的**修正案抉擇**！若某方支持度過低，可能會導致朝野黨團協商陷入僵局！
+          <div class="intro-card-icon"><i class="fas fa-landmark text-gold"></i></div>
+          <div class="intro-card-content">
+            <p>
+              <strong>【總統選舉制度：相對多數決】</strong><br>
+              中華民國總統與副總統選舉採<strong>「單一選區、相對多數決」</strong>。全國為單一選區，選民直接投票。
+              不需要獲得過半數的支持，只要獲得**相對最高票**的候選人即告當選（又稱第一過去門檻制，Winner-takes-all）。
+            </p>
+          </div>
+        </div>
+
+        <!-- Mini-game Campaign Strategy -->
+        <div class="minigame-box" id="campaign-game-container">
+          <div class="game-header">
+            <h4>任務 1：選戰造勢與政見攻防</h4>
+            <span class="badge badge-cyan">選戰模擬</span>
+          </div>
+          <p class="game-instruction">
+            你被任命為候選人<strong>「民主希望隊」</strong>的選戰總幹事！面對另外兩位強大的競爭對手，你必須為最後一場黃金週造勢晚會選擇核心政見。不同的政見會對不同的選民群體產生不同影響：
           </p>
+
+          <div class="campaign-options">
+            <div class="campaign-option-card" data-strategy="youth">
+              <div class="opt-header">
+                <i class="fas fa-graduation-cap text-cyan"></i>
+                <h5>方針 A：主打「青年居住正義」</h5>
+              </div>
+              <p>承諾興建社會住宅、補助青年租屋、發放購屋低利貸款。</p>
+              <div class="opt-impact">
+                <span><i class="fas fa-users"></i> 吸引大量青年與首投族支持。</span>
+                <span><i class="fas fa-triangle-exclamation text-yellow"></i> 年長選民態度持平。</span>
+              </div>
+            </div>
+
+            <div class="campaign-option-card" data-strategy="elderly">
+              <div class="opt-header">
+                <i class="fas fa-hospital text-purple"></i>
+                <h5>方針 B：主打「銀髮社會福利」</h5>
+              </div>
+              <p>擴大長照 3.0 預算、全面補助老人健保、提高敬老愛心卡點數。</p>
+              <div class="opt-impact">
+                <span><i class="fas fa-users"></i> 贏得高投票率的年長者鐵票。</span>
+                <span><i class="fas fa-triangle-exclamation text-yellow"></i> 青年人擔心財政排擠效應。</span>
+              </div>
+            </div>
+
+            <div class="campaign-option-card" data-strategy="tech">
+              <div class="opt-header">
+                <i class="fas fa-microchip text-gold"></i>
+                <h5>方針 C：主打「科技綠能發展」</h5>
+              </div>
+              <p>扶植 AI 半導體產業鏈、推動校園與園區綠能發電、提供企業創新補助。</p>
+              <div class="opt-impact">
+                <span><i class="fas fa-users"></i> 獲得科技中產階級與產業支持。</span>
+                <span><i class="fas fa-triangle-exclamation text-yellow"></i> 環保團體與勞工群體持保留態度。</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="campaign-vote-preview hidden" id="campaign-preview-box">
+            <h5>策略分析成功！你已成功部署黃金週政見！</h5>
+            <p>接下來，請啟動**開票按鈕**，模擬大選投開票結果！</p>
+            <button id="btn-start-pres-vote" class="btn btn-success btn-large btn-pulse">
+              <i class="fas fa-envelope-open-text"></i> 啟動投開票！
+            </button>
+          </div>
         </div>
 
-        <!-- Stakeholder Hearing Panel -->
-        <div class="minigame-box" id="hearing-game-container">
-          <h4>任務 1：召開公聽會！答覆各界代表質疑</h4>
-          
-          <div class="hearing-workspace" id="hearing-workspace">
-            <!-- Active stakeholder dialogue will render here dynamically -->
+        <!-- Dynamic Election Results (Revealed after clicking vote button) -->
+        <div class="minigame-box hidden" id="pres-results-container">
+          <div class="game-header">
+            <h4>總統大選即時開票看板</h4>
+            <div class="live-indicator"><span class="dot"></span> LIVE 隨時開票中</div>
           </div>
-          
-          <div class="hearing-options-panel" id="hearing-options-container">
-            <!-- Options to reply will render here dynamically -->
-          </div>
-        </div>
 
-        <!-- Party Caucus Negotiation (Unlocked after hearing) -->
-        <div class="minigame-box hidden" id="negotiation-game-container">
-          <h4>任務 2：朝野黨團協商！尋求政黨共識</h4>
-          <p class="game-instruction">法案在委員會中被政黨爭執不下！拉動拉桿調整三方政黨的「讓步值」，讓三個指針都重疊在發光的「共識區」，即可通過協商！</p>
-          
-          <div class="negotiation-workspace">
-            <div class="party-control">
-              <label for="slider-party-a"><i class="fas fa-square-full party-icon-blue"></i> 藍天黨 (注重行政執行可行性)</label>
-              <div class="slider-wrapper">
-                <input type="range" id="slider-party-a" min="0" max="100" value="20">
-                <span class="value-display" id="val-party-a">20%</span>
+          <div class="pres-vote-workspace">
+            <!-- Vote Counting Bars -->
+            <div class="candidate-results-list">
+              <!-- Candidate 1 -->
+              <div class="candidate-row" id="cand-1">
+                <div class="cand-avatar cand-blue"><i class="fas fa-user-tie"></i></div>
+                <div class="cand-details">
+                  <div class="cand-meta">
+                    <span class="cand-name">1號 藍海進步黨 (藍天明)</span>
+                    <span class="cand-percent" id="cand-1-pct">0%</span>
+                  </div>
+                  <div class="cand-progress-bg">
+                    <div class="cand-progress-fill bg-blue" id="cand-1-bar" style="width: 0%;"></div>
+                  </div>
+                  <div class="cand-votes" id="cand-1-votes">0 票</div>
+                </div>
+                <div class="winner-badge hidden" id="winner-badge-1"><i class="fas fa-crown"></i> 當選</div>
+              </div>
+
+              <!-- Candidate 2 (Player) -->
+              <div class="candidate-row" id="cand-2">
+                <div class="cand-avatar cand-green"><i class="fas fa-user-shield"></i></div>
+                <div class="cand-details">
+                  <div class="cand-meta">
+                    <span class="cand-name">2號 民主希望隊 (<span id="player-cand-name">玩家名</span>)</span>
+                    <span class="cand-percent" id="cand-2-pct">0%</span>
+                  </div>
+                  <div class="cand-progress-bg">
+                    <div class="cand-progress-fill bg-green" id="cand-2-bar" style="width: 0%;"></div>
+                  </div>
+                  <div class="cand-votes" id="cand-2-votes">0 票</div>
+                </div>
+                <div class="winner-badge hidden" id="winner-badge-2"><i class="fas fa-crown"></i> 當選</div>
+              </div>
+
+              <!-- Candidate 3 -->
+              <div class="candidate-row" id="cand-3">
+                <div class="cand-avatar cand-yellow"><i class="fas fa-user-astronaut"></i></div>
+                <div class="cand-details">
+                  <div class="cand-meta">
+                    <span class="cand-name">3號 陽光力量聯盟 (黃向陽)</span>
+                    <span class="cand-percent" id="cand-3-pct">0%</span>
+                  </div>
+                  <div class="cand-progress-bg">
+                    <div class="cand-progress-fill bg-yellow" id="cand-3-bar" style="width: 0%;"></div>
+                  </div>
+                  <div class="cand-votes" id="cand-3-votes">0 票</div>
+                </div>
+                <div class="winner-badge hidden" id="winner-badge-3"><i class="fas fa-crown"></i> 當選</div>
               </div>
             </div>
 
-            <div class="party-control">
-              <label for="slider-party-b"><i class="fas fa-square-full party-icon-green"></i> 綠地黨 (注重學生表意與自主權)</label>
-              <div class="slider-wrapper">
-                <input type="range" id="slider-party-b" min="0" max="100" value="80">
-                <span class="value-display" id="val-party-b">80%</span>
-              </div>
-            </div>
-
-            <div class="party-control">
-              <label for="slider-party-c"><i class="fas fa-square-full party-icon-yellow"></i> 陽光黨 (注重配套輔導與社會平衡)</label>
-              <div class="slider-wrapper">
-                <input type="range" id="slider-party-c" min="0" max="100" value="50">
-                <span class="value-display" id="val-party-c">50%</span>
-              </div>
-            </div>
-
-            <div class="negotiation-target-zone">
-              <div class="target-glow-zone" id="target-glow-zone"></div>
-              <div class="pointer pointer-a" id="ptr-party-a"></div>
-              <div class="pointer pointer-b" id="ptr-party-b"></div>
-              <div class="pointer pointer-c" id="ptr-party-c"></div>
-              <div class="target-label">共識發光區 (50%)</div>
+            <!-- Discussion about Proportionality / Relative Majority -->
+            <div class="election-analysis-card hidden" id="election-analysis-box">
+              <h5><i class="fas fa-info-circle text-cyan"></i> 民主公民課：什麼是相對多數決？</h5>
+              <p id="relative-majority-explain">
+                開票結果揭曉！在相對多數決下，當選人並不需要獲得絕對多數（過半數，即大於50%）的選票。只要得票數領先所有對手即可當選。這種制度能快速產生贏家，但也可能出現「多數民意不滿意當選人」的現象（例如當選人僅獲得39%選票，意味著有61%的人支持其他對手）。
+              </p>
             </div>
           </div>
-          <div class="negotiation-feedback" id="negotiation-feedback">朝野協商中，努力拉近彼此的差距...</div>
         </div>
 
         <div class="button-footer">
           <button id="btn-to-stage3" class="btn btn-primary hidden">
-            送出審查報告，進入二讀會 <i class="fas fa-arrow-right"></i>
+            進入關卡三：立委兩票制 <i class="fas fa-arrow-right"></i>
           </button>
         </div>
       </div>
 
-      <!-- 4. Stage 3: Second Reading (Proportionality Principle Debate) -->
+      <!-- 3. Stage 3: Legislative Election (Single-District Two-Vote) -->
       <div class="screen" id="screen-stage3">
-        <h3 class="screen-title">第三關：二讀會大辯論！憲法比例原則之思辨</h3>
+        <h3 class="screen-title"><span class="step-num">關卡三</span> 立法委員選舉：單一選區兩票制</h3>
         
         <div class="stage-intro-card">
-          <p>
-            <strong>【二讀會與比例原則】</strong><br>
-            二讀會是法案審查最關鍵、辯論最激烈的階段！立委們會就法案的合理性進行攻防。
-            根據**中華民國憲法第 23 條（比例原則）**，國家限制人民權利時，必須符合「目的正當性」、「手段適合性」、「限制必要性（最小侵害）」與「衡平性」。請為您的法規做出最符合憲法精神的法理辯護！
+          <div class="intro-card-icon"><i class="fas fa-balance-scale text-purple"></i></div>
+          <div class="intro-card-content">
+            <p>
+              <strong>【立委選舉：單一選區兩票制】</strong><br>
+              台灣的立法委員共有 113 席，每位選民會領到<strong>兩張選票</strong>：<br>
+              <strong>第 1 票：區域立委（選人）</strong> - 每個選區選出一名最高票的立委（相對多數決）。<br>
+              <strong>第 2 票：政黨票（選黨）</strong> - 決定 34 席「不分區立委」的分配。只有得票率跨越 <strong>5% 門檻</strong>的政黨，才能依比例分得席次！
+            </p>
+          </div>
+        </div>
+
+        <!-- Ballots Casting Simulator -->
+        <div class="minigame-box" id="legislative-vote-container">
+          <div class="game-header">
+            <h4>任務 1：投下你的立委神聖兩票</h4>
+            <span class="badge badge-purple">投開票體驗</span>
+          </div>
+          
+          <div class="ballots-wrapper">
+            <!-- Ballot 1 -->
+            <div class="ballot-card-sim" id="ballot-district">
+              <div class="ballot-header">
+                <span>中華民國第11屆立法委員選舉票</span>
+                <span class="ballot-type-tag">區域立法委員</span>
+              </div>
+              <div class="ballot-candidates-grid">
+                <div class="ballot-option" data-cand="1">
+                  <div class="cand-number">1</div>
+                  <div class="ballot-cand-info">
+                    <span class="name">藍天明</span>
+                    <span class="party">藍天進步黨</span>
+                  </div>
+                  <div class="vote-stamp-spot"></div>
+                </div>
+                <div class="ballot-option" data-cand="2">
+                  <div class="cand-number">2</div>
+                  <div class="ballot-cand-info">
+                    <span class="name">林民主</span>
+                    <span class="party">民主希望隊</span>
+                  </div>
+                  <div class="vote-stamp-spot"></div>
+                </div>
+                <div class="ballot-option" data-cand="3">
+                  <div class="cand-number">3</div>
+                  <div class="ballot-cand-info">
+                    <span class="name">黃向陽</span>
+                    <span class="party">陽光力量聯盟</span>
+                  </div>
+                  <div class="vote-stamp-spot"></div>
+                </div>
+              </div>
+              <p class="ballot-tip">請點擊一位候選人進行蓋印投票</p>
+            </div>
+
+            <!-- Ballot 2 -->
+            <div class="ballot-card-sim" id="ballot-party">
+              <div class="ballot-header">
+                <span>中華民國第11屆立法委員選舉票</span>
+                <span class="ballot-type-tag party-tag">全國不分區及僑居國外國民 (政黨票)</span>
+              </div>
+              <div class="ballot-parties-grid">
+                <div class="ballot-option-party" data-party="A">
+                  <span class="party-num">1</span>
+                  <span class="party-color-icon bg-blue"></span>
+                  <span class="party-name">藍天進步黨</span>
+                  <div class="vote-stamp-spot"></div>
+                </div>
+                <div class="ballot-option-party" data-party="B">
+                  <span class="party-num">2</span>
+                  <span class="party-color-icon bg-green"></span>
+                  <span class="party-name">民主希望隊</span>
+                  <div class="vote-stamp-spot"></div>
+                </div>
+                <div class="ballot-option-party" data-party="C">
+                  <span class="party-num">3</span>
+                  <span class="party-color-icon bg-yellow"></span>
+                  <span class="party-name">陽光力量聯盟</span>
+                  <div class="vote-stamp-spot"></div>
+                </div>
+                <div class="ballot-option-party" data-party="D">
+                  <span class="party-num">4</span>
+                  <span class="party-color-icon bg-pink"></span>
+                  <span class="party-name">新潮青年黨</span>
+                  <div class="vote-stamp-spot"></div>
+                </div>
+                <div class="ballot-option-party" data-party="E">
+                  <span class="party-num">5</span>
+                  <span class="party-color-icon bg-orange"></span>
+                  <span class="party-name">生態綠能黨</span>
+                  <div class="vote-stamp-spot"></div>
+                </div>
+                <div class="ballot-option-party" data-party="F">
+                  <span class="party-num">6</span>
+                  <span class="party-color-icon bg-purple-solid"></span>
+                  <span class="party-name">勞工權益盟</span>
+                  <div class="vote-stamp-spot"></div>
+                </div>
+              </div>
+              <p class="ballot-tip">請點擊一個政黨進行蓋印投票</p>
+            </div>
+          </div>
+
+          <!-- Vote Drop Animation Box -->
+          <div class="ballot-box-animation hidden" id="ballot-box-anim-container">
+            <div class="box-slot">
+              <div class="flying-ballot" id="flying-ballot-1"><i class="fas fa-file-alt"></i> 區域票</div>
+              <div class="flying-ballot" id="flying-ballot-2"><i class="fas fa-file-invoice"></i> 政黨票</div>
+              <i class="fas fa-box-open box-icon"></i>
+            </div>
+            <p>投票完成！選票已投入票箱。正在前往「政黨票席次計算機」...</p>
+          </div>
+        </div>
+
+        <!-- Task 2: Party Proportional Calculator & Parliament Visualizer -->
+        <div class="minigame-box hidden" id="legislative-calculator-container">
+          <div class="game-header">
+            <h4>任務 2：政黨票分配席次計算與議席分佈圖</h4>
+            <span class="badge badge-gold">5%得票率門檻限制</span>
+          </div>
+          <p class="game-instruction">
+            不分區立委共有 34 席。調整各政黨得票率滑桿，親自看見**小於 5% 門檻的政黨**如何被篩除，而合格政黨如何按得票佔比分配席次！<br>
+            <strong>挑戰任務</strong>：嘗試調整滑桿，讓**「生態綠能黨（橘）」**成功跨越 5% 門檻，並觀察分配結果！
           </p>
-        </div>
 
-        <div class="stage3-split-layout">
-          <!-- Left: Proportionality Quiz -->
-          <div class="quiz-panel">
-            <div class="panel-header">
-              <i class="fas fa-balance-scale"></i> 院會大辯論：比例原則答辯
+          <div class="calc-workspace">
+            <!-- Left: Inputs -->
+            <div class="calc-inputs">
+              <h5 class="section-subtitle">調整各黨政黨票得票率 (總和需為 100%)</h5>
+              <div class="party-sliders-list" id="party-sliders-container">
+                <!-- Sliders dynamically generated -->
+              </div>
+              <div class="sum-error-message" id="slider-sum-warning">
+                目前得票率總和：<span id="slider-sum-val">100</span>% (必須等於 100% 才能計算)
+              </div>
             </div>
-            <div class="quiz-box">
-              <div class="question-header">
-                <span class="question-number" id="quiz-q-num">第 1 / 3 題</span>
-                <span class="legislator-avatar-hud"><i class="fas fa-user-tie"></i> 院會現場辯論中</span>
+
+            <!-- Right: Results & Chart -->
+            <div class="calc-results">
+              <h5 class="section-subtitle">34席不分區分配結果 (點亮立委席次)</h5>
+              
+              <!-- Parliament Seating SVG Arc -->
+              <div class="parliament-chart-wrapper">
+                <svg class="parliament-svg" viewBox="-120 -100 240 110" id="parliament-svg">
+                  <!-- Dots generated dynamically via JS (semi-circle of 34 seats) -->
+                </svg>
+                <div class="parliament-hover-info" id="parliament-hover-info">移至座位查看詳情</div>
               </div>
-              <p class="question-text" id="quiz-question">讀取中...</p>
-              <div class="quiz-options" id="quiz-options-container">
-                <!-- Dynamic choices -->
-              </div>
-              <div class="quiz-feedback hidden" id="quiz-feedback-box">
-                <span id="quiz-feedback-text"></span>
+
+              <!-- Result Table -->
+              <table class="result-table">
+                <thead>
+                  <tr>
+                    <th>政黨</th>
+                    <th>得票率</th>
+                    <th>跨越5%</th>
+                    <th>分配席次</th>
+                    <th>女性保障</th>
+                  </tr>
+                </thead>
+                <tbody id="result-table-body">
+                  <!-- Generated dynamically -->
+                </tbody>
+              </table>
+
+              <!-- Gender info notice -->
+              <div class="gender-rule-box">
+                <i class="fas fa-venus-mars text-purple"></i>
+                <span>根據規定，各政黨當選之不分區立委席次，**女性比例不得低於二分之一**。系統已自動套用性別輪替保障規則！</span>
               </div>
             </div>
           </div>
-
-          <!-- Right: Visual Voting Board -->
-          <div class="voting-panel">
-            <div class="panel-header">
-              <i class="fas fa-desktop"></i> 立法院院會表決器 (113 席)
-            </div>
-            <div class="voting-hud-stats">
-              <div class="vote-stat support"><span class="label">贊成</span><span class="count" id="vote-count-yes">0</span></div>
-              <div class="vote-stat oppose"><span class="label">反對</span><span class="count" id="vote-count-no">0</span></div>
-              <div class="vote-stat abstain"><span class="label">未決定</span><span class="count" id="vote-count-undecided">113</span></div>
-            </div>
-            
-            <!-- Voting seats grid -->
-            <div class="voting-seats-grid" id="voting-seats-grid">
-              <!-- 113 dots representing seats -->
-            </div>
-
-            <div class="passing-threshold-marker">
-              過半數通過門檻：57 票
-            </div>
-          </div>
-        </div>
-
-        <div class="voting-action-overlay hidden" id="voting-trigger-overlay">
-          <div class="overlay-content">
-            <h4><i class="fas fa-exclamation-triangle"></i> 二讀廣泛討論結束，準備表決！</h4>
-            <p>你已成功使用憲法比例原則完成法理答辯。現在，請點擊按鈕，啟動院會電子表決器！</p>
-            <button id="btn-start-electronic-vote" class="btn btn-success btn-large btn-pulse">
-              <i class="fas fa-play"></i> 按下表決鈕！
+          
+          <div class="calc-action-area">
+            <button id="btn-submit-legislative" class="btn btn-success">
+              確認不分區立委分配結果，進入下一關 <i class="fas fa-chevron-right"></i>
             </button>
           </div>
         </div>
 
         <div class="button-footer">
           <button id="btn-to-stage4" class="btn btn-primary hidden">
-            通過二讀會！前往三讀會 <i class="fas fa-arrow-right"></i>
+            前往關卡四：九合一地方選舉 <i class="fas fa-arrow-right"></i>
           </button>
         </div>
       </div>
 
-      <!-- 5. Stage 4: Third Reading (Constitutionality Review) -->
+      <!-- 4. Stage 4: Nine-in-One Local Elections (Ballot Sorting) -->
       <div class="screen" id="screen-stage4">
-        <h3 class="screen-title">第四關：三讀會把關！法律合憲性審查</h3>
+        <h3 class="screen-title"><span class="step-num">關卡四</span> 九合一地方公職人員選舉：選票分發員</h3>
         
         <div class="stage-intro-card">
-          <p>
-            <strong>【三讀與合憲性審查】</strong><br>
-            三讀會是立法程序的最後一關。除非發現法案條文與**「憲法」或「其他上位法律」**相牴觸，否則只能做文字修正。
-            天啊！在最後關頭，法制作業人員發現草案中居然包含了一條**「違背憲法基本權利（人身自由）」或「權限逾越」的嚴重違憲條款**！請找出該段條文並予以修正，以避免未來被宣告違憲無效！
-          </p>
+          <div class="intro-card-icon"><i class="fas fa-mail-bulk text-cyan"></i></div>
+          <div class="intro-card-content">
+            <p>
+              <strong>【九合一選舉與選票數量】</strong><br>
+              台灣每四年舉辦一次地方公職人員選舉（俗稱九合一）。選民會根據**戶籍所在地**拿到不同數量的選票：<br>
+              ① **直轄市**（如雙北、桃園、台中、台南、高雄）：**3 張選票**（市長、市議員、里長）。<br>
+              ② **一般縣市**（如彰化、花蓮）：**5 張選票**（縣長、縣議員、鄉鎮市長、鄉鎮市民代表、村里長）。<br>
+              ③ **省轄市**（基隆、新竹、嘉義市）：**3 張選票**（市長、市議員、里長，無鄉鎮市級）。<br>
+              ④ **直轄市山地原住民區**（如烏來區、和平區）：**5 張選票**（包含區長與區民代表）。<br>
+              *注意：原住民選民選議員時，要發給「原住民議員票」。*
+            </p>
+          </div>
         </div>
 
-        <!-- Constitutionality Quiz -->
-        <div class="minigame-box" id="constitution-game-container">
-          <h4>任務：找出違憲條款並進行修正</h4>
-          <p class="game-instruction">請閱讀下方草案，**點擊該段具有違憲疑慮的紅色下底線文字**，並選擇正確的修正條文：</p>
-          
-          <div class="proofread-paper">
-            <h4 class="paper-bill-title" id="proofread-bill-title">草案標題</h4>
-            <div class="paper-content" id="proofread-bill-content">
-              <!-- Dynamic content based on bill with inline unconstitutional clause -->
+        <!-- Ballot Dispatch Game -->
+        <div class="minigame-box" id="ballot-dispatch-container">
+          <div class="game-header">
+            <h4>任務：投票所選票正確分發挑戰</h4>
+            <div class="dispatch-hud">
+              <div class="disp-item"><i class="fas fa-clock text-yellow"></i> 剩餘時間: <span id="disp-timer">30</span> 秒</div>
+              <div class="disp-item"><i class="fas fa-check-circle text-green"></i> 成功服務: <span id="disp-score" class="counter-highlight">0</span> / 6 位</div>
             </div>
           </div>
           
-          <div class="proofread-hud">
-            <div>審查狀態：<span id="proofread-corrected-count" class="counter-highlight">未修正</span></div>
-            <div class="proofread-feedback" id="proofread-feedback"></div>
+          <div class="dispatch-instructions">
+            <p><i class="fas fa-circle-info text-cyan animate-pulse"></i> 請扮演投票所選務人員，查看排隊選民的身分證件與戶籍，並在下方**點擊正確的選票組合**發給他們！</p>
           </div>
 
-          <!-- Dialog popup for replacement -->
-          <div class="constitution-modal hidden" id="constitution-modal">
-            <div class="modal-content">
-              <h5>⚖️ 違憲條款修正案抉擇</h5>
-              <p id="constitution-typo-explain">本段條文限制了自由，且處罰手段違背了法官保留原則與職權限制...</p>
-              <div class="modal-options" id="constitution-modal-options">
-                <!-- Replacement choices will be generated here -->
+          <div class="dispatch-workspace">
+            <!-- Left: Current Voter card -->
+            <div class="voter-card" id="current-voter-card">
+              <div class="voter-card-header">
+                <i class="fas fa-id-card"></i> 中華民國國民身分證
               </div>
+              <div class="voter-card-body">
+                <div class="voter-avatar"><i class="fas fa-user-circle"></i></div>
+                <div class="voter-info">
+                  <table>
+                    <tr>
+                      <th>姓名：</th>
+                      <td id="voter-card-name">載入中...</td>
+                    </tr>
+                    <tr>
+                      <th>戶籍地址：</th>
+                      <td id="voter-card-address" class="highlight-text">載入中...</td>
+                    </tr>
+                    <tr>
+                      <th>身分特記：</th>
+                      <td id="voter-card-special">載入中...</td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+              <div class="voter-tag" id="voter-card-identity-tag">一般選民</div>
+            </div>
+
+            <!-- Right: Dispensing Buttons -->
+            <div class="dispense-actions-grid">
+              <button class="btn btn-action-disp" data-choice="3-general">
+                <span class="btn-main-txt">直轄市 / 省轄市 一般選票 (3張)</span>
+                <span class="btn-sub-txt">市長、市議員(一般)、里長</span>
+              </button>
+              
+              <button class="btn btn-action-disp" data-choice="3-indigenous">
+                <span class="btn-main-txt">直轄市 / 省轄市 原住民選票 (3張)</span>
+                <span class="btn-sub-txt">市長、市議員(原住民)、里長</span>
+              </button>
+
+              <button class="btn btn-action-disp" data-choice="5-general">
+                <span class="btn-main-txt">一般縣轄市 一般選票 (5張)</span>
+                <span class="btn-sub-txt">縣長、縣議員(一般)、鄉鎮市長、代表、村里長</span>
+              </button>
+              
+              <button class="btn btn-action-disp" data-choice="5-indigenous">
+                <span class="btn-main-txt">一般縣轄市 原住民選票 (5張)</span>
+                <span class="btn-sub-txt">縣長、縣議員(原住民)、鄉鎮市長、代表、村里長</span>
+              </button>
+
+              <button class="btn btn-action-disp" data-choice="5-mountain">
+                <span class="btn-main-txt">山地原住民區選票 (5張)</span>
+                <span class="btn-sub-txt">直轄市長、市議員(原住民)、區長、區代表、里長</span>
+              </button>
             </div>
           </div>
-        </div>
-
-        <!-- Gavel Striking Box (Hidden until proofread won) -->
-        <div class="ceremony-box hidden" id="third-reading-ceremony">
-          <h4><i class="fas fa-university"></i> 立法院院會：三讀敲槌儀式</h4>
-          <p class="announcement">
-            「本案經三讀會條文合憲修正整理完竣。現在進行最後表決……表決結果贊成多數！本案通過！<br>
-            <span class="gavel-shout">《<span id="ceremony-bill-title-s4">法案名稱</span>》三讀通過！》</span> turn 」
-          </p>
           
-          <div class="gavel-interactive-area">
-            <div class="gavel-wrapper" id="gavel-anim-s4">
-              <svg class="gavel-svg" viewBox="0 0 100 100">
-                <rect x="25" y="30" width="30" height="16" rx="4" fill="#8B4513" stroke="#D4AF37" stroke-width="2"/>
-                <rect x="22" y="27" width="6" height="22" rx="2" fill="#D4AF37"/>
-                <rect x="52" y="27" width="6" height="22" rx="2" fill="#D4AF37"/>
-                <rect x="40" y="46" width="8" height="40" rx="3" fill="#A0522D"/>
-                <circle cx="44" cy="84" r="5" fill="#8B4513"/>
-                <ellipse cx="60" cy="85" rx="25" ry="10" fill="#CD853F" stroke="#8B4513" stroke-width="2"/>
-                <ellipse cx="60" cy="81" rx="25" ry="10" fill="#DEB887"/>
-              </svg>
-              <div class="gavel-spark" id="gavel-spark-s4"></div>
+          <div class="feedback-message" id="dispatch-feedback"></div>
+
+          <!-- Start Overlay -->
+          <div class="game-start-overlay" id="dispatch-start-overlay">
+            <div class="overlay-card">
+              <i class="fas fa-mail-bulk text-cyan large-icon animate-bounce"></i>
+              <h4>準備好分發選票了嗎？</h4>
+              <p>限時 30 秒，點擊正確的選票組合發給排隊的選民。錯發或超發選票是違法的喔！</p>
+              <button id="btn-start-dispatch" class="btn btn-primary">開始分發挑戰</button>
             </div>
-            <p class="gavel-instruction">點擊議事槌敲擊桌面，完成三讀通過！</p>
-            <button id="btn-strike-gavel-s4" class="btn btn-danger hidden">
-              <i class="fas fa-hammer"></i> 敲擊議事槌
-            </button>
           </div>
         </div>
 
         <div class="button-footer">
           <button id="btn-to-stage5" class="btn btn-primary hidden">
-            送交總統及行政院 <i class="fas fa-arrow-right"></i>
+            結算民主挑戰，頒發證書 <i class="fas fa-arrow-right"></i>
           </button>
         </div>
       </div>
 
-      <!-- 6. Stage 5: Veto Challenge & Policy Defense -->
-      <div class="screen" id="screen-stage5">
-        <h3 class="screen-title">第五關：行政院覆議案！政策辯護決策</h3>
-        
-        <div class="stage-intro-card">
-          <p>
-            <strong>【行政院覆議與決策】</strong><br>
-            行政院收到法案後，認為執行上極度窒礙難行，移請立法院覆議。
-            面對行政院的退回，身為提案委員，你必須做出**關鍵性的答辯回應**。若您選擇強硬拒絕或完全妥協，會對民意支持度與表決結果產生不同的後果！
-          </p>
-        </div>
-
-        <!-- Veto Defense Choice -->
-        <div class="veto-alert-box" id="veto-alert-container">
-          <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
-          <h4>🚨 行政院提出「覆議」！</h4>
-          <p class="alert-message">
-            行政院指出，該法案在實務執行上涉及極高的人力編制與財政預算，經總統核可後，決定移請立法院「覆議」！
-          </p>
-          <p class="veto-bill-subtitle" style="text-align: center; margin: 15px 0; font-size: 1.15rem;">
-            覆議法規：<span id="veto-bill-title" class="highlight-text">《法案名稱》</span>
-          </p>
-          <p class="game-instruction">身為提案主導者，請選擇您的應對與辯護策略：</p>
-          
-          <div class="veto-options-panel" id="veto-options-container">
-            <!-- Dynamic choices will be rendered here based on bill -->
-          </div>
-        </div>
-
-        <!-- Rapid Clicks Mini-game (Difficulty based on decision) -->
-        <div class="minigame-box hidden" id="veto-game-container">
-          <h4>任務：全院表決！維持原案投票戰</h4>
-          <p class="game-instruction" id="veto-game-instruction">快速狂點按鈕以獲得足夠贊成票！</p>
-          
-          <div class="veto-game-hud">
-            <div class="progress-bar-container">
-              <div class="progress-bar-fill" id="veto-progress-fill"></div>
-              <div class="threshold-line" style="left: 50%;">
-                <span class="threshold-tag">過半數門檻 (57票)</span>
-              </div>
-            </div>
-            <div class="veto-score-board">
-              <div class="score-item">贊成維持原案: <span id="veto-votes" class="counter-highlight">0</span> / 113 票</div>
-              <div class="score-item">剩餘時間: <span id="veto-timer">8.0</span> 秒</div>
-            </div>
-          </div>
-
-          <div class="veto-click-area">
-            <button id="btn-click-vote" class="btn-click-target">
-              <span class="click-text">維持原案！</span>
-              <span class="click-icon"><i class="fas fa-vote-yea"></i></span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Outro Story (Success) -->
-        <div class="ceremony-box hidden" id="veto-success-box">
-          <div class="celebration-icon"><i class="fas fa-award"></i></div>
-          <h4>🎉 挑戰成功！覆議維持原案！</h4>
-          <p>
-            立法院全體委員過半數維持原案，覆議案不成立！行政院長必須接受該法律。總統正式公布，自公布日起算第三日發生效力！
-          </p>
-          <button id="btn-to-certificate" class="btn btn-success">
-            查看法案發布證書 <i class="fas fa-scroll"></i>
-          </button>
-        </div>
-
-        <!-- Outro Story (Fail) -->
-        <div class="ceremony-box hidden" id="veto-fail-box">
-          <div class="fail-icon"><i class="fas fa-times-circle"></i></div>
-          <h4>❌ 覆議表決未通過！</h4>
-          <p id="veto-fail-message">
-            很遺憾，沒能在時限內凝聚足夠的立委席次（未達過半數 57 票）。原法案失效！
-          </p>
-          <button id="btn-restart-veto" class="btn btn-secondary">
-            重新挑戰覆議表決 <i class="fas fa-redo"></i>
-          </button>
-        </div>
-      </div>
-
-      <!-- 7. Outro Screen (Certificate) -->
+      <!-- 5. Outro Screen (Certificate) -->
       <div class="screen" id="screen-certificate">
         <div class="certificate-container" id="certificate-print-area">
           <div class="certificate-border">
             <div class="cert-header">
-              <i class="fas fa-university cert-logo"></i>
-              <h3>中華民國立法院</h3>
-              <h4>素養立法大師認證證書</h4>
+              <i class="fas fa-vote-yea cert-logo"></i>
+              <h3>中華民國選舉特別委員會</h3>
+              <h4>台灣民主素養合格公民證書</h4>
             </div>
             
             <div class="cert-body">
-              <p class="cert-text-intro">茲證明立法委員</p>
-              <h2 class="cert-player-name" id="cert-player-name">訪客委員</h2>
-              <p class="cert-text-intro">在推動以下法規案中，展現卓越之利益調和與法理思辨素養：</p>
-              <h1 class="cert-bill-title" id="cert-bill-title">《草案標題》</h1>
+              <p class="cert-text-intro">茲證明民主公民</p>
+              <h2 class="cert-player-name" id="cert-player-name">訪客選民</h2>
+              <p class="cert-text-intro" id="cert-player-meta">班級：--- | 座號：--</p>
+              <p class="cert-text-intro">在「認識台灣選舉制度互動挑戰」中表現卓越，並成功習得以下民主公民素養：</p>
               
               <div class="cert-evaluation-grid">
                 <div class="eval-card">
-                  <div class="eval-title"><i class="fas fa-balance-scale"></i> 利益平衡度</div>
-                  <div class="eval-stat" id="cert-balance-score">良好</div>
+                  <div class="eval-title"><i class="fas fa-id-card text-cyan"></i> 參政資格與公投</div>
+                  <div class="eval-stat" id="cert-s1-score">通過</div>
                 </div>
                 <div class="eval-card">
-                  <div class="eval-title"><i class="fas fa-scroll"></i> 比例原則思辨</div>
-                  <div class="eval-stat" id="cert-proportionality-score">3 / 3 題</div>
+                  <div class="eval-title"><i class="fas fa-user-tie text-green"></i> 相對多數決認識</div>
+                  <div class="eval-stat" id="cert-s2-score">良好</div>
                 </div>
                 <div class="eval-card">
-                  <div class="eval-title"><i class="fas fa-gavel"></i> 合憲性修正</div>
-                  <div class="eval-stat">完成</div>
+                  <div class="eval-title"><i class="fas fa-balance-scale text-purple"></i> 兩票制與5%限制</div>
+                  <div class="eval-stat" id="cert-s3-score">跨越門檻</div>
+                </div>
+                <div class="eval-card">
+                  <div class="eval-title"><i class="fas fa-mail-bulk text-pink"></i> 九合一選票辨識</div>
+                  <div class="eval-stat" id="cert-s4-score">滿分</div>
                 </div>
               </div>
 
               <p class="cert-desc">
-                本法案歷經起草、公聽會利益調和、朝野黨團協商，並於二讀會中針對比例原則完成答辯表決通過、三讀會進行違憲條款修正。全案符合憲法民主立法程序，特頒此證以茲鼓勵其公民素養思辨之表現！
+                該員已成功模擬台灣各項核心選舉制度，深刻理解選民資格、公投通過之雙重門檻、總統大選之相對多數決、立委選舉單一選區兩票制（含政黨席次之5%门槛限制及女性席次保障），以及地方九合一多張選票之複雜分發規則。具備健全之現代民主素養與參政知識，特頒此證！
               </p>
             </div>
 
             <div class="cert-footer">
               <div class="cert-sign">
-                <span class="label">立法院長</span>
-                <span class="sign-name">遊 戲 院 長 <span class="seal">印</span></span>
+                <span class="label">特別委員會召集人</span>
+                <span class="sign-name">民主學堂堂主 <span class="seal">中選印</span></span>
               </div>
               <div class="cert-date">
-                中華民國 <span id="cert-date-year">115</span> 年 <span id="cert-date-month">6</span> 月 <span id="cert-date-day">21</span> 日
+                中華民國 <span id="cert-date-year">115</span> 年 <span id="cert-date-month">6</span> 月 <span id="cert-date-day">24</span> 日
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Google Sheet Sync Status -->
-        <div class="sync-status-box" id="sync-status-box">
-          <i class="fas fa-cloud-upload-alt sync-icon" id="sync-icon"></i>
-          <span id="sync-text">已備妥成果，準備進行雲端同步...</span>
-        </div>
-
         <div class="certificate-actions">
           <button id="btn-print-certificate" class="btn btn-secondary">
-            <i class="fas fa-camera"></i> 另存 PDF 或列印
+            <i class="fas fa-print"></i> 列印或另存 PDF
           </button>
+          <a href="slides.html" class="btn btn-secondary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+            <i class="fas fa-chalkboard-teacher"></i> 閱讀公民簡報
+          </a>
           <button id="btn-restart-all" class="btn btn-primary">
-            再玩一次，挑戰其他法案 <i class="fas fa-redo"></i>
+            重新挑戰其他身份 <i class="fas fa-redo"></i>
           </button>
         </div>
-        <p class="cert-print-tip"><i class="fas fa-info-circle"></i> 提示：您可以將證書另存為 PDF 檔案提交給公民科老師唷！</p>
+        <p class="cert-print-tip"><i class="fas fa-info-circle"></i> 提示：您可以將證書列印或存為 PDF，作為公民課的學習成果學習單唷！</p>
       </div>
 
     </section>
@@ -628,6 +843,6 @@
   <canvas class="confetti-canvas" id="confetti-canvas"></canvas>
 
   <!-- Javascript Logic -->
-  <script src="app.js?v=20260622"></script>
+  <script src="app.js?v=20260624"></script>
 </body>
 </html>
