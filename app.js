@@ -2,6 +2,10 @@
    台灣選舉制度互動式遊戲 - 核心邏輯
    ========================================== */
 
+// --- 後端配置 ---
+// 教師部署 Google Apps Script 後，請將產生的網頁應用程式 URL 貼在下方雙引號內：
+const GOOGLE_SHEET_APP_URL = "";
+
 document.addEventListener('DOMContentLoaded', () => {
   
   // ==========================================
@@ -1364,6 +1368,64 @@ document.addEventListener('DOMContentLoaded', () => {
     certDateYear.textContent = minguoYear;
     certDateMonth.textContent = today.getMonth() + 1;
     certDateDay.textContent = today.getDate();
+
+    // 雲端試算表同步
+    syncToGoogleSheet();
+  }
+
+  function getStrategyLabel(strategy) {
+    if (strategy === 'youth') return '主打青年居住正義';
+    if (strategy === 'elderly') return '主打銀髮社會福利';
+    if (strategy === 'tech') return '主打科技綠能發展';
+    return '未選擇';
+  }
+
+  function syncToGoogleSheet() {
+    const syncBox = document.getElementById('sync-status-box');
+    const syncText = document.getElementById('sync-text');
+    const syncIcon = document.getElementById('sync-icon');
+    
+    if (!syncBox || !syncText || !syncIcon) return;
+    
+    if (!GOOGLE_SHEET_APP_URL) {
+      syncBox.style.display = 'none';
+      return;
+    }
+    
+    syncBox.style.display = 'flex';
+    syncText.textContent = '雲端資料同步中...';
+    syncIcon.className = 'fas fa-spinner fa-spin text-cyan';
+    
+    const payload = {
+      class: gameState.playerClass || '無',
+      seat: gameState.playerSeat || '無',
+      name: gameState.playerName,
+      bill: getDifficultyLabel(gameState.difficulty),
+      draft: getStrategyLabel(gameState.stage2Strategy),
+      balance: gameState.currentScore,
+      score: gameState.stage3Complete ? '通過 (達標)' : '未完成',
+      vetoStrategy: `${gameState.stage4Score} / 6 題`,
+      passed: '是',
+      timestamp: new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' })
+    };
+    
+    fetch(GOOGLE_SHEET_APP_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    })
+    .then(() => {
+      syncText.textContent = '雲端同步完成！';
+      syncIcon.className = 'fas fa-check-circle text-green';
+    })
+    .catch((error) => {
+      console.error('Google Sheet Sync Error:', error);
+      syncText.textContent = '同步失敗，請聯絡老師檢查網路設定。';
+      syncIcon.className = 'fas fa-exclamation-triangle text-red';
+    });
   }
 
   function getDifficultyLabel(diff) {
