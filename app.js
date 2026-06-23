@@ -4,7 +4,7 @@
 
 // --- 後端配置 ---
 // 教師部署 Google Apps Script 後，請將產生的網頁應用程式 URL 貼在下方雙引號內：
-const GOOGLE_SHEET_APP_URL = "";
+const GOOGLE_SHEET_APP_URL = "https://script.google.com/macros/s/AKfycbzzwwoV2fJeqh--UE-su9UZUfORvPV_F0pBZUp35lIe2mPLa27CmCVzutTFb_VssIKtcA/exec";
 
 document.addEventListener('DOMContentLoaded', () => {
   
